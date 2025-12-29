@@ -148,7 +148,7 @@ public class MainWindow extends JFrame implements IObserver {
         
         // Initialize editor
         contentEditor = new JEditorPane();
-        contentEditor.setFont(new Font("Courier New", Font.PLAIN, 12));
+        contentEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         editorScrollPane = new JScrollPane(contentEditor);
         
         // Initialize split pane
