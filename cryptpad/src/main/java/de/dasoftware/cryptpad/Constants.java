@@ -23,8 +23,8 @@ public final class Constants {
     public static final String SYSTEM_LINE_SEPARATOR = System.lineSeparator();
     
     // UI Constants
-    public static final int DEFAULT_WINDOW_WIDTH = 800;
-    public static final int DEFAULT_WINDOW_HEIGHT = 600;
+    public static final int DEFAULT_WINDOW_WIDTH = 1100;
+    public static final int DEFAULT_WINDOW_HEIGHT = 850;
     
     // Encryption
     public static final String ENCRYPTED_MESSAGE_MARKER = "-----BEGIN ENCRYPTED MESSAGE-----";

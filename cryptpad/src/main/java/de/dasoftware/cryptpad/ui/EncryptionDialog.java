@@ -1,6 +1,7 @@
 package de.dasoftware.cryptpad.ui;
 
 import de.dasoftware.cryptpad.crypto.EncryptionWrapper;
+import de.dasoftware.cryptpad.util.IconUtil;
 
 import javax.crypto.BadPaddingException;
 import javax.swing.*;
@@ -16,9 +17,6 @@ import java.util.Arrays;
 /**
  * Standalone text editor with encryption and decryption capabilities
  * Allows encrypting/decrypting text content and saving to plain text files
- * 
- * @author DA-Software
- * @version 1.0.0
  */
 public class EncryptionDialog extends JFrame {
     
@@ -52,6 +50,7 @@ public class EncryptionDialog extends JFrame {
         setupLayout();
         setupListeners();
         setupMenuBar();
+        IconUtil.setApplicationIcon(this);
         
         setSize(600, 450);
         setLocationRelativeTo(null);

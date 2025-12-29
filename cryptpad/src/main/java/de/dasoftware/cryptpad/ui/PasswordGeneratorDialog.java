@@ -1,5 +1,6 @@
 package de.dasoftware.cryptpad.ui;
 
+import de.dasoftware.cryptpad.util.IconUtil;
 import de.dasoftware.cryptpad.util.PasswordGenerator;
 
 import javax.swing.*;
@@ -9,9 +10,6 @@ import java.awt.event.ActionEvent;
 
 /**
  * Dialog for generating random passwords with configurable options
- * 
- * @author DA-Software
- * @version 1.0.0
  */
 public class PasswordGeneratorDialog extends JDialog {
     
@@ -53,6 +51,7 @@ public class PasswordGeneratorDialog extends JDialog {
         initComponents();
         setupLayout();
         setupListeners();
+        IconUtil.setApplicationIcon(this);
         
         pack();
         setLocationRelativeTo(parent);

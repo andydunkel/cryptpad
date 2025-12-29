@@ -19,9 +19,6 @@ import java.util.Arrays;
 
 /**
  * Main window of DA-CryptPad application
- * 
- * @author DA-Software
- * @version 1.0.0
  */
 public class MainWindow extends JFrame implements IObserver {
     
@@ -116,6 +113,9 @@ public class MainWindow extends JFrame implements IObserver {
         setSize(Constants.DEFAULT_WINDOW_WIDTH, Constants.DEFAULT_WINDOW_HEIGHT);
         setLocationRelativeTo(null);
         
+        // Set application icon
+        setApplicationIcon();
+        
         // Initialize toolbar
         initToolBar();
         
@@ -158,6 +158,39 @@ public class MainWindow extends JFrame implements IObserver {
         // Initialize tree popup menu
         initTreePopupMenu();
         navigationTree.setComponentPopupMenu(treePopupMenu);
+    }
+
+    /**
+     * Sets the application icon for this window
+     */
+    private void setApplicationIcon() {
+        try {
+            // Load icon image(s)
+            ImageIcon icon16 = new ImageIcon(getClass().getResource("/icons/app-icon-16.png"));
+            ImageIcon icon32 = new ImageIcon(getClass().getResource("/icons/app-icon-32.png"));
+            ImageIcon icon48 = new ImageIcon(getClass().getResource("/icons/app-icon-48.png"));
+            ImageIcon icon64 = new ImageIcon(getClass().getResource("/icons/app-icon-64.png"));
+            
+            // Set multiple icon sizes (for different contexts)
+            java.util.List<Image> icons = new java.util.ArrayList<>();
+            icons.add(icon16.getImage());
+            icons.add(icon32.getImage());
+            icons.add(icon48.getImage());
+            icons.add(icon64.getImage());
+            
+            setIconImages(icons);
+            
+        } catch (Exception e) {
+            System.err.println("Could not load application icon: " + e.getMessage());
+            
+            // Fallback: Try to load just one icon
+            try {
+                ImageIcon icon = new ImageIcon(getClass().getResource("/icons/app-icon.png"));
+                setIconImage(icon.getImage());
+            } catch (Exception ex) {
+                System.err.println("Could not load fallback icon: " + ex.getMessage());
+            }
+        }
     }
     
     /**

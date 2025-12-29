@@ -2,6 +2,7 @@ package de.dasoftware.cryptpad;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import de.dasoftware.cryptpad.ui.MainWindow;
+import de.dasoftware.cryptpad.ui.SplashScreen;
 import de.dasoftware.cryptpad.model.DataModel;
 
 import javax.swing.*;
@@ -9,9 +10,6 @@ import javax.swing.*;
 /**
  * Main class for DA-CryptPad
  * Starts and initializes the application
- * 
- * @author DA-Software
- * @version 1.0.0
  */
 public class CryptPadMain {
     
@@ -21,11 +19,23 @@ public class CryptPadMain {
      * @param args Command line arguments (optional: file to open)
      */
     public static void main(String[] args) {
+        // Show splash screen
+        SplashScreen splash = new SplashScreen();
+        splash.setVisible(true);    	
+    	
         // Set FlatLaf Look and Feel (before creating GUI components!)
         initializeLookAndFeel();
         
-        // Start GUI in Event Dispatch Thread
+        // Give splash screen time to display
+        try {
+            Thread.sleep(1500); // Show for 1.5 seconds
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }        
+        
+        // Start GUI on Event Dispatch Thread
         SwingUtilities.invokeLater(() -> {
+            splash.close(); // Close splash before showing main window
             startApplication(args);
         });
     }

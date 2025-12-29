@@ -8,9 +8,6 @@ import java.awt.*;
 /**
  * Splash screen shown during application startup
  * Displays the application logo for a brief moment
- * 
- * @author DA-Software
- * @version 1.0.0
  */
 public class SplashScreen extends JWindow {
     

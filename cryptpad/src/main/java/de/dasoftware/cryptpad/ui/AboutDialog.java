@@ -1,6 +1,7 @@
 package de.dasoftware.cryptpad.ui;
 
 import de.dasoftware.cryptpad.Constants;
+import de.dasoftware.cryptpad.util.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +33,7 @@ public class AboutDialog extends JDialog {
         initComponents();
         setupLayout();
         setupListeners();
+        IconUtil.setApplicationIcon(this);
         
         pack();
         setLocationRelativeTo(parent);
@@ -62,7 +64,7 @@ public class AboutDialog extends JDialog {
         versionLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         
         // Author label
-        authorLabel = new JLabel("© 2024 " + Constants.APP_VENDOR);
+        authorLabel = new JLabel("© DA-Software.net");
         authorLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         
         // OK button
@@ -74,7 +76,7 @@ public class AboutDialog extends JDialog {
      * Sets up the layout
      */
     private void setupLayout() {
-        setLayout(new BorderLayout(10, 10));
+        getContentPane().setLayout(new BorderLayout(10, 10));
         
         // Center panel with logo and labels
         JPanel centerPanel = new JPanel();
@@ -100,8 +102,8 @@ public class AboutDialog extends JDialog {
         buttonPanel.add(okButton);
         
         // Add panels to dialog
-        add(centerPanel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        getContentPane().add(centerPanel, BorderLayout.CENTER);
+        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         
         // Set background
         getContentPane().setBackground(Color.WHITE);

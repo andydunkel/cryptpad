@@ -1,6 +1,9 @@
 package de.dasoftware.cryptpad.ui;
 
 import javax.swing.*;
+
+import de.dasoftware.cryptpad.util.IconUtil;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -36,6 +39,7 @@ public class EncryptPasswordDialog extends JDialog {
         initComponents();
         setupLayout();
         setupListeners();
+        IconUtil.setApplicationIcon(this);
         
         pack();
         setLocationRelativeTo(parent);

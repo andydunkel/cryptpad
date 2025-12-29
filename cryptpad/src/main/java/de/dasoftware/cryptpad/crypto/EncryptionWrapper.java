@@ -1,5 +1,7 @@
 package de.dasoftware.cryptpad.crypto;
 
+import de.dasoftware.cryptpad.Constants;
+
 /**
  * Wrapper for encryption with message formatting
  * Adds headers and footers to encrypted content similar to PGP-style messages
@@ -14,7 +16,7 @@ public class EncryptionWrapper {
     private static final String BEGIN_FILE = "-----BEGIN ENCRYPTED FILE-----";
     private static final String END_MESSAGE = "-----END ENCRYPTED MESSAGE-----";
     private static final String BEGIN_ENC = "-----BEGIN-----";
-    private static final String VERSION_INFO = "Version: DA-CryptPad V1.0";
+    private static final String VERSION_INFO = "Version: DA-CryptPad" + Constants.APP_VERSION;
     
     private final IEncryption encryption;
     
