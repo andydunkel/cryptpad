@@ -336,11 +336,6 @@ public class EncryptionDialog extends JFrame {
             savedFileName = filename;
             updateTitle();
             
-            JOptionPane.showMessageDialog(this,
-                    "File saved successfully!",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-            
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
                     "Could not save the file: " + e.getMessage(),

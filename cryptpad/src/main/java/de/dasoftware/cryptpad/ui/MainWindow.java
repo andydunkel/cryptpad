@@ -892,11 +892,7 @@ public class MainWindow extends JFrame implements IObserver {
             saved = true;
             savedFileName = fileName;
             updateTitle(new File(fileName).getName());
-            
-            JOptionPane.showMessageDialog(this,
-                    "File saved successfully!",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
+        
             
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
