@@ -17,6 +17,11 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Arrays;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rsyntaxtextarea.Theme;
+import org.fife.ui.rtextarea.RTextScrollPane;
+
 /**
  * Main window of DA-CryptPad application
  */
@@ -31,8 +36,8 @@ public class MainWindow extends JFrame implements IObserver {
     private JSplitPane splitPane;
     private JTree navigationTree;
     private JScrollPane treeScrollPane;
-    private JEditorPane contentEditor;
-    private JScrollPane editorScrollPane;
+    private RSyntaxTextArea contentEditor; 
+    private RTextScrollPane editorScrollPane;
     
     // Toolbar
     private JToolBar toolBar;
@@ -146,10 +151,28 @@ public class MainWindow extends JFrame implements IObserver {
         treeScrollPane = new JScrollPane(navigationTree);
         treeScrollPane.setMinimumSize(new Dimension(200, 300));
         
-        // Initialize editor
-        contentEditor = new JEditorPane();
+        // Initialize editor with Markdown syntax highlighting
+        contentEditor = new RSyntaxTextArea();
+        contentEditor.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MARKDOWN);
+        contentEditor.setCodeFoldingEnabled(true);
+        contentEditor.setAntiAliasingEnabled(true);
+        contentEditor.setAutoIndentEnabled(true);
+        contentEditor.setTabSize(4);
         contentEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        editorScrollPane = new JScrollPane(contentEditor);
+
+        // Apply theme
+        try {
+            Theme theme = Theme.load(getClass().getResourceAsStream(
+                "/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
+            theme.apply(contentEditor);
+        } catch (Exception e) {
+            System.err.println("Could not load RSyntaxTextArea theme: " + e.getMessage());
+        }
+        
+        // Use RTextScrollPane for line numbers and code folding
+        editorScrollPane = new RTextScrollPane(contentEditor);
+        editorScrollPane.setLineNumbersEnabled(true);
+        editorScrollPane.setFoldIndicatorEnabled(true);        
         
         // Initialize split pane
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, editorScrollPane);

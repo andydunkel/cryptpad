@@ -43,6 +43,13 @@
       <artifactId>flatlaf-intellij-themes</artifactId>
       <version>${flatlaf.version}</version>
     </dependency>
+    
+    <!-- RSyntaxTextArea for Syntax Highlighting -->
+    <dependency>
+        <groupId>com.fifesoft</groupId>
+        <artifactId>rsyntaxtextarea</artifactId>
+        <version>3.5.2</version>
+    </dependency>
   </dependencies>
   
   <build>
