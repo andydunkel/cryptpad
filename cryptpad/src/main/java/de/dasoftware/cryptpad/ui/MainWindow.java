@@ -133,6 +133,11 @@ public class MainWindow extends JFrame implements IObserver {
         navigationTree.setShowsRootHandles(true);
         navigationTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         
+        // Enable drag and drop
+        navigationTree.setDragEnabled(true);
+        navigationTree.setDropMode(DropMode.ON_OR_INSERT);
+        navigationTree.setTransferHandler(new TreeTransferHandler(navigationTree, model));        
+        
         // Tree icons
         try {
             ImageIcon leafIcon = new ImageIcon(getClass().getResource("/icons/leaf.png"));

@@ -18,16 +18,14 @@ public class DataModel implements IDataModel {
     private DefaultTreeModel treeModel;
     private IXMLManager xmlManager;
     
-    /**
-     * Constructs a new DataModel with an empty tree structure
-     * The root node is hidden from the user
-     */
     public DataModel() {
         rootNode = new EntryTreeNode("Root");
         observers = new ArrayList<>();
         
-        // Add default content node
-        rootNode.add(new EntryTreeNode("Content"));
+        // Add default node with better name
+        EntryTreeNode defaultNode = new EntryTreeNode("Notes");
+        defaultNode.setContent("# Welcome to DA-CryptPad!\n\nStart typing your notes here...");
+        rootNode.add(defaultNode);
         
         treeModel = new DefaultTreeModel(rootNode);
     }
