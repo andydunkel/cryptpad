@@ -781,6 +781,7 @@ public class MainWindow extends JFrame implements IObserver {
         saved = false;
         savedFileName = "";
         updateTitle("untitled." + Constants.FILE_EXTENSION);
+        selectFirstNode();
     }
     
     /**
@@ -827,6 +828,8 @@ public class MainWindow extends JFrame implements IObserver {
                     navigationTree.expandRow(i);
                 }
                 
+                selectFirstNode();
+                
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,
                         "Error loading file:\n" + ex.getMessage(),
@@ -837,6 +840,32 @@ public class MainWindow extends JFrame implements IObserver {
                 Arrays.fill(password, '0');
             }
         }
+    }
+    
+    /**
+     * Selects the first visible node in the tree
+     * Should be called after creating new file or loading a file
+     */
+    private void selectFirstNode() {
+        SwingUtilities.invokeLater(() -> {
+            EntryTreeNode root = model.getRootNode();
+            
+            if (root != null && root.getChildCount() > 0) {
+                // Select first child of root
+                EntryTreeNode firstChild = (EntryTreeNode) root.getChildAt(0);
+                TreePath path = new TreePath(model.getTreeModel().getPathToRoot(firstChild));
+                
+                navigationTree.setSelectionPath(path);
+                navigationTree.scrollPathToVisible(path);
+                
+                // Load content into editor
+                contentEditor.setText(firstChild.getContent());
+                contentEditor.setCaretPosition(0);
+            } else {
+                // No nodes exist - clear editor
+                contentEditor.setText("");
+            }
+        });
     }
     
     /**
@@ -941,8 +970,25 @@ public class MainWindow extends JFrame implements IObserver {
      */
     @Override
     public void refresh() {
+        // Null check in case refresh is called before initialization
+        if (navigationTree == null || navigationTree.getModel() == null) {
+            return;
+        }
+        
+        // Save currently selected path
+        TreePath selectedPath = navigationTree.getSelectionPath();
+        
         DefaultTreeModel treeModel = (DefaultTreeModel) navigationTree.getModel();
         treeModel.reload();
         navigationTree.repaint();
+        
+        // Try to restore selection
+        if (selectedPath != null) {
+            navigationTree.setSelectionPath(selectedPath);
+            navigationTree.scrollPathToVisible(selectedPath);
+        } else {
+            // No selection - select first node
+            selectFirstNode();
+        }
     }
 }
