@@ -6,9 +6,12 @@ import de.dasoftware.cryptpad.model.EntryTreeNode;
 import de.dasoftware.cryptpad.model.IDataModel;
 import de.dasoftware.cryptpad.model.IObserver;
 
+
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -30,6 +33,7 @@ public class MainWindow extends JFrame implements IObserver {
     // Model
     private IDataModel model;
     private boolean saved = false;
+    private boolean dirty = false;
     private String savedFileName = "";
     
     // Main components
@@ -430,6 +434,24 @@ public class MainWindow extends JFrame implements IObserver {
         
         // Tree selection
         navigationTree.addTreeSelectionListener(this::onTreeSelectionChanged);
+
+        // Content editor changes - mark as dirty
+        contentEditor.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                markDirty();
+            }
+            
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                markDirty();
+            }
+            
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                markDirty();
+            }
+        });        
         
         // Toolbar buttons
         btnNew.addActionListener(this::onNewFile);
@@ -476,6 +498,27 @@ public class MainWindow extends JFrame implements IObserver {
     }
     
     // ========== Event Handlers ==========
+    
+    /**
+     * Marks the file as dirty (unsaved changes)
+     */
+    public void markDirty() {
+        if (!dirty) {
+            dirty = true;
+            updateTitle();
+        }
+    }
+    
+    /**
+     * Marks the file as clean (no unsaved changes)
+     */
+    private void markClean() {
+        if (dirty) {
+            dirty = false;
+            updateTitle();
+        }
+    }
+        
     
     /**
      * Handles tree selection changes
@@ -558,6 +601,8 @@ public class MainWindow extends JFrame implements IObserver {
             TreePath path = new TreePath(model.getTreeModel().getPathToRoot(newNode));
             navigationTree.setSelectionPath(path);
             navigationTree.scrollPathToVisible(path);
+            
+            markDirty();
         }
     }
     
@@ -588,6 +633,8 @@ public class MainWindow extends JFrame implements IObserver {
             TreePath newPath = new TreePath(model.getTreeModel().getPathToRoot(newNode));
             navigationTree.setSelectionPath(newPath);
             navigationTree.scrollPathToVisible(newPath);
+            
+            markDirty();
         }
     }
     
@@ -618,6 +665,8 @@ public class MainWindow extends JFrame implements IObserver {
             TreePath newPath = new TreePath(model.getTreeModel().getPathToRoot(newNode));
             navigationTree.setSelectionPath(newPath);
             navigationTree.scrollPathToVisible(newPath);
+            
+            markDirty();
         }
     }
     
@@ -643,6 +692,8 @@ public class MainWindow extends JFrame implements IObserver {
         if (dialog.getModalResult()) {
             String newTitle = dialog.getNodeTitle();
             model.setNodeTitle(node, newTitle);
+            
+            markDirty();
         }
     }
     
@@ -670,6 +721,7 @@ public class MainWindow extends JFrame implements IObserver {
         if (result == JOptionPane.YES_OPTION) {
             model.deleteNode(node);
             contentEditor.setText("");
+            markDirty();
         }
     }
     
@@ -744,10 +796,51 @@ public class MainWindow extends JFrame implements IObserver {
      * Handler for window closing
      */
     private void onWindowClose() {
-        int result = showSaveConfirmation();
-        if (result != JOptionPane.CANCEL_OPTION) {
-            dispose();
-            System.exit(0);
+        // Auto-save if file is already saved with password
+        if (dirty && saved && !savedFileName.isEmpty() && 
+            model.getPassword() != null && !model.getPassword().isEmpty()) {
+            
+            // Save current editor content first
+            TreePath currentPath = navigationTree.getLeadSelectionPath();
+            if (currentPath != null) {
+                try {
+                    EntryTreeNode node = (EntryTreeNode) currentPath.getLastPathComponent();
+                    model.setNodeContent(node, contentEditor.getText());
+                } catch (Exception e) {
+                    // Ignore
+                }
+            }
+            
+            // Auto-save
+            try {
+                model.saveFile(savedFileName);
+                dispose();
+                System.exit(0);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Auto-save failed:\n" + ex.getMessage() + 
+                        "\n\nDo you want to exit anyway?",
+                        "Save Error",
+                        JOptionPane.ERROR_MESSAGE);
+                
+                int result = JOptionPane.showConfirmDialog(this,
+                        "Exit without saving?",
+                        "Confirm Exit",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE);
+                
+                if (result == JOptionPane.YES_OPTION) {
+                    dispose();
+                    System.exit(0);
+                }
+            }
+        } else {
+            // Show save confirmation
+            int result = showSaveConfirmation();
+            if (result != JOptionPane.CANCEL_OPTION) {
+                dispose();
+                System.exit(0);
+            }
         }
     }
     
@@ -760,12 +853,12 @@ public class MainWindow extends JFrame implements IObserver {
      */
     private int showSaveConfirmation() {
         // Don't ask if no changes
-        if (savedFileName.isEmpty() && contentEditor.getText().trim().isEmpty()) {
+        if (!dirty) {
             return JOptionPane.NO_OPTION;
         }
         
         int result = JOptionPane.showConfirmDialog(this,
-                "Save the current file?",
+                "Save changes to the current file?",
                 "Save Confirmation",
                 JOptionPane.YES_NO_CANCEL_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
@@ -784,8 +877,11 @@ public class MainWindow extends JFrame implements IObserver {
         model.clearModel();
         contentEditor.setText("");
         saved = false;
+        dirty = false;
         savedFileName = "";
-        updateTitle("untitled." + Constants.FILE_EXTENSION);
+        updateTitle();
+        
+        // Select first node after creating new file
         selectFirstNode();
     }
     
@@ -824,15 +920,17 @@ public class MainWindow extends JFrame implements IObserver {
             try {
                 model.loadFile(filename);
                 saved = true;
+                dirty = false;
                 savedFileName = filename;
                 contentEditor.setText("");
-                updateTitle(new File(filename).getName());
+                updateTitle();
                 
                 // Expand first level of tree
                 for (int i = 0; i < navigationTree.getRowCount(); i++) {
                     navigationTree.expandRow(i);
                 }
                 
+                // Select first node after loading
                 selectFirstNode();
                 
             } catch (Exception ex) {
@@ -947,10 +1045,10 @@ public class MainWindow extends JFrame implements IObserver {
         try {
             model.saveFile(fileName);
             saved = true;
+            dirty = false;
             savedFileName = fileName;
-            updateTitle(new File(fileName).getName());
-        
-            
+            updateTitle();
+                        
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
                     "Error saving file:\n" + ex.getMessage(),
@@ -960,12 +1058,32 @@ public class MainWindow extends JFrame implements IObserver {
     }
     
     /**
-     * Updates window title
+     * Updates window title with filename and dirty indicator
+     */
+    private void updateTitle() {
+        StringBuilder title = new StringBuilder(Constants.APP_NAME);
+        
+        if (!savedFileName.isEmpty()) {
+            title.append(" - ").append(new File(savedFileName).getName());
+        } else {
+            title.append(" - untitled.").append(Constants.FILE_EXTENSION);
+        }
+        
+        if (dirty) {
+            title.append(" *");
+        }
+        
+        setTitle(title.toString());
+    }
+    
+    /**
+     * Overloaded method for backward compatibility
      * 
      * @param fileName Current file name
      */
+    @Deprecated
     private void updateTitle(String fileName) {
-        setTitle(Constants.APP_NAME + " - " + fileName);
+        updateTitle();
     }
     
     // ========== IObserver Implementation ==========

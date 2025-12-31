@@ -6,6 +6,8 @@ import de.dasoftware.cryptpad.model.IDataModel;
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+
+import java.awt.Window;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -131,6 +133,12 @@ public class TreeTransferHandler extends TransferHandler {
             
             // Perform the move in the model
             moveNode(transferNode, parent, index);
+            
+            // Mark as dirty - get MainWindow reference
+            Window window = SwingUtilities.getWindowAncestor(tree);
+            if (window instanceof MainWindow) {
+                ((MainWindow) window).markDirty();  // You need to make this public!
+            }
             
             // Select the moved node
             TreePath newPath = new TreePath(
