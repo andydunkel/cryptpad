@@ -50,6 +50,13 @@
         <artifactId>rsyntaxtextarea</artifactId>
         <version>3.5.2</version>
     </dependency>
+    
+    <!-- DA-Updater -->
+    <dependency>
+        <groupId>de.dasoftware</groupId>
+        <artifactId>da-updater</artifactId>
+        <version>1.0.0</version>
+    </dependency>    
   </dependencies>
   
   <build>

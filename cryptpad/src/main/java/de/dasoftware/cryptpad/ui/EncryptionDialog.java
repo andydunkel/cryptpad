@@ -20,7 +20,8 @@ import java.util.Arrays;
  */
 public class EncryptionDialog extends JFrame {
     
-    private boolean saved = false;
+    private static final long serialVersionUID = 1L;
+	private boolean saved = false;
     private String savedFileName = "";
     
     // Components

@@ -16,7 +16,9 @@ import java.util.Arrays;
  */
 public class EncryptPasswordDialog extends JDialog {
     
-    private boolean modalResult = false;
+    private static final long serialVersionUID = 1L;
+
+	private boolean modalResult = false;
     
     // Components
     private JPanel mainPanel;

@@ -1,11 +1,11 @@
 package de.dasoftware.cryptpad.ui;
 
 import de.dasoftware.cryptpad.Constants;
-import de.dasoftware.cryptpad.model.DataModel;
 import de.dasoftware.cryptpad.model.EntryTreeNode;
 import de.dasoftware.cryptpad.model.IDataModel;
 import de.dasoftware.cryptpad.model.IObserver;
-
+import de.dasoftware.updater.UpdaterData;
+import de.dasoftware.updater.ui.UpdaterDialog;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -30,7 +30,8 @@ import org.fife.ui.rtextarea.RTextScrollPane;
  */
 public class MainWindow extends JFrame implements IObserver {
     
-    // Model
+    private static final long serialVersionUID = 1L;
+	// Model
     private IDataModel model;
     private boolean saved = false;
     private boolean dirty = false;
@@ -63,7 +64,6 @@ public class MainWindow extends JFrame implements IObserver {
     private JMenu menuFile;
     private JMenu menuEdit;
     private JMenu menuEncryption;
-    private JMenu menuImport;
     private JMenu menuHelp;
     
     // File menu items
@@ -352,8 +352,16 @@ public class MainWindow extends JFrame implements IObserver {
         // Help menu
         menuHelp = new JMenu("Help");
         menuHelp.setMnemonic('H');
+        
+        JMenuItem menuItemCheckUpdates = createMenuItem("Check for Updates", null, 'U', null);
+        menuItemCheckUpdates.addActionListener(this::onCheckUpdates);
+        
+        menuHelp.add(menuItemCheckUpdates);
+        menuHelp.addSeparator();
+        
         menuItemAbout = createMenuItem("About " + Constants.APP_NAME, "/icons/Info.png", 'A', null);
         menuHelp.add(menuItemAbout);
+               
         
         // Add menus to menu bar
         menuBar.add(menuFile);
@@ -362,6 +370,22 @@ public class MainWindow extends JFrame implements IObserver {
         menuBar.add(menuHelp);
         
         setJMenuBar(menuBar);
+    }
+    
+    /**
+     * Handler for Check Updates
+     */
+    private void onCheckUpdates(ActionEvent e) {
+        UpdaterData data = new UpdaterData();
+        data.setUpdateUrl("https://da-software.net/versions/cryptpad.php");
+        data.setVersionString(Constants.APP_VERSION); // z.B. "0.0.1"
+        data.setAppTitle(Constants.APP_NAME);
+        data.setUpdaterTitle(Constants.APP_NAME + " Updater");
+        data.setAutoUpdate(false);  // Manual update
+        data.setAutoClose(false);   // Keep dialog open
+        
+        UpdaterDialog dialog = new UpdaterDialog(this, data);
+        dialog.setVisible(true);
     }
     
     /**
@@ -507,18 +531,7 @@ public class MainWindow extends JFrame implements IObserver {
             dirty = true;
             updateTitle();
         }
-    }
-    
-    /**
-     * Marks the file as clean (no unsaved changes)
-     */
-    private void markClean() {
-        if (dirty) {
-            dirty = false;
-            updateTitle();
-        }
-    }
-        
+    }  
     
     /**
      * Handles tree selection changes

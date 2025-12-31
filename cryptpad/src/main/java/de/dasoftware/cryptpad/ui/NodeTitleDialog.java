@@ -17,7 +17,9 @@ import java.awt.event.KeyEvent;
  */
 public class NodeTitleDialog extends JDialog {
     
-    private boolean modalResult = false;
+    private static final long serialVersionUID = 1L;
+
+	private boolean modalResult = false;
     
     // Components
     private JLabel titleLabel;

@@ -8,7 +8,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class EntryTreeNode extends DefaultMutableTreeNode {
     
-    private String content = "";
+    private static final long serialVersionUID = -8527091360079777899L;
+	private String content = "";
     private boolean selected = false;
     
     /**

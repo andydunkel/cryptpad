@@ -21,7 +21,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
  */
 public class TreeTransferHandler extends TransferHandler {
     
-    private final IDataModel model;
+    private static final long serialVersionUID = 1L;
+	private final IDataModel model;
     private final JTree tree;
     
     // Custom DataFlavor for tree nodes
@@ -171,7 +172,6 @@ public class TreeTransferHandler extends TransferHandler {
     private void moveNode(EntryTreeNode node, EntryTreeNode newParent, int index) {
         // Remove from old parent
         EntryTreeNode oldParent = (EntryTreeNode) node.getParent();
-        int oldIndex = oldParent.getIndex(node);
         oldParent.remove(node);
         
         // Add to new parent

@@ -13,7 +13,8 @@ import java.awt.event.ActionEvent;
  */
 public class PasswordGeneratorDialog extends JDialog {
     
-    // Default values
+    private static final long serialVersionUID = 1L;
+	// Default values
     private static final int DEFAULT_PASSWORD_LENGTH = 10;
     private static final int DEFAULT_PASSWORD_COUNT = 5;
     private static final int MIN_PASSWORD_LENGTH = 4;

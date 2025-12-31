@@ -14,7 +14,9 @@ import java.awt.event.KeyEvent;
  */
 public class DecryptPasswordDialog extends JDialog {
     
-    private boolean modalResult = false;
+    private static final long serialVersionUID = 1L;
+
+	private boolean modalResult = false;
     
     // Components
     private JPanel mainPanel;

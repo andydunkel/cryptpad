@@ -15,7 +15,8 @@ import java.awt.event.ActionEvent;
  */
 public class AboutDialog extends JDialog {
     
-    // Components
+    private static final long serialVersionUID = 1L;
+	// Components
     private JLabel logoLabel;
     private JLabel versionLabel;
     private JLabel authorLabel;

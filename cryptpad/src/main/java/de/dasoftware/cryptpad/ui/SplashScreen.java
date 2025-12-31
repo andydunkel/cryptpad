@@ -11,7 +11,8 @@ import java.awt.*;
  */
 public class SplashScreen extends JWindow {
     
-    private JLabel imageLabel;
+    private static final long serialVersionUID = 1L;
+	private JLabel imageLabel;
     
     /**
      * Constructor
