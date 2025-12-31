@@ -15,7 +15,6 @@ public final class Constants {
     
     // File handling
     public static final String FILE_EXTENSION = "cryptpad";
-    public static final String FILE_EXTENSION_OLD = "jcryptpad";  // For backward compatibility
     
     // Line separators
     public static final String CRLF = "\r\n";  // Windows style

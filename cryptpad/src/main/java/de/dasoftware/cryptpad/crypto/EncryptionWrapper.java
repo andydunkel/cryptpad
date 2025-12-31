@@ -16,7 +16,7 @@ public class EncryptionWrapper {
     private static final String BEGIN_FILE = "-----BEGIN ENCRYPTED FILE-----";
     private static final String END_MESSAGE = "-----END ENCRYPTED MESSAGE-----";
     private static final String BEGIN_ENC = "-----BEGIN-----";
-    private static final String VERSION_INFO = "Version: DA-CryptPad" + Constants.APP_VERSION;
+    private static final String VERSION_INFO = "Version: DA-CryptPad " + Constants.APP_VERSION;
     
     private final IEncryption encryption;
     
