@@ -1,51 +1,99 @@
-[Files]
-;DestDir: {app}; Source: files\*; Flags: recursesubdirs overwritereadonly ignoreversion replacesameversion
+; DA-CryptPad Inno Setup Script
 
-Source: DA-CryptPad.exe; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-
-Source: ..\LICENSE; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\res\icon\DA-CryptPadFile.ico; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\res\icon\DA-CryptPad.ico; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-
-[Icons]
-Name: {group}\DA-CryptPad; Filename: {app}\DA-CryptPad.exe; WorkingDir: {app}; IconFilename: {app}\DA-CryptPad.ico; IconIndex: 0; Languages: 
-Name: {group}\Uninstall; Filename: {uninstallexe};
-
-[Run]
-Filename: {app}\DA-CryptPad.exe; WorkingDir: {app}; Flags: nowait postinstall; Description: DA-CryptPad
+; ===== Defines =====
+#define MyAppName "DA-CryptPad"
+#define MyAppVersion "1.0.0"
+#define MyAppPublisher "DA-Software"
+#define MyAppURL "https://www.da-software.net"
+#define MyAppExeName "cryptpad.exe"
 
 [Setup]
-AppCopyright=Andy Dunkel
-AppName=DA-CryptPad
-AppVerName=DA-CryptPad 1.0.0
-DefaultDirName={pf}\DA-CryptPad
-AppID={{67347003-2D90-4209-B9BA-EF949A5EC85B}
-VersionInfoVersion=1.0.0
-VersionInfoCompany=AndyDunkel.net
-VersionInfoDescription=DA-CryptPad
+; Application Info
+AppId={{67347003-2D90-4209-B9BA-EF949A5EC85B}
+AppName={#MyAppName}
+AppVersion={#MyAppVersion}
+AppVerName={#MyAppName} {#MyAppVersion}
+AppPublisher={#MyAppPublisher}
+AppPublisherURL={#MyAppURL}
+AppSupportURL={#MyAppURL}
+AppUpdatesURL={#MyAppURL}
+AppCopyright={#MyAppPublisher}
+
+; Version Info
+VersionInfoVersion={#MyAppVersion}
+VersionInfoCompany=DA-Software.net
+VersionInfoDescription={#MyAppName}
+VersionInfoProductName={#MyAppName}
+VersionInfoProductVersion={#MyAppVersion}
+
+; Installation Settings
+DefaultDirName={autopf}\{#MyAppName}
+DefaultGroupName={#MyAppName}
+LicenseFile=..\LICENSE
+OutputDir=installer
+OutputBaseFilename={#MyAppName}-Setup-{#MyAppVersion}
+
+; Compression
+Compression=lzma2
+SolidCompression=yes
+
+; Architecture
+ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
+
+; UI
+WizardStyle=modern
+ShowLanguageDialog=auto
 LanguageDetectionMethod=uilanguage
-DefaultGroupName=DA-CryptPad
 ShowUndisplayableLanguages=false
-OutputBaseFilename=DA-CryptPad
-VersionInfoProductName=DA-CryptPad
-VersionInfoProductVersion=1.0.0
-LicenseFile=../LICENSE
-AppPublisher=Andy Dunkel
-AppPublisherURL=http://andydunkel.net
-AppSupportURL=http://andydunkel.net
-AppUpdatesURL=http://andydunkel.net
+
+; Associations
 ChangesAssociations=true
-SignTool=yubikey /d $qDA-CryptPad$q /du $qhttps://www.da-software.net$q /v $f
+
+; Code Signing
+SignTool=yubikey /d $q{#MyAppName}$q /du $q{#MyAppURL}$q /v $f
 SignedUninstaller=yes
 
+[Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "german"; MessagesFile: "compiler:Languages\German.isl"
+
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
+[Files]
+; Main Application
+Source: "{#MyAppExeName}"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
+Source: "..\cryptpad\target\DA-CryptPad.jar"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
+
+; Bundled JRE
+Source: "jre\*"; DestDir: "{app}\jre"; Flags: overwritereadonly ignoreversion replacesameversion recursesubdirs createallsubdirs
+
+; Icons
+Source: "..\res\icon\DA-CryptPadFile.ico"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
+Source: "..\res\icon\DA-CryptPad.ico"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
+
+; License
+Source: "..\LICENSE"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
+
+[Icons]
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; IconFilename: "{app}\DA-CryptPad.ico"; IconIndex: 0
+Name: "{group}\Uninstall {#MyAppName}"; Filename: "{uninstallexe}"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; IconFilename: "{app}\DA-CryptPad.ico"; Tasks: desktopicon
+
 [Registry]
-Root: HKCR; Subkey: .DA-CryptPad; ValueType: string; ValueData: DA-CryptPadfile; Flags: uninsdeletevalue
-Root: HKCR; Subkey: DA-CryptPadfile; ValueType: string; ValueData: DA-CryptPad; Flags: uninsdeletekey
-Root: HKCR; Subkey: DA-CryptPadfile\DefaultIcon; ValueType: string; ValueData: {app}\DA-CryptPadFile.ico
-Root: HKCR; Subkey: DA-CryptPadfile\shell\open\command; ValueType: string; ValueData: """{app}\DA-CryptPad.exe"" ""%1"""
-                                                                                          
+; File Association for .cryptpad files
+Root: HKCR; Subkey: ".cryptpad"; ValueType: string; ValueData: "{#MyAppName}file"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "{#MyAppName}file"; ValueType: string; ValueData: "{#MyAppName} File"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "{#MyAppName}file\DefaultIcon"; ValueType: string; ValueData: "{app}\DA-CryptPadFile.ico"
+Root: HKCR; Subkey: "{#MyAppName}file\shell\open\command"; ValueType: string; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+
+[Run]
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent
+
 [UninstallDelete]
-Name: {app}; Type: filesandordirs
+Type: filesandordirs; Name: "{app}"
+Type: filesandordirs; Name: "{localappdata}\{#MyAppName}"
 
 [Code]
 function GetUninstallString(): String;
@@ -60,30 +108,24 @@ begin
   Result := sUnInstallString;
 end;
 
-
-/////////////////////////////////////////////////////////////////////
 function IsUpgrade(): Boolean;
 begin
   Result := (GetUninstallString() <> '');
 end;
 
-
-/////////////////////////////////////////////////////////////////////
 function UnInstallOldVersion(): Integer;
 var
   sUnInstallString: String;
   iResultCode: Integer;
 begin
-// Return Values:
-// 1 - uninstall string is empty
-// 2 - error executing the UnInstallString
-// 3 - successfully executed the UnInstallString
-
-  // default return value
+  // Return Values:
+  // 1 - uninstall string is empty
+  // 2 - error executing the UnInstallString
+  // 3 - successfully executed the UnInstallString
+  
   Result := 0;
-
-  // get the uninstall string of the old app
   sUnInstallString := GetUninstallString();
+  
   if sUnInstallString <> '' then begin
     sUnInstallString := RemoveQuotes(sUnInstallString);
     if Exec(sUnInstallString, '/SILENT /NORESTART /SUPPRESSMSGBOXES','', SW_HIDE, ewWaitUntilTerminated, iResultCode) then
@@ -94,7 +136,6 @@ begin
     Result := 1;
 end;
 
-/////////////////////////////////////////////////////////////////////
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if (CurStep=ssInstall) then
@@ -105,11 +146,3 @@ begin
     end;
   end;
 end;
-
-
-
-
-
-
-
-

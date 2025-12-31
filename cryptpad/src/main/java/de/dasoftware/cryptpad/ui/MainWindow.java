@@ -905,8 +905,7 @@ public class MainWindow extends JFrame implements IObserver {
         JFileChooser chooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 Constants.APP_NAME + " files",
-                Constants.FILE_EXTENSION,
-                Constants.FILE_EXTENSION_OLD  // Backward compatibility
+                Constants.FILE_EXTENSION
         );
         
         chooser.setFileFilter(filter);

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>cryptpad.jar</jar>
+  <outfile>cryptpad.exe</outfile>
+  <errTitle>DA-CryptPad</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>https://adoptium.net/</downloadUrl>
+  <supportUrl>https://da-software.net</supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>DA-CryptPad.ico</icon>
+  <jre>
+    <path>jre</path>
+    <requiresJdk>false</requiresJdk>
+    <requires64Bit>true</requires64Bit>
+    <minVersion>11</minVersion>
+    <maxVersion></maxVersion>
+    <initialHeapSize>128</initialHeapSize>
+    <maxHeapSize>512</maxHeapSize>
+  </jre>
+  <versionInfo>
+    <fileVersion>1.0.0.0</fileVersion>
+    <txtFileVersion>1.0.0</txtFileVersion>
+    <fileDescription>DA-CryptPad - Encrypted Note Manager</fileDescription>
+    <copyright>© DA-Software</copyright>
+    <productVersion>1.0.0.0</productVersion>
+    <txtProductVersion>1.0.0</txtProductVersion>
+    <productName>DA-CryptPad</productName>
+    <companyName>DA-Software</companyName>
+    <internalName>DA-CryptPad</internalName>
+    <originalFilename>DA-CryptPad.exe</originalFilename>
+    <trademarks></trademarks>
+    <language>ENGLISH_US</language>
+  </versionInfo>
+</launch4jConfig>
