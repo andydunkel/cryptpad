@@ -47,6 +47,8 @@ public class AboutDialog extends JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
         
+        Font baseFont = UIManager.getFont("Label.font");
+        
         // Logo/Image
         logoLabel = new JLabel();
         try {
@@ -55,17 +57,20 @@ public class AboutDialog extends JDialog {
         } catch (Exception e) {
             // If image not found, display text instead
             logoLabel.setText(Constants.APP_NAME);
-            logoLabel.setFont(new Font("Arial", Font.BOLD, 24));
+            logoLabel.setFont(baseFont.deriveFont(Font.BOLD, baseFont.getSize2D() + 10f));
             logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         }
         
         // Version label
         versionLabel = new JLabel("Version " + Constants.APP_VERSION);
-        versionLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        versionLabel.setFont(baseFont.deriveFont(Font.PLAIN, baseFont.getSize2D()));
         
-        // Author label
-        authorLabel = new JLabel("© DA-Software.net");
-        authorLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        // Author / Link label
+        authorLabel = new JLabel("<html><a href=''>© DA-Software.net</a></html>");
+        authorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        authorLabel.setFont(baseFont.deriveFont(Font.PLAIN, baseFont.getSize2D()));
+        authorLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        authorLabel.setToolTipText("http://da-software.net");                
         
         // OK button
         okButton = new JButton("OK");
@@ -121,7 +126,41 @@ public class AboutDialog extends JDialog {
             KeyStroke.getKeyStroke("ESCAPE"),
             JComponent.WHEN_IN_FOCUSED_WINDOW
         );
+        
+        authorLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                openWebsite("http://da-software.net");
+            }
+
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                authorLabel.setText("<html><a href=''>© <u>DA-Software.net</u></a></html>");
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                authorLabel.setText("<html><a href=''>© DA-Software.net</a></html>");
+            }
+        });
     }
+    
+    private void openWebsite(String url) {
+        try {
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().browse(new java.net.URI(url));
+            } else {
+                JOptionPane.showMessageDialog(this,
+                    "Desktop browsing is not supported on this system.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                "Could not open website:\n" + url,
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     
     /**
      * Handler for OK button click

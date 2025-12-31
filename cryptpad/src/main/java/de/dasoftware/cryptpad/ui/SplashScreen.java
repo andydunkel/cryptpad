@@ -28,6 +28,7 @@ public class SplashScreen extends JWindow {
      */
     private void initComponents() {
         imageLabel = new JLabel();
+        Font baseFont = UIManager.getFont("Label.font");
         
         try {
             ImageIcon splashIcon = new ImageIcon(getClass().getResource("/icons/splash.png"));
@@ -35,7 +36,7 @@ public class SplashScreen extends JWindow {
         } catch (Exception e) {
             // If image not found, show text instead
             imageLabel.setText(Constants.APP_NAME);
-            imageLabel.setFont(new Font("Arial", Font.BOLD, 48));
+            imageLabel.setFont(baseFont.deriveFont(Font.BOLD, baseFont.getSize2D() + 28f));
             imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
             imageLabel.setPreferredSize(new Dimension(400, 300));
             imageLabel.setOpaque(true);
