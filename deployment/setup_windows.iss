@@ -1,46 +1,48 @@
 [Files]
 ;DestDir: {app}; Source: files\*; Flags: recursesubdirs overwritereadonly ignoreversion replacesameversion
 
-Source: jCryptPad.exe; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: DA-CryptPad.exe; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 
-Source: ..\doc\gpl.txt; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\resources\icon\jCryptPadFile.ico; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\resources\icon\jCryptPad.ico; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\LICENSE; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\res\icon\DA-CryptPadFile.ico; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\res\icon\DA-CryptPad.ico; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 
 [Icons]
-Name: {group}\jCryptPad; Filename: {app}\jCryptPad.exe; WorkingDir: {app}; IconFilename: {app}\jCryptPad.ico; IconIndex: 0; Languages: 
+Name: {group}\DA-CryptPad; Filename: {app}\DA-CryptPad.exe; WorkingDir: {app}; IconFilename: {app}\DA-CryptPad.ico; IconIndex: 0; Languages: 
 Name: {group}\Uninstall; Filename: {uninstallexe};
 
 [Run]
-Filename: {app}\jCryptPad.exe; WorkingDir: {app}; Flags: nowait postinstall; Description: jCryptPad
+Filename: {app}\DA-CryptPad.exe; WorkingDir: {app}; Flags: nowait postinstall; Description: DA-CryptPad
 
 [Setup]
 AppCopyright=Andy Dunkel
-AppName=jCryptPad
-AppVerName=jCryptPad 1.0.0
-DefaultDirName={pf}\jCryptPad
-AppID={{BA2A0D41-ABAC-4A7B-861D-E13578246922}
+AppName=DA-CryptPad
+AppVerName=DA-CryptPad 1.0.0
+DefaultDirName={pf}\DA-CryptPad
+AppID={{67347003-2D90-4209-B9BA-EF949A5EC85B}
 VersionInfoVersion=1.0.0
 VersionInfoCompany=AndyDunkel.net
-VersionInfoDescription=jCryptPad
+VersionInfoDescription=DA-CryptPad
 LanguageDetectionMethod=uilanguage
-DefaultGroupName=jCryptPad
+DefaultGroupName=DA-CryptPad
 ShowUndisplayableLanguages=false
-OutputBaseFilename=jcryptpad
-VersionInfoProductName=jCryptPad
+OutputBaseFilename=DA-CryptPad
+VersionInfoProductName=DA-CryptPad
 VersionInfoProductVersion=1.0.0
-LicenseFile=../doc/gpl.txt
+LicenseFile=../LICENSE
 AppPublisher=Andy Dunkel
 AppPublisherURL=http://andydunkel.net
 AppSupportURL=http://andydunkel.net
 AppUpdatesURL=http://andydunkel.net
 ChangesAssociations=true
+SignTool=yubikey /d $qDA-CryptPad$q /du $qhttps://www.da-software.net$q /v $f
+SignedUninstaller=yes
 
 [Registry]
-Root: HKCR; Subkey: .jcryptpad; ValueType: string; ValueData: jcryptpadfile; Flags: uninsdeletevalue
-Root: HKCR; Subkey: jcryptpadfile; ValueType: string; ValueData: jCryptPad; Flags: uninsdeletekey
-Root: HKCR; Subkey: jcryptpadfile\DefaultIcon; ValueType: string; ValueData: {app}\jCryptPadFile.ico
-Root: HKCR; Subkey: jcryptpadfile\shell\open\command; ValueType: string; ValueData: """{app}\jCryptPad.exe"" ""%1"""
+Root: HKCR; Subkey: .DA-CryptPad; ValueType: string; ValueData: DA-CryptPadfile; Flags: uninsdeletevalue
+Root: HKCR; Subkey: DA-CryptPadfile; ValueType: string; ValueData: DA-CryptPad; Flags: uninsdeletekey
+Root: HKCR; Subkey: DA-CryptPadfile\DefaultIcon; ValueType: string; ValueData: {app}\DA-CryptPadFile.ico
+Root: HKCR; Subkey: DA-CryptPadfile\shell\open\command; ValueType: string; ValueData: """{app}\DA-CryptPad.exe"" ""%1"""
                                                                                           
 [UninstallDelete]
 Name: {app}; Type: filesandordirs
@@ -51,7 +53,7 @@ var
   sUnInstPath: String;
   sUnInstallString: String;
 begin
-  sUnInstPath := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{94ccae57-7cb2-4978-b109-daaf110f34d4}_is1';
+  sUnInstPath := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{67347003-2D90-4209-B9BA-EF949A5EC85B}_is1';
   sUnInstallString := '';
   if not RegQueryStringValue(HKLM, sUnInstPath, 'UninstallString', sUnInstallString) then
     RegQueryStringValue(HKCU, sUnInstPath, 'UninstallString', sUnInstallString);
