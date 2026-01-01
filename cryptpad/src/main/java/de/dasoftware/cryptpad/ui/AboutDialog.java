@@ -131,7 +131,7 @@ public class AboutDialog extends JDialog {
         authorLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                openWebsite("http://da-software.net");
+                openWebsite("https://da-software.net");
             }
 
             @Override
@@ -150,15 +150,9 @@ public class AboutDialog extends JDialog {
         try {
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().browse(new java.net.URI(url));
-            } else {
-                JOptionPane.showMessageDialog(this,
-                    "Desktop browsing is not supported on this system.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            } 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this,
-                "Could not open website:\n" + url,
-                "Error", JOptionPane.ERROR_MESSAGE);
+            //
         }
     }
 

@@ -2,6 +2,7 @@ package de.dasoftware.cryptpad.ui;
 
 import javax.swing.*;
 
+import de.dasoftware.cryptpad.i18n.Messages;
 import de.dasoftware.cryptpad.util.IconUtil;
 
 import java.awt.*;
@@ -11,15 +12,13 @@ import java.awt.event.KeyEvent;
 
 /**
  * Dialog for entering or editing a tree node title
- * 
- * @author DA-Software
- * @version 1.0.0
  */
 public class NodeTitleDialog extends JDialog {
     
     private static final long serialVersionUID = 1L;
 
-	private boolean modalResult = false;
+    private boolean modalResult = false;
+    private boolean editMode = false;
     
     // Components
     private JLabel titleLabel;
@@ -49,19 +48,19 @@ public class NodeTitleDialog extends JDialog {
      * Initializes all components
      */
     private void initComponents() {
-        setTitle("Enter Node Title");
+        setTitle(Messages.getString("nodetitle.new.title"));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
         
         // Label
-        titleLabel = new JLabel("Title:");
+        titleLabel = new JLabel(Messages.getString("nodetitle.label"));
         
         // Text field
         titleField = new JTextField(20);
         
         // Buttons
-        okButton = new JButton("OK");
-        cancelButton = new JButton("Cancel");
+        okButton = new JButton(Messages.getString("button.ok"));
+        cancelButton = new JButton(Messages.getString("button.cancel"));
         
         // Make OK button default
         getRootPane().setDefaultButton(okButton);
@@ -132,8 +131,8 @@ public class NodeTitleDialog extends JDialog {
         
         if (title.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Please enter a title.",
-                    "Title required",
+                    Messages.getString("nodetitle.empty"),
+                    Messages.getString("nodetitle.required"),
                     JOptionPane.WARNING_MESSAGE);
             titleField.requestFocusInWindow();
             return;
@@ -192,5 +191,14 @@ public class NodeTitleDialog extends JDialog {
      */
     public void setNodeTitle(String title) {
         titleField.setText(title != null ? title : "");
+        
+        // Update title based on whether we're editing
+        if (title != null && !title.isEmpty()) {
+            editMode = true;
+            setTitle(Messages.getString("nodetitle.edit.title"));
+        } else {
+            editMode = false;
+            setTitle(Messages.getString("nodetitle.new.title"));
+        }
     }
 }

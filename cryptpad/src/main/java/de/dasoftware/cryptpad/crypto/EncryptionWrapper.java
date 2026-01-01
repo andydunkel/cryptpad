@@ -1,13 +1,11 @@
 package de.dasoftware.cryptpad.crypto;
 
 import de.dasoftware.cryptpad.Constants;
+import de.dasoftware.cryptpad.i18n.Messages;
 
 /**
  * Wrapper for encryption with message formatting
  * Adds headers and footers to encrypted content similar to PGP-style messages
- * 
- * @author DA-Software
- * @version 1.0.0
  */
 public class EncryptionWrapper {
     
@@ -16,7 +14,7 @@ public class EncryptionWrapper {
     private static final String BEGIN_FILE = "-----BEGIN ENCRYPTED FILE-----";
     private static final String END_MESSAGE = "-----END ENCRYPTED MESSAGE-----";
     private static final String BEGIN_ENC = "-----BEGIN-----";
-    private static final String VERSION_INFO = "Version: DA-CryptPad " + Constants.APP_VERSION;
+    private static final String VERSION_INFO = "Version: " + Constants.APP_NAME + " " + Constants.APP_VERSION;
     
     private final IEncryption encryption;
     
@@ -74,7 +72,7 @@ public class EncryptionWrapper {
         int endPos = wrappedMessage.indexOf(END_MESSAGE);
         
         if (startPos == -1 || endPos == -1) {
-            throw new Exception("Invalid encrypted message format: Missing headers");
+            throw new Exception(Messages.getString("encryption.wrapper.error.missingheaders"));
         }
         
         // Extract encrypted content (skip BEGIN marker and newline)
@@ -85,7 +83,7 @@ public class EncryptionWrapper {
         encryptedContent = encryptedContent.replaceAll("\\s+", "");
         
         if (encryptedContent.isEmpty()) {
-            throw new Exception("Invalid encrypted message format: No content found");
+            throw new Exception(Messages.getString("encryption.wrapper.error.nocontent"));
         }
         
         // Decrypt and return

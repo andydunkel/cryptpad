@@ -4,6 +4,7 @@ import de.dasoftware.updater.RemoteUpdateData;
 import de.dasoftware.updater.UpdateLogic;
 import de.dasoftware.updater.UpdaterData;
 import de.dasoftware.updater.WebDownloader;
+import de.dasoftware.updater.i18n.Messages;
 
 import javax.swing.*;
 import java.awt.*;
@@ -92,11 +93,11 @@ public class UpdaterDialog extends JDialog {
         labelTitle.setFont(new Font("Arial", Font.BOLD, 14));
         
         // Installed version
-        labelInstalledVersionText = new JLabel("Installed version:");
+        labelInstalledVersionText = new JLabel(Messages.getString("updater.version.installed"));
         labelInstalledVersion = new JLabel(data.getVersionString());
         
         // Available version
-        labelAvailableVersionText = new JLabel("Available version:");
+        labelAvailableVersionText = new JLabel(Messages.getString("updater.version.available"));
         labelAvailableVersionText.setVisible(false);
         labelAvailableVersion = new JLabel("0.0.0");
         labelAvailableVersion.setVisible(false);
@@ -106,7 +107,9 @@ public class UpdaterDialog extends JDialog {
         labelMessage.setVisible(false);
         
         // Update information link
-        linkUpdateInformation = new JLabel("<html><a href='#'>Show version information</a></html>");
+        linkUpdateInformation = new JLabel(
+            "<html><a href='#'>" + Messages.getString("updater.link.information") + "</a></html>"
+        );
         linkUpdateInformation.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         linkUpdateInformation.setForeground(Color.BLUE);
         linkUpdateInformation.setVisible(false);
@@ -167,18 +170,18 @@ public class UpdaterDialog extends JDialog {
         
         // Buttons - Text depends on OS
         if (IS_WINDOWS) {
-            buttonStartUpdate = new JButton("Start update");
+            buttonStartUpdate = new JButton(Messages.getString("updater.button.startupdate"));
         } else {
-            buttonStartUpdate = new JButton("Download update");
+            buttonStartUpdate = new JButton(Messages.getString("updater.button.download"));
         }
         buttonStartUpdate.setPreferredSize(new Dimension(140, 28));
         buttonStartUpdate.setVisible(false);
         
-        buttonUpdateLater = new JButton("Update later");
+        buttonUpdateLater = new JButton(Messages.getString("updater.button.later"));
         buttonUpdateLater.setPreferredSize(new Dimension(140, 28));
         buttonUpdateLater.setVisible(false);
         
-        // Progress bar
+        // Progress bar bleibt gleich
         progressBar = new JProgressBar(0, 100);
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
@@ -310,7 +313,7 @@ public class UpdaterDialog extends JDialog {
                     if (data.isAutoClose()) {
                         dispose();
                     } else {
-                        showError("Failed to check for updates: " + ex.getMessage());
+                    	showError(Messages.getString("updater.error.checkfailed", ex.getMessage()));
                     }
                 }
             }
@@ -390,9 +393,6 @@ public class UpdaterDialog extends JDialog {
         worker.execute();
     }
     
-    /**
-     * Opens the download page in browser (Linux/macOS)
-     */
     private void openDownloadPage() {
         try {
             String url = remoteData.getInformationUrl();
@@ -404,10 +404,10 @@ public class UpdaterDialog extends JDialog {
                 Desktop.getDesktop().browse(new URI(url));
                 dispose();
             } else {
-                showError("No download URL available.");
+                showError(Messages.getString("updater.error.nourl"));
             }
         } catch (Exception ex) {
-            showError("Could not open browser: " + ex.getMessage());
+            showError(Messages.getString("updater.error.browser", ex.getMessage()));
         }
     }
     
@@ -440,13 +440,13 @@ public class UpdaterDialog extends JDialog {
                     
                     // Different message based on OS
                     if (IS_WINDOWS) {
-                        showMessage("A new version is available!");
+                        showMessage(Messages.getString("updater.message.available"));
                     } else {
-                        showMessage("A new version is available! Click 'Download update' to visit the download page.");
+                        showMessage(Messages.getString("updater.message.available.nonwindows"));
                     }
                 }
             } else {
-                showMessage("Latest version is installed.");
+                showMessage(Messages.getString("updater.message.uptodate"));
             }
         } else {
             labelAvailableVersionText.setVisible(false);
@@ -479,7 +479,7 @@ public class UpdaterDialog extends JDialog {
         try {
             Desktop.getDesktop().browse(new URI(remoteData.getInformationUrl()));
         } catch (Exception ex) {
-            showError("Could not open browser: " + ex.getMessage());
+            showError(Messages.getString("updater.error.browser", ex.getMessage()));
         }
     }
     
@@ -490,14 +490,13 @@ public class UpdaterDialog extends JDialog {
         if (runningUpdate) {
             int result = JOptionPane.showConfirmDialog(
                 this,
-                "Update is in progress. Cancel update?",
-                "Confirmation",
+                Messages.getString("updater.confirm.cancel"),
+                Messages.getString("updater.confirm.title"),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE
             );
             
             if (result == JOptionPane.YES_OPTION) {
-                // Cancel download if possible
                 dispose();
             }
         } else {

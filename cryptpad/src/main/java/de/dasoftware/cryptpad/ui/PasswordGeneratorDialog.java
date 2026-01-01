@@ -1,5 +1,6 @@
 package de.dasoftware.cryptpad.ui;
 
+import de.dasoftware.cryptpad.i18n.Messages;
 import de.dasoftware.cryptpad.util.IconUtil;
 import de.dasoftware.cryptpad.util.PasswordGenerator;
 
@@ -14,7 +15,7 @@ import java.awt.event.ActionEvent;
 public class PasswordGeneratorDialog extends JDialog {
     
     private static final long serialVersionUID = 1L;
-	// Default values
+    // Default values
     private static final int DEFAULT_PASSWORD_LENGTH = 10;
     private static final int DEFAULT_PASSWORD_COUNT = 5;
     private static final int MIN_PASSWORD_LENGTH = 4;
@@ -62,30 +63,30 @@ public class PasswordGeneratorDialog extends JDialog {
      * Initializes all components
      */
     private void initComponents() {
-        setTitle("Password Generator");
+        setTitle(Messages.getString("passwordgen.title"));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
         
         // Labels
-        lengthLabel = new JLabel("Password length:");
-        countLabel = new JLabel("How many passwords?");
+        lengthLabel = new JLabel(Messages.getString("passwordgen.length"));
+        countLabel = new JLabel(Messages.getString("passwordgen.count"));
         
         // Text fields
         lengthField = new JTextField(String.valueOf(DEFAULT_PASSWORD_LENGTH), 10);
         countField = new JTextField(String.valueOf(DEFAULT_PASSWORD_COUNT), 10);
         
         // Checkboxes
-        specialCharsCheckBox = new JCheckBox("Include special characters");
-        numbersCheckBox = new JCheckBox("Include numbers");
-        capitalsCheckBox = new JCheckBox("Include capitals");
+        specialCharsCheckBox = new JCheckBox(Messages.getString("passwordgen.specialchars"));
+        numbersCheckBox = new JCheckBox(Messages.getString("passwordgen.numbers"));
+        capitalsCheckBox = new JCheckBox(Messages.getString("passwordgen.capitals"));
         
         // Generate button
-        generateButton = new JButton("Generate Passwords");
+        generateButton = new JButton(Messages.getString("passwordgen.generate"));
         
         // List with model
         listModel = new DefaultListModel<>();
         passwordsList = new JList<>(listModel);
-        passwordsList.setFont(new Font("Courier New", Font.PLAIN, 11));
+        passwordsList.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
         passwordsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         scrollPane = new JScrollPane(passwordsList);
@@ -93,12 +94,13 @@ public class PasswordGeneratorDialog extends JDialog {
         
         // Panel for passwords list
         passwordsPanel = new JPanel(new BorderLayout());
-        passwordsPanel.setBorder(BorderFactory.createTitledBorder("Passwords"));
+        passwordsPanel.setBorder(BorderFactory.createTitledBorder(
+            Messages.getString("passwordgen.passwords")));
         passwordsPanel.add(scrollPane, BorderLayout.CENTER);
         
         // Popup menu
         popupMenu = new JPopupMenu();
-        copyMenuItem = new JMenuItem("Copy");
+        copyMenuItem = new JMenuItem(Messages.getString("passwordgen.copy"));
         try {
             ImageIcon icon = new ImageIcon(getClass().getResource("/icons/copy16.png"));
             copyMenuItem.setIcon(icon);
@@ -186,24 +188,28 @@ public class PasswordGeneratorDialog extends JDialog {
     private void onGenerate(ActionEvent e) {
         try {
             // Parse and validate length
-            int length = parseIntField(lengthField, "Password length");
+            int length = parseIntField(lengthField, 
+                Messages.getString("passwordgen.length").replace(":", ""));
+            
             if (length < MIN_PASSWORD_LENGTH || length > MAX_PASSWORD_LENGTH) {
                 JOptionPane.showMessageDialog(this,
-                        String.format("Password length must be between %d and %d characters.",
+                        Messages.getString("passwordgen.error.invalidlength",
                                 MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH),
-                        "Invalid length",
+                        Messages.getString("passwordgen.error.invalidinput"),
                         JOptionPane.WARNING_MESSAGE);
                 lengthField.requestFocus();
                 return;
             }
             
             // Parse and validate count
-            int count = parseIntField(countField, "Password count");
+            int count = parseIntField(countField, 
+                Messages.getString("passwordgen.count").replace("?", ""));
+            
             if (count < MIN_PASSWORD_COUNT || count > MAX_PASSWORD_COUNT) {
                 JOptionPane.showMessageDialog(this,
-                        String.format("Password count must be between %d and %d.",
+                        Messages.getString("passwordgen.error.invalidcount",
                                 MIN_PASSWORD_COUNT, MAX_PASSWORD_COUNT),
-                        "Invalid count",
+                        Messages.getString("passwordgen.error.invalidinput"),
                         JOptionPane.WARNING_MESSAGE);
                 countField.requestFocus();
                 return;
@@ -233,8 +239,8 @@ public class PasswordGeneratorDialog extends JDialog {
             // Error message already shown by parseIntField
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
-                    "Error generating passwords: " + ex.getMessage(),
-                    "Error",
+                    Messages.getString("passwordgen.error.generate", ex.getMessage()),
+                    Messages.getString("passwordgen.error.title"),
                     JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -252,13 +258,13 @@ public class PasswordGeneratorDialog extends JDialog {
             
             // Optional: Show feedback
             JOptionPane.showMessageDialog(this,
-                    "Password copied to clipboard!",
-                    "Copied",
+                    Messages.getString("passwordgen.success.copied"),
+                    Messages.getString("passwordgen.success.title"),
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this,
-                    "Please select a password first.",
-                    "No selection",
+                    Messages.getString("passwordgen.noselection.message"),
+                    Messages.getString("passwordgen.noselection.title"),
                     JOptionPane.WARNING_MESSAGE);
         }
     }
@@ -277,8 +283,8 @@ public class PasswordGeneratorDialog extends JDialog {
             return Integer.parseInt(text);
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this,
-                    fieldName + " must be a valid number.",
-                    "Invalid input",
+                    Messages.getString("passwordgen.error.invalidnumber", fieldName),
+                    Messages.getString("passwordgen.error.invalidinput"),
                     JOptionPane.WARNING_MESSAGE);
             field.requestFocus();
             field.selectAll();

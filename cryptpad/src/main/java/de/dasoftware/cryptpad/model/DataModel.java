@@ -1,14 +1,13 @@
 package de.dasoftware.cryptpad.model;
 
+import de.dasoftware.cryptpad.i18n.Messages;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.tree.DefaultTreeModel;
 
 /**
  * Data model for managing the application's tree structure and encrypted content
- * 
- * @author DA-Software
- * @version 1.0.0
  */
 public class DataModel implements IDataModel {
     
@@ -19,12 +18,12 @@ public class DataModel implements IDataModel {
     private IXMLManager xmlManager;
     
     public DataModel() {
-        rootNode = new EntryTreeNode("Root");
+        rootNode = new EntryTreeNode(Messages.getString("tree.rootnode"));
         observers = new ArrayList<>();
         
         // Add default node with better name
-        EntryTreeNode defaultNode = new EntryTreeNode("Notes");
-        defaultNode.setContent("# Welcome to DA-CryptPad!\n\nStart typing your notes here...");
+        EntryTreeNode defaultNode = new EntryTreeNode(Messages.getString("tree.defaultnode"));
+        defaultNode.setContent(Messages.getString("tree.defaultcontent"));
         rootNode.add(defaultNode);
         
         treeModel = new DefaultTreeModel(rootNode);
@@ -192,7 +191,7 @@ public class DataModel implements IDataModel {
      */
     @Override
     public void clearModel() {
-        rootNode = new EntryTreeNode("Root");
+        rootNode = new EntryTreeNode(Messages.getString("tree.rootnode"));
         treeModel.setRoot(rootNode);
         refreshObservers();
     }

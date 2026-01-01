@@ -2,6 +2,7 @@ package de.dasoftware.cryptpad.ui;
 
 import javax.swing.*;
 
+import de.dasoftware.cryptpad.i18n.Messages;
 import de.dasoftware.cryptpad.util.IconUtil;
 
 import java.awt.*;
@@ -16,7 +17,7 @@ public class DecryptPasswordDialog extends JDialog {
     
     private static final long serialVersionUID = 1L;
 
-	private boolean modalResult = false;
+    private boolean modalResult = false;
     
     // Components
     private JPanel mainPanel;
@@ -47,23 +48,24 @@ public class DecryptPasswordDialog extends JDialog {
      * Initializes all components
      */
     private void initComponents() {
-        setTitle("Enter password for decryption");
+        setTitle(Messages.getString("password.decrypt.title"));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
         
         // Main panel with titled border
         mainPanel = new JPanel();
-        mainPanel.setBorder(BorderFactory.createTitledBorder("Enter Password"));
+        mainPanel.setBorder(BorderFactory.createTitledBorder(
+            Messages.getString("password.decrypt.border")));
         
         // Password label
-        passwordLabel = new JLabel("Password:");
+        passwordLabel = new JLabel(Messages.getString("password.decrypt.label"));
         
         // Password field
         passwordField = new JPasswordField(20);
         
         // Buttons
-        okButton = new JButton("OK");
-        cancelButton = new JButton("Cancel");
+        okButton = new JButton(Messages.getString("button.ok"));
+        cancelButton = new JButton(Messages.getString("button.cancel"));
         
         // Make OK button default
         getRootPane().setDefaultButton(okButton);
@@ -139,8 +141,8 @@ public class DecryptPasswordDialog extends JDialog {
         
         if (password.length == 0) {
             JOptionPane.showMessageDialog(this,
-                    "Please provide a password.",
-                    "Password required",
+                    Messages.getString("password.decrypt.empty"),
+                    Messages.getString("password.decrypt.required"),
                     JOptionPane.WARNING_MESSAGE);
             passwordField.requestFocus();
         } else {

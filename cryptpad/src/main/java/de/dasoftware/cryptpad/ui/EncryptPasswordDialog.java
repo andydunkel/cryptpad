@@ -2,6 +2,7 @@ package de.dasoftware.cryptpad.ui;
 
 import javax.swing.*;
 
+import de.dasoftware.cryptpad.i18n.Messages;
 import de.dasoftware.cryptpad.util.IconUtil;
 
 import java.awt.*;
@@ -18,7 +19,7 @@ public class EncryptPasswordDialog extends JDialog {
     
     private static final long serialVersionUID = 1L;
 
-	private boolean modalResult = false;
+    private boolean modalResult = false;
     
     // Components
     private JPanel mainPanel;
@@ -51,25 +52,26 @@ public class EncryptPasswordDialog extends JDialog {
      * Initializes all components
      */
     private void initComponents() {
-        setTitle("Enter password for encryption");
+        setTitle(Messages.getString("password.encrypt.title"));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
         
         // Main panel with titled border
         mainPanel = new JPanel();
-        mainPanel.setBorder(BorderFactory.createTitledBorder("Set Password"));
+        mainPanel.setBorder(BorderFactory.createTitledBorder(
+            Messages.getString("password.encrypt.border")));
         
         // Labels
-        passwordLabel = new JLabel("Password:");
-        retypeLabel = new JLabel("Retype Password:");
+        passwordLabel = new JLabel(Messages.getString("password.encrypt.label1"));
+        retypeLabel = new JLabel(Messages.getString("password.encrypt.label2"));
         
         // Password fields
         passwordField1 = new JPasswordField(20);
         passwordField2 = new JPasswordField(20);
         
         // Buttons
-        okButton = new JButton("OK");
-        cancelButton = new JButton("Cancel");
+        okButton = new JButton(Messages.getString("button.ok"));
+        cancelButton = new JButton(Messages.getString("button.cancel"));
         
         // Make OK button default
         getRootPane().setDefaultButton(okButton);
@@ -156,8 +158,8 @@ public class EncryptPasswordDialog extends JDialog {
             // Check if password is empty
             if (password1.length == 0) {
                 JOptionPane.showMessageDialog(this,
-                        "Please enter a password.",
-                        "Password required",
+                        Messages.getString("password.encrypt.empty"),
+                        Messages.getString("password.encrypt.required"),
                         JOptionPane.WARNING_MESSAGE);
                 passwordField1.requestFocusInWindow();
                 return;
@@ -166,8 +168,8 @@ public class EncryptPasswordDialog extends JDialog {
             // Check if passwords match
             if (!Arrays.equals(password1, password2)) {
                 JOptionPane.showMessageDialog(this,
-                        "Passwords do not match.",
-                        "Password mismatch",
+                        Messages.getString("password.encrypt.nomatch"),
+                        Messages.getString("password.encrypt.mismatch"),
                         JOptionPane.WARNING_MESSAGE);
                 
                 // Clear fields and focus first field

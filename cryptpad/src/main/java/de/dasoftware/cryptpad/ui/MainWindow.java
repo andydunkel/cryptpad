@@ -6,6 +6,7 @@ import de.dasoftware.cryptpad.model.IDataModel;
 import de.dasoftware.cryptpad.model.IObserver;
 import de.dasoftware.updater.UpdaterData;
 import de.dasoftware.updater.ui.UpdaterDialog;
+import de.dasoftware.cryptpad.i18n.Messages;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -19,6 +20,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Locale;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -109,7 +111,7 @@ public class MainWindow extends JFrame implements IObserver {
         
         this.model.subscribe(this);
         
-        updateTitle("untitled." + Constants.FILE_EXTENSION);
+        updateTitle();
     }
     
     /**
@@ -231,43 +233,55 @@ public class MainWindow extends JFrame implements IObserver {
     private void initToolBar() {
         toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        
+
         // File operations
-        btnNew = createToolBarButton("/icons/tb_new.png", "New File");
-        btnOpen = createToolBarButton("/icons/tb_open.png", "Open File");
-        btnSave = createToolBarButton("/icons/tb_save.png", "Save File");
-        
+        btnNew = createToolBarButton("/icons/tb_new.png", 
+            Messages.getString("tooltip.new"));
+        btnOpen = createToolBarButton("/icons/tb_open.png", 
+            Messages.getString("tooltip.open"));
+        btnSave = createToolBarButton("/icons/tb_save.png", 
+            Messages.getString("tooltip.save"));
+
         toolBar.add(btnNew);
         toolBar.add(btnOpen);
         toolBar.add(btnSave);
         toolBar.addSeparator();
-        
+
         // Node operations
-        btnNewMainNode = createToolBarButton("/icons/mainnode.png", "Add Main Node");
-        btnNewSibling = createToolBarButton("/icons/sibling.png", "Add Sibling");
-        btnNewChild = createToolBarButton("/icons/childnode.png", "Add Child Node");
-        btnEditNode = createToolBarButton("/icons/edit.png", "Edit Node");
-        btnDeleteNode = createToolBarButton("/icons/delete16.png", "Delete Node");
-        
+        btnNewMainNode = createToolBarButton("/icons/mainnode.png", 
+            Messages.getString("tooltip.newmainnode"));
+        btnNewSibling = createToolBarButton("/icons/sibling.png", 
+            Messages.getString("tooltip.newsibling"));
+        btnNewChild = createToolBarButton("/icons/childnode.png", 
+            Messages.getString("tooltip.newchild"));
+        btnEditNode = createToolBarButton("/icons/edit.png", 
+            Messages.getString("tooltip.editnode"));
+        btnDeleteNode = createToolBarButton("/icons/delete16.png", 
+            Messages.getString("tooltip.deletenode"));
+
         toolBar.add(btnNewMainNode);
         toolBar.add(btnNewSibling);
         toolBar.add(btnNewChild);
         toolBar.add(btnEditNode);
         toolBar.add(btnDeleteNode);
         toolBar.addSeparator();
-        
+
         // Edit operations
-        btnCut = createToolBarButton("/icons/cut16.png", "Cut");
-        btnCopy = createToolBarButton("/icons/copy16.png", "Copy");
-        btnPaste = createToolBarButton("/icons/paste16.png", "Paste");
-        
+        btnCut = createToolBarButton("/icons/cut16.png", 
+            Messages.getString("tooltip.cut"));
+        btnCopy = createToolBarButton("/icons/copy16.png", 
+            Messages.getString("tooltip.copy"));
+        btnPaste = createToolBarButton("/icons/paste16.png", 
+            Messages.getString("tooltip.paste"));
+
         toolBar.add(btnCut);
         toolBar.add(btnCopy);
         toolBar.add(btnPaste);
         toolBar.addSeparator();
-        
+
         // Help
-        btnAbout = createToolBarButton("/icons/Info.png", "About " + Constants.APP_NAME);
+        btnAbout = createToolBarButton("/icons/Info.png", 
+            Messages.getString("tooltip.about", Constants.APP_NAME));
         toolBar.add(btnAbout);
     }
     
@@ -297,19 +311,45 @@ public class MainWindow extends JFrame implements IObserver {
         menuBar = new JMenuBar();
         
         // File menu
-        menuFile = new JMenu("File");
-        menuFile.setMnemonic('F');
-        
-        menuItemNew = createMenuItem("New", "/icons/tb_new.png", 'N', 
-                KeyStroke.getKeyStroke("control N"));
-        menuItemOpen = createMenuItem("Open", "/icons/tb_open.png", 'O', 
-                KeyStroke.getKeyStroke("control O"));
-        menuItemSave = createMenuItem("Save", "/icons/tb_save.png", 'S', 
-                KeyStroke.getKeyStroke("control S"));
-        menuItemSaveAs = createMenuItem("Save as", null, 'A', null);
-        menuItemExit = createMenuItem("Exit", "/icons/exit.png", 'E', 
-                KeyStroke.getKeyStroke("alt F4"));
-        
+     // File menu
+        menuFile = new JMenu(Messages.getString("menu.file"));
+        menuFile.setMnemonic(Messages.getMnemonic("menu.file.mnemonic"));
+
+        menuItemNew = createMenuItem(
+            Messages.getString("menu.file.new"), 
+            "/icons/tb_new.png", 
+            Messages.getMnemonic("menu.file.new.mnemonic"),
+            KeyStroke.getKeyStroke("control N")
+        );
+
+        menuItemOpen = createMenuItem(
+            Messages.getString("menu.file.open"),
+            "/icons/tb_open.png", 
+            Messages.getMnemonic("menu.file.open.mnemonic"),
+            KeyStroke.getKeyStroke("control O")
+        );
+
+        menuItemSave = createMenuItem(
+            Messages.getString("menu.file.save"),
+            "/icons/tb_save.png", 
+            Messages.getMnemonic("menu.file.save.mnemonic"),
+            KeyStroke.getKeyStroke("control S")
+        );
+
+        menuItemSaveAs = createMenuItem(
+            Messages.getString("menu.file.saveas"),
+            null, 
+            Messages.getMnemonic("menu.file.saveas.mnemonic"),
+            null
+        );
+
+        menuItemExit = createMenuItem(
+            Messages.getString("menu.file.exit"),
+            "/icons/exit.png", 
+            Messages.getMnemonic("menu.file.exit.mnemonic"),
+            KeyStroke.getKeyStroke("alt F4")
+        );
+
         menuFile.add(menuItemNew);
         menuFile.add(menuItemOpen);
         menuFile.add(menuItemSave);
@@ -318,17 +358,37 @@ public class MainWindow extends JFrame implements IObserver {
         menuFile.add(menuItemExit);
         
         // Edit menu
-        menuEdit = new JMenu("Edit");
-        menuEdit.setMnemonic('E');
-        
-        menuItemCut = createMenuItem("Cut", "/icons/cut16.png", 'C', 
-                KeyStroke.getKeyStroke("control X"));
-        menuItemCopy = createMenuItem("Copy", "/icons/copy16.png", 'O', 
-                KeyStroke.getKeyStroke("control C"));
-        menuItemPaste = createMenuItem("Paste", "/icons/paste16.png", 'P', 
-                KeyStroke.getKeyStroke("control V"));
-        menuItemDeleteNode = createMenuItem("Delete Node", "/icons/delete16.png", 'D', null);
-        
+        menuEdit = new JMenu(Messages.getString("menu.edit"));
+        menuEdit.setMnemonic(Messages.getMnemonic("menu.edit.mnemonic"));
+
+        menuItemCut = createMenuItem(
+            Messages.getString("menu.edit.cut"),
+            "/icons/cut16.png", 
+            Messages.getMnemonic("menu.edit.cut.mnemonic"),
+            KeyStroke.getKeyStroke("control X")
+        );
+
+        menuItemCopy = createMenuItem(
+            Messages.getString("menu.edit.copy"),
+            "/icons/copy16.png", 
+            Messages.getMnemonic("menu.edit.copy.mnemonic"),
+            KeyStroke.getKeyStroke("control C")
+        );
+
+        menuItemPaste = createMenuItem(
+            Messages.getString("menu.edit.paste"),
+            "/icons/paste16.png", 
+            Messages.getMnemonic("menu.edit.paste.mnemonic"),
+            KeyStroke.getKeyStroke("control V")
+        );
+
+        menuItemDeleteNode = createMenuItem(
+            Messages.getString("menu.edit.deletenode"),
+            "/icons/delete16.png", 
+            Messages.getMnemonic("menu.edit.deletenode.mnemonic"),
+            null
+        );
+
         menuEdit.add(menuItemCut);
         menuEdit.add(menuItemCopy);
         menuEdit.add(menuItemPaste);
@@ -336,30 +396,56 @@ public class MainWindow extends JFrame implements IObserver {
         menuEdit.add(menuItemDeleteNode);
         
         // Encryption menu
-        menuEncryption = new JMenu("Encryption");
-        
-        menuItemSetPassword = createMenuItem("Set password for this file", null, 'S', null);
-        menuItemPasswordGenerator = createMenuItem("Password Generator", null, 'P', 
-                KeyStroke.getKeyStroke("control alt P"));
-        menuItemTextEncryption = createMenuItem("Text Encryption", null, 'T', 
-                KeyStroke.getKeyStroke("control alt T"));
-        
+        menuEncryption = new JMenu(Messages.getString("menu.encryption"));
+        menuEncryption.setMnemonic(Messages.getMnemonic("menu.encryption.mnemonic"));
+
+        menuItemSetPassword = createMenuItem(
+            Messages.getString("menu.encryption.setpassword"),
+            null, 
+            Messages.getMnemonic("menu.encryption.setpassword.mnemonic"),
+            null
+        );
+
+        menuItemPasswordGenerator = createMenuItem(
+            Messages.getString("menu.encryption.passwordgen"),
+            null, 
+            Messages.getMnemonic("menu.encryption.passwordgen.mnemonic"),
+            KeyStroke.getKeyStroke("control alt P")
+        );
+
+        menuItemTextEncryption = createMenuItem(
+            Messages.getString("menu.encryption.textencryption"),
+            null, 
+            Messages.getMnemonic("menu.encryption.textencryption.mnemonic"),
+            KeyStroke.getKeyStroke("control alt T")
+        );
+
         menuEncryption.add(menuItemSetPassword);
         menuEncryption.addSeparator();
         menuEncryption.add(menuItemPasswordGenerator);
         menuEncryption.add(menuItemTextEncryption);
         
         // Help menu
-        menuHelp = new JMenu("Help");
-        menuHelp.setMnemonic('H');
-        
-        JMenuItem menuItemCheckUpdates = createMenuItem("Check for Updates", null, 'U', null);
+        menuHelp = new JMenu(Messages.getString("menu.help"));
+        menuHelp.setMnemonic(Messages.getMnemonic("menu.help.mnemonic"));
+
+        JMenuItem menuItemCheckUpdates = createMenuItem(
+            Messages.getString("menu.help.checkupdates"),
+            null, 
+            Messages.getMnemonic("menu.help.checkupdates.mnemonic"),
+            null
+        );
         menuItemCheckUpdates.addActionListener(this::onCheckUpdates);
-        
+
+        menuItemAbout = createMenuItem(
+            Messages.getString("menu.help.about", Constants.APP_NAME),
+            "/icons/Info.png", 
+            Messages.getMnemonic("menu.help.about.mnemonic"),
+            null
+        );
+
         menuHelp.add(menuItemCheckUpdates);
         menuHelp.addSeparator();
-        
-        menuItemAbout = createMenuItem("About " + Constants.APP_NAME, "/icons/Info.png", 'A', null);
         menuHelp.add(menuItemAbout);
                
         
@@ -376,6 +462,7 @@ public class MainWindow extends JFrame implements IObserver {
      * Handler for Check Updates
      */
     private void onCheckUpdates(ActionEvent e) {
+    	Messages.setLocale(Locale.GERMAN);
         UpdaterData data = new UpdaterData();
         data.setUpdateUrl("https://da-software.net/versions/cryptpad.php");
         data.setVersionString(Constants.APP_VERSION); // z.B. "0.0.1"
@@ -419,13 +506,42 @@ public class MainWindow extends JFrame implements IObserver {
      */
     private void initTreePopupMenu() {
         treePopupMenu = new JPopupMenu();
+
+        popupNewMainNode = createMenuItem(
+            Messages.getString("popup.newmainnode"),
+            "/icons/mainnode.png", 
+            (char)0, 
+            null
+        );
         
-        popupNewMainNode = createMenuItem("New main node", "/icons/mainnode.png", (char)0, null);
-        popupNewSibling = createMenuItem("Add new sibling node", "/icons/sibling.png", (char)0, null);
-        popupNewChild = createMenuItem("Add new child node", "/icons/childnode.png", (char)0, null);
-        popupEditNode = createMenuItem("Edit Node", "/icons/edit.png", (char)0, null);
-        popupDeleteNode = createMenuItem("Delete item", "/icons/delete16.png", (char)0, null);
+        popupNewSibling = createMenuItem(
+            Messages.getString("popup.newsibling"),
+            "/icons/sibling.png", 
+            (char)0, 
+            null
+        );
         
+        popupNewChild = createMenuItem(
+            Messages.getString("popup.newchild"),
+            "/icons/childnode.png", 
+            (char)0, 
+            null
+        );
+        
+        popupEditNode = createMenuItem(
+            Messages.getString("popup.editnode"),
+            "/icons/edit.png", 
+            (char)0, 
+            null
+        );
+        
+        popupDeleteNode = createMenuItem(
+            Messages.getString("popup.deletenode"),
+            "/icons/delete16.png", 
+            (char)0, 
+            null
+        );
+
         treePopupMenu.add(popupNewMainNode);
         treePopupMenu.add(popupNewSibling);
         treePopupMenu.add(popupNewChild);
@@ -625,28 +741,28 @@ public class MainWindow extends JFrame implements IObserver {
     private void onNewSiblingNode(ActionEvent e) {
         TreePath path = navigationTree.getSelectionPath();
         if (path == null) {
-            JOptionPane.showMessageDialog(this, 
-                    "Please select a node first", 
-                    "No selection", 
+            JOptionPane.showMessageDialog(this,
+                    Messages.getString("dialog.noselection.message"),
+                    Messages.getString("dialog.noselection.title"),
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         EntryTreeNode selectedNode = (EntryTreeNode) path.getLastPathComponent();
         EntryTreeNode parentNode = (EntryTreeNode) selectedNode.getParent();
-        
+
         NodeTitleDialog dialog = new NodeTitleDialog(this, true);
         dialog.setVisible(true);
-        
+
         if (dialog.getModalResult()) {
             String title = dialog.getNodeTitle();
             EntryTreeNode newNode = model.addNode(parentNode, title);
-            
+
             // Select the new node
             TreePath newPath = new TreePath(model.getTreeModel().getPathToRoot(newNode));
             navigationTree.setSelectionPath(newPath);
             navigationTree.scrollPathToVisible(newPath);
-            
+
             markDirty();
         }
     }
@@ -657,28 +773,28 @@ public class MainWindow extends JFrame implements IObserver {
     private void onNewChildNode(ActionEvent e) {
         TreePath path = navigationTree.getSelectionPath();
         if (path == null) {
-            JOptionPane.showMessageDialog(this, 
-                    "Please select a node first", 
-                    "No selection", 
+            JOptionPane.showMessageDialog(this,
+                    Messages.getString("dialog.noselection.message"),
+                    Messages.getString("dialog.noselection.title"),
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         EntryTreeNode selectedNode = (EntryTreeNode) path.getLastPathComponent();
-        
+
         NodeTitleDialog dialog = new NodeTitleDialog(this, true);
         dialog.setVisible(true);
-        
+
         if (dialog.getModalResult()) {
             String title = dialog.getNodeTitle();
             EntryTreeNode newNode = model.addNode(selectedNode, title);
-            
+
             // Expand parent and select new node
             navigationTree.expandPath(path);
             TreePath newPath = new TreePath(model.getTreeModel().getPathToRoot(newNode));
             navigationTree.setSelectionPath(newPath);
             navigationTree.scrollPathToVisible(newPath);
-            
+
             markDirty();
         }
     }
@@ -689,23 +805,23 @@ public class MainWindow extends JFrame implements IObserver {
     private void onEditNode(ActionEvent e) {
         TreePath path = navigationTree.getSelectionPath();
         if (path == null) {
-            JOptionPane.showMessageDialog(this, 
-                    "Please select a node first", 
-                    "No selection", 
+            JOptionPane.showMessageDialog(this,
+                    Messages.getString("dialog.noselection.message"),
+                    Messages.getString("dialog.noselection.title"),
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         EntryTreeNode node = (EntryTreeNode) path.getLastPathComponent();
-        
+
         NodeTitleDialog dialog = new NodeTitleDialog(this, true);
         dialog.setNodeTitle(node.getUserObject().toString());
         dialog.setVisible(true);
-        
+
         if (dialog.getModalResult()) {
             String newTitle = dialog.getNodeTitle();
             model.setNodeTitle(node, newTitle);
-            
+
             markDirty();
         }
     }
@@ -716,21 +832,21 @@ public class MainWindow extends JFrame implements IObserver {
     private void onDeleteNode(ActionEvent e) {
         TreePath path = navigationTree.getSelectionPath();
         if (path == null) {
-            JOptionPane.showMessageDialog(this, 
-                    "Please select a node first", 
-                    "No selection", 
+            JOptionPane.showMessageDialog(this,
+                    Messages.getString("dialog.noselection.message"),
+                    Messages.getString("dialog.noselection.title"),
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         EntryTreeNode node = (EntryTreeNode) path.getLastPathComponent();
-        
+
         int result = JOptionPane.showConfirmDialog(this,
-                "Delete this node and all children?",
-                "Delete Node",
+                Messages.getString("dialog.deletenode.message"),
+                Messages.getString("dialog.deletenode.title"),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
-        
+
         if (result == JOptionPane.YES_OPTION) {
             model.deleteNode(node);
             contentEditor.setText("");
@@ -765,18 +881,18 @@ public class MainWindow extends JFrame implements IObserver {
     private void onSetPassword(ActionEvent e) {
         EncryptPasswordDialog dialog = new EncryptPasswordDialog(this, true);
         dialog.setVisible(true);
-        
+
         if (dialog.getModalResult()) {
             char[] password = dialog.getPassword();
             model.setPassword(new String(password));
-            
+
             // Clear password from memory
             dialog.clearPasswords();
             Arrays.fill(password, '0');
-            
+
             JOptionPane.showMessageDialog(this,
-                    "Password set successfully!",
-                    "Success",
+                    Messages.getString("dialog.success.password"),
+                    Messages.getString("dialog.success.title"),
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }
@@ -810,9 +926,9 @@ public class MainWindow extends JFrame implements IObserver {
      */
     private void onWindowClose() {
         // Auto-save if file is already saved with password
-        if (dirty && saved && !savedFileName.isEmpty() && 
+        if (dirty && saved && !savedFileName.isEmpty() &&
             model.getPassword() != null && !model.getPassword().isEmpty()) {
-            
+
             // Save current editor content first
             TreePath currentPath = navigationTree.getLeadSelectionPath();
             if (currentPath != null) {
@@ -823,7 +939,7 @@ public class MainWindow extends JFrame implements IObserver {
                     // Ignore
                 }
             }
-            
+
             // Auto-save
             try {
                 model.saveFile(savedFileName);
@@ -831,17 +947,16 @@ public class MainWindow extends JFrame implements IObserver {
                 System.exit(0);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,
-                        "Auto-save failed:\n" + ex.getMessage() + 
-                        "\n\nDo you want to exit anyway?",
-                        "Save Error",
+                        Messages.getString("dialog.error.autosave", ex.getMessage()),
+                        Messages.getString("dialog.error.title"),
                         JOptionPane.ERROR_MESSAGE);
-                
+
                 int result = JOptionPane.showConfirmDialog(this,
-                        "Exit without saving?",
-                        "Confirm Exit",
+                        Messages.getString("dialog.confirmexit.message"),
+                        Messages.getString("dialog.confirmexit.title"),
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.WARNING_MESSAGE);
-                
+
                 if (result == JOptionPane.YES_OPTION) {
                     dispose();
                     System.exit(0);
@@ -861,7 +976,7 @@ public class MainWindow extends JFrame implements IObserver {
     
     /**
      * Shows save confirmation dialog
-     * 
+     *
      * @return JOptionPane result (YES_OPTION, NO_OPTION, CANCEL_OPTION)
      */
     private int showSaveConfirmation() {
@@ -869,17 +984,17 @@ public class MainWindow extends JFrame implements IObserver {
         if (!dirty) {
             return JOptionPane.NO_OPTION;
         }
-        
+
         int result = JOptionPane.showConfirmDialog(this,
-                "Save changes to the current file?",
-                "Save Confirmation",
+                Messages.getString("dialog.save.message"),
+                Messages.getString("dialog.save.title"),
                 JOptionPane.YES_NO_CANCEL_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
-        
+
         if (result == JOptionPane.YES_OPTION) {
             saveFile(false);
         }
-        
+
         return result;
     }
     
@@ -904,7 +1019,7 @@ public class MainWindow extends JFrame implements IObserver {
     private void showOpenFileDialog() {
         JFileChooser chooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                Constants.APP_NAME + " files",
+                Constants.APP_NAME + " " + Messages.getString("dialog.open.files"),
                 Constants.FILE_EXTENSION
         );
         
@@ -918,17 +1033,17 @@ public class MainWindow extends JFrame implements IObserver {
     
     /**
      * Opens a file
-     * 
+     *
      * @param filename File path to open
      */
     public void openFile(String filename) {
         DecryptPasswordDialog dialog = new DecryptPasswordDialog(this, true);
         dialog.setVisible(true);
-        
+
         if (dialog.getModalResult()) {
             char[] password = dialog.getPassword();
             model.setPassword(new String(password));
-            
+
             try {
                 model.loadFile(filename);
                 saved = true;
@@ -936,19 +1051,19 @@ public class MainWindow extends JFrame implements IObserver {
                 savedFileName = filename;
                 contentEditor.setText("");
                 updateTitle();
-                
+
                 // Expand first level of tree
                 for (int i = 0; i < navigationTree.getRowCount(); i++) {
                     navigationTree.expandRow(i);
                 }
-                
+
                 // Select first node after loading
                 selectFirstNode();
-                
+
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,
-                        "Error loading file:\n" + ex.getMessage(),
-                        "Load Error",
+                        Messages.getString("dialog.error.load", ex.getMessage()),
+                        Messages.getString("dialog.error.title"),
                         JOptionPane.ERROR_MESSAGE);
             } finally {
                 // Clear password from memory
@@ -1021,7 +1136,7 @@ public class MainWindow extends JFrame implements IObserver {
         if (!saved || showDialog || savedFileName.isEmpty()) {
             JFileChooser chooser = new JFileChooser();
             FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                    Constants.APP_NAME + " files",
+                    Constants.APP_NAME + " " + Messages.getString("dialog.open.files"),
                     Constants.FILE_EXTENSION
             );
             
@@ -1050,7 +1165,7 @@ public class MainWindow extends JFrame implements IObserver {
     
     /**
      * Saves data to file
-     * 
+     *
      * @param fileName File path
      */
     private void saveToFile(String fileName) {
@@ -1060,11 +1175,11 @@ public class MainWindow extends JFrame implements IObserver {
             dirty = false;
             savedFileName = fileName;
             updateTitle();
-                        
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
-                    "Error saving file:\n" + ex.getMessage(),
-                    "Save Error",
+                    Messages.getString("dialog.error.save", ex.getMessage()),
+                    Messages.getString("dialog.error.title"),
                     JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -1074,17 +1189,18 @@ public class MainWindow extends JFrame implements IObserver {
      */
     private void updateTitle() {
         StringBuilder title = new StringBuilder(Constants.APP_NAME);
-        
+
         if (!savedFileName.isEmpty()) {
             title.append(" - ").append(new File(savedFileName).getName());
         } else {
-            title.append(" - untitled.").append(Constants.FILE_EXTENSION);
+            title.append(" - ").append(Messages.getString("window.title.untitled"))
+                 .append(".").append(Constants.FILE_EXTENSION);
         }
-        
+
         if (dirty) {
             title.append(" *");
         }
-        
+
         setTitle(title.toString());
     }
     

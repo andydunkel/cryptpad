@@ -1,6 +1,7 @@
 package de.dasoftware.cryptpad.ui;
 
 import de.dasoftware.cryptpad.crypto.EncryptionWrapper;
+import de.dasoftware.cryptpad.i18n.Messages;
 import de.dasoftware.cryptpad.util.IconUtil;
 
 import javax.crypto.BadPaddingException;
@@ -21,7 +22,7 @@ import java.util.Arrays;
 public class EncryptionDialog extends JFrame {
     
     private static final long serialVersionUID = 1L;
-	private boolean saved = false;
+    private boolean saved = false;
     private String savedFileName = "";
     
     // Components
@@ -61,22 +62,30 @@ public class EncryptionDialog extends JFrame {
      * Initializes all components
      */
     private void initComponents() {
-        setTitle("Text Encryption");
+        setTitle(Messages.getString("encryption.title"));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
         // Toolbar buttons
-        newButton = createToolbarButton("/icons/tb_new.png", "New");
-        openButton = createToolbarButton("/icons/tb_open.png", "Open");
-        saveButton = createToolbarButton("/icons/tb_save.png", "Save");
-        cutButton = createToolbarButton("/icons/cut16.png", "Cut");
-        copyButton = createToolbarButton("/icons/copy16.png", "Copy");
-        pasteButton = createToolbarButton("/icons/paste16.png", "Paste");
-        encryptButton = createToolbarButton("/icons/lock.png", "Encrypt");
-        exitButton = createToolbarButton("/icons/exit.png", "Exit");
+        newButton = createToolbarButton("/icons/tb_new.png", 
+            Messages.getString("encryption.tooltip.new"));
+        openButton = createToolbarButton("/icons/tb_open.png", 
+            Messages.getString("encryption.tooltip.open"));
+        saveButton = createToolbarButton("/icons/tb_save.png", 
+            Messages.getString("encryption.tooltip.save"));
+        cutButton = createToolbarButton("/icons/cut16.png", 
+            Messages.getString("encryption.tooltip.cut"));
+        copyButton = createToolbarButton("/icons/copy16.png", 
+            Messages.getString("encryption.tooltip.copy"));
+        pasteButton = createToolbarButton("/icons/paste16.png", 
+            Messages.getString("encryption.tooltip.paste"));
+        encryptButton = createToolbarButton("/icons/lock.png", 
+            Messages.getString("encryption.tooltip.encrypt"));
+        exitButton = createToolbarButton("/icons/exit.png", 
+            Messages.getString("encryption.tooltip.exit"));
         
         // Text area
         textArea = new JTextArea();
-        textArea.setFont(new Font("Courier New", Font.PLAIN, 12));
+        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         
@@ -129,30 +138,60 @@ public class EncryptionDialog extends JFrame {
         menuBar = new JMenuBar();
         
         // File menu
-        fileMenu = new JMenu("File");
-        fileMenu.setMnemonic('F');
+        fileMenu = new JMenu(Messages.getString("encryption.menu.file"));
+        fileMenu.setMnemonic(Messages.getMnemonic("encryption.menu.file.mnemonic"));
         
-        fileMenu.add(createMenuItem("New", 'N', "control N", "/icons/tb_new.png", this::onNew));
-        fileMenu.add(createMenuItem("Open", 'O', "control O", "/icons/tb_open.png", this::onOpen));
-        fileMenu.add(createMenuItem("Save", 'S', "control S", "/icons/tb_save.png", this::onSave));
-        fileMenu.add(createMenuItem("Save As", 'A', null, null, this::onSaveAs));
+        fileMenu.add(createMenuItem(
+            Messages.getString("encryption.menu.file.new"),
+            Messages.getMnemonic("encryption.menu.file.new.mnemonic"),
+            "control N", "/icons/tb_new.png", this::onNew));
+        fileMenu.add(createMenuItem(
+            Messages.getString("encryption.menu.file.open"),
+            Messages.getMnemonic("encryption.menu.file.open.mnemonic"),
+            "control O", "/icons/tb_open.png", this::onOpen));
+        fileMenu.add(createMenuItem(
+            Messages.getString("encryption.menu.file.save"),
+            Messages.getMnemonic("encryption.menu.file.save.mnemonic"),
+            "control S", "/icons/tb_save.png", this::onSave));
+        fileMenu.add(createMenuItem(
+            Messages.getString("encryption.menu.file.saveas"),
+            Messages.getMnemonic("encryption.menu.file.saveas.mnemonic"),
+            null, null, this::onSaveAs));
         fileMenu.addSeparator();
-        fileMenu.add(createMenuItem("Exit", 'E', "control F4", "/icons/exit.png", e -> dispose()));
+        fileMenu.add(createMenuItem(
+            Messages.getString("encryption.menu.file.exit"),
+            Messages.getMnemonic("encryption.menu.file.exit.mnemonic"),
+            "control F4", "/icons/exit.png", e -> dispose()));
         
         // Edit menu
-        editMenu = new JMenu("Edit");
-        editMenu.setMnemonic('E');
+        editMenu = new JMenu(Messages.getString("encryption.menu.edit"));
+        editMenu.setMnemonic(Messages.getMnemonic("encryption.menu.edit.mnemonic"));
         
-        editMenu.add(createMenuItem("Cut", 'C', "control X", "/icons/cut16.png", e -> textArea.cut()));
-        editMenu.add(createMenuItem("Copy", 'O', "control C", "/icons/copy16.png", e -> textArea.copy()));
-        editMenu.add(createMenuItem("Paste", 'P', "control V", "/icons/paste16.png", e -> textArea.paste()));
+        editMenu.add(createMenuItem(
+            Messages.getString("encryption.menu.edit.cut"),
+            Messages.getMnemonic("encryption.menu.edit.cut.mnemonic"),
+            "control X", "/icons/cut16.png", e -> textArea.cut()));
+        editMenu.add(createMenuItem(
+            Messages.getString("encryption.menu.edit.copy"),
+            Messages.getMnemonic("encryption.menu.edit.copy.mnemonic"),
+            "control C", "/icons/copy16.png", e -> textArea.copy()));
+        editMenu.add(createMenuItem(
+            Messages.getString("encryption.menu.edit.paste"),
+            Messages.getMnemonic("encryption.menu.edit.paste.mnemonic"),
+            "control V", "/icons/paste16.png", e -> textArea.paste()));
         
         // Encryption menu
-        encryptionMenu = new JMenu("Encryption");
-        encryptionMenu.setMnemonic('C');
+        encryptionMenu = new JMenu(Messages.getString("encryption.menu.encryption"));
+        encryptionMenu.setMnemonic(Messages.getMnemonic("encryption.menu.encryption.mnemonic"));
         
-        encryptionMenu.add(createMenuItem("Encrypt Text", 'E', null, null, this::onEncrypt));
-        encryptionMenu.add(createMenuItem("Decrypt Text", 'D', null, null, this::onDecrypt));
+        encryptionMenu.add(createMenuItem(
+            Messages.getString("encryption.menu.encryption.encrypt"),
+            Messages.getMnemonic("encryption.menu.encryption.encrypt.mnemonic"),
+            null, null, this::onEncrypt));
+        encryptionMenu.add(createMenuItem(
+            Messages.getString("encryption.menu.encryption.decrypt"),
+            Messages.getMnemonic("encryption.menu.encryption.decrypt.mnemonic"),
+            null, null, this::onDecrypt));
         
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
@@ -186,7 +225,10 @@ public class EncryptionDialog extends JFrame {
     private JMenuItem createMenuItem(String text, char mnemonic, String accelerator, 
                                      String iconPath, java.awt.event.ActionListener listener) {
         JMenuItem item = new JMenuItem(text);
-        item.setMnemonic(mnemonic);
+        
+        if (mnemonic != '\0') {
+            item.setMnemonic(mnemonic);
+        }
         
         if (accelerator != null) {
             item.setAccelerator(KeyStroke.getKeyStroke(accelerator));
@@ -278,8 +320,8 @@ public class EncryptionDialog extends JFrame {
         }
         
         int result = JOptionPane.showConfirmDialog(this,
-                "Do you want to save the current file?",
-                "Save Confirmation",
+                Messages.getString("encryption.save.message"),
+                Messages.getString("encryption.save.title"),
                 JOptionPane.YES_NO_CANCEL_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
         
@@ -339,8 +381,8 @@ public class EncryptionDialog extends JFrame {
             
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
-                    "Could not save the file: " + e.getMessage(),
-                    "Error",
+                    Messages.getString("encryption.error.save", e.getMessage()),
+                    Messages.getString("encryption.error.title"),
                     JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -362,8 +404,8 @@ public class EncryptionDialog extends JFrame {
             
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
-                    "Could not load the file: " + e.getMessage(),
-                    "Error",
+                    Messages.getString("encryption.error.load", e.getMessage()),
+                    Messages.getString("encryption.error.title"),
                     JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -374,8 +416,8 @@ public class EncryptionDialog extends JFrame {
     private void encryptText() {
         if (textArea.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Please enter some text to encrypt.",
-                    "No text",
+                    Messages.getString("encryption.notext.encrypt"),
+                    Messages.getString("encryption.notext.title"),
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -392,11 +434,12 @@ public class EncryptionDialog extends JFrame {
                                                          new String(password));
                 textArea.setText(encrypted);
                 saved = false;
+                updateTitle();
                 
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,
-                        "Encryption failed: " + ex.getMessage(),
-                        "Error",
+                        Messages.getString("encryption.error.encrypt", ex.getMessage()),
+                        Messages.getString("encryption.error.title"),
                         JOptionPane.ERROR_MESSAGE);
             } finally {
                 // Clear password from memory
@@ -412,8 +455,8 @@ public class EncryptionDialog extends JFrame {
     private void decryptText() {
         if (textArea.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Please enter some text to decrypt.",
-                    "No text",
+                    Messages.getString("encryption.notext.decrypt"),
+                    Messages.getString("encryption.notext.title"),
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -430,16 +473,17 @@ public class EncryptionDialog extends JFrame {
                                                          new String(password));
                 textArea.setText(decrypted);
                 saved = false;
+                updateTitle();
                 
             } catch (BadPaddingException ex) {
                 JOptionPane.showMessageDialog(this,
-                        "Decryption failed. Wrong password or corrupted data.",
-                        "Decryption Error",
+                        Messages.getString("encryption.error.wrongpassword"),
+                        Messages.getString("encryption.error.title"),
                         JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,
-                        "Decryption failed: " + ex.getMessage(),
-                        "Error",
+                        Messages.getString("encryption.error.decrypt", ex.getMessage()),
+                        Messages.getString("encryption.error.title"),
                         JOptionPane.ERROR_MESSAGE);
             } finally {
                 // Clear password from memory
@@ -452,7 +496,7 @@ public class EncryptionDialog extends JFrame {
      * Updates the window title with filename
      */
     private void updateTitle() {
-        String title = "Text Encryption";
+        String title = Messages.getString("encryption.title");
         
         if (!savedFileName.isEmpty()) {
             File file = new File(savedFileName);
