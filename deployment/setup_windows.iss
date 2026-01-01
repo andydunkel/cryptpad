@@ -31,7 +31,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 LicenseFile=..\LICENSE
 OutputDir=installer
-OutputBaseFilename={#MyAppName}-Setup-{#MyAppVersion}
+OutputBaseFilename=cryptpad
 
 ; Compression
 Compression=lzma2
@@ -51,8 +51,8 @@ ShowUndisplayableLanguages=false
 ChangesAssociations=true
 
 ; Code Signing
-SignTool=yubikey /d $q{#MyAppName}$q /du $q{#MyAppURL}$q /v $f
-SignedUninstaller=yes
+;SignTool=yubikey /d $q{#MyAppName}$q /du $q{#MyAppURL}$q /v $f
+;SignedUninstaller=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -64,14 +64,13 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 ; Main Application
 Source: "{#MyAppExeName}"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
-Source: "..\cryptpad\target\DA-CryptPad.jar"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
 
 ; Bundled JRE
 Source: "jre\*"; DestDir: "{app}\jre"; Flags: overwritereadonly ignoreversion replacesameversion recursesubdirs createallsubdirs
 
 ; Icons
-Source: "..\res\icon\DA-CryptPadFile.ico"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
-Source: "..\res\icon\DA-CryptPad.ico"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
+Source: "..\res\DA-CryptPadFile.ico"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
+Source: "..\res\DA-CryptPad.ico"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
 
 ; License
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
