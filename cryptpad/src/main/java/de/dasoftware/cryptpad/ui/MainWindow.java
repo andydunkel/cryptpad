@@ -461,8 +461,7 @@ public class MainWindow extends JFrame implements IObserver {
     /**
      * Handler for Check Updates
      */
-    private void onCheckUpdates(ActionEvent e) {
-    	Messages.setLocale(Locale.GERMAN);
+    private void onCheckUpdates(ActionEvent e) {    
         UpdaterData data = new UpdaterData();
         data.setUpdateUrl("https://da-software.net/versions/cryptpad.php");
         data.setVersionString(Constants.APP_VERSION); // z.B. "0.0.1"
