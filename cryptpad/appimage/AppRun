@@ -1,0 +1,13 @@
+#!/bin/bash
+# AppRun script for DA-CryptPad
+
+HERE="$(dirname "$(readlink -f "$0")")"
+
+# Set up environment
+export PATH="${HERE}/jre/bin:${PATH}"
+export LD_LIBRARY_PATH="${HERE}/jre/lib:${LD_LIBRARY_PATH}"
+
+# Launch application
+exec "${HERE}/jre/bin/java" \
+    -Djava.library.path="${HERE}/jre/lib" \
+    -jar "${HERE}/lib/da-cryptpad.jar" "$@"
