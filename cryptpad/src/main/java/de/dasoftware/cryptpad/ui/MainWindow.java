@@ -181,7 +181,6 @@ public class MainWindow extends JFrame implements IObserver {
         contentEditor.setAntiAliasingEnabled(true);
         contentEditor.setAutoIndentEnabled(true);
         contentEditor.setTabSize(4);
-        contentEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
         // Apply theme based on settings
         try {
@@ -198,6 +197,9 @@ public class MainWindow extends JFrame implements IObserver {
             System.err.println("Could not load RSyntaxTextArea theme: " + e.getMessage());
         }
         
+        Font editorFont = getMonospaceFont(12);
+        contentEditor.setFont(editorFont);
+        
         // Use RTextScrollPane for line numbers and code folding
         editorScrollPane = new RTextScrollPane(contentEditor);
         editorScrollPane.setLineNumbersEnabled(true);
@@ -210,6 +212,40 @@ public class MainWindow extends JFrame implements IObserver {
         // Initialize tree popup menu
         initTreePopupMenu();
         navigationTree.setComponentPopupMenu(treePopupMenu);
+    }
+    
+    /**
+     * Gets a monospace font that works cross-platform
+     * 
+     * @param size Font size
+     * @return Monospace Font
+     */
+    private Font getMonospaceFont(int size) {
+        // Try to find a good monospace font
+        String[] preferredFonts = {
+            "Consolas",        // Windows
+            "Monaco",          // macOS
+            "Ubuntu Mono",     // Linux
+            "DejaVu Sans Mono",// Linux
+            "Courier New",     // Fallback - everywhere
+            "Monospaced"       // Java logical font
+        };
+        
+        // Get all available fonts
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        String[] availableFonts = ge.getAvailableFontFamilyNames();
+        
+        // Try to find first available preferred font
+        for (String fontName : preferredFonts) {
+            for (String available : availableFonts) {
+                if (available.equals(fontName)) {
+                    return new Font(fontName, Font.PLAIN, size);
+                }
+            }
+        }
+        
+        // Ultimate fallback
+        return new Font(Font.MONOSPACED, Font.PLAIN, size);
     }
 
     /**
@@ -1235,17 +1271,7 @@ public class MainWindow extends JFrame implements IObserver {
         }
 
         setTitle(title.toString());
-    }
-    
-    /**
-     * Overloaded method for backward compatibility
-     * 
-     * @param fileName Current file name
-     */
-    @Deprecated
-    private void updateTitle(String fileName) {
-        updateTitle();
-    }
+    }    
     
     // ========== IObserver Implementation ==========
     
