@@ -180,4 +180,14 @@ public class AppSettings {
     public static String getSettingsFileLocation() {
         return getSettingsPath().toString();
     }
+    
+    /**
+     * Checks if the current theme is a dark theme
+     * 
+     * @return true if dark theme is active
+     */
+    public static boolean isDarkTheme() {
+        String theme = getTheme();
+        return theme.contains("Dark") || theme.equals("FlatLaf Darcula");
+    }
 }

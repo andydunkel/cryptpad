@@ -1,5 +1,8 @@
 package de.dasoftware.cryptpad;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import de.dasoftware.cryptpad.ui.MainWindow;
 import de.dasoftware.cryptpad.ui.SplashScreen;
@@ -55,25 +58,58 @@ public class CryptPadMain {
     }
     
     /**
-     * Initializes the Look and Feel
+     * Initializes the Look and Feel based on settings
      */
     private static void initializeLookAndFeel() {
+        String theme = AppSettings.getTheme();
+        
         try {
-            // FlatLaf Light Theme
-            FlatLightLaf.setup();
-            
-            // Alternative Themes (commented out):
-            // FlatDarkLaf.setup();                    // Dark Theme
-            // FlatIntelliJLaf.setup();                // IntelliJ Theme
-            // FlatDarculaLaf.setup();                 // Dracula Theme
-            
-            // FlatLaf settings for rounded corners
-            UIManager.put("Button.arc", 8);
-            UIManager.put("Component.arc", 8);
-            UIManager.put("TextComponent.arc", 8);
+            switch (theme) {
+                case "System":
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    break;
+                    
+                case "FlatLaf Light":
+                    FlatLightLaf.setup();
+                    applyFlatLafCustomizations();
+                    break;
+                    
+                case "FlatLaf Dark":
+                    FlatDarkLaf.setup();
+                    applyFlatLafCustomizations();
+                    break;
+                    
+                case "FlatLaf IntelliJ":
+                    FlatIntelliJLaf.setup();
+                    applyFlatLafCustomizations();
+                    break;
+                    
+                case "FlatLaf Darcula":
+                    FlatDarculaLaf.setup();
+                    applyFlatLafCustomizations();
+                    break;
+                    
+                case "Nimbus":
+                    for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                        if ("Nimbus".equals(info.getName())) {
+                            UIManager.setLookAndFeel(info.getClassName());
+                            break;
+                        }
+                    }
+                    break;
+                    
+                case "Metal":
+                    UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+                    break;
+                    
+                default:
+                    // Fallback to FlatLaf Light
+                    FlatLightLaf.setup();
+                    applyFlatLafCustomizations();
+            }
             
         } catch (Exception ex) {
-            System.err.println("Failed to initialize FlatLaf: " + ex.getMessage());
+            System.err.println("Failed to initialize Look and Feel: " + ex.getMessage());
             ex.printStackTrace();
             
             // Fallback to System Look and Feel
@@ -84,7 +120,15 @@ public class CryptPadMain {
             }
         }
     }
-    
+
+    /**
+     * Applies FlatLaf customizations (rounded corners, etc.)
+     */
+    private static void applyFlatLafCustomizations() {
+        UIManager.put("Button.arc", 8);
+        UIManager.put("Component.arc", 8);
+        UIManager.put("TextComponent.arc", 8);
+    }
     /**
      * Starts the main application
      * 

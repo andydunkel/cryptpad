@@ -4,6 +4,7 @@ import de.dasoftware.cryptpad.Constants;
 import de.dasoftware.cryptpad.model.EntryTreeNode;
 import de.dasoftware.cryptpad.model.IDataModel;
 import de.dasoftware.cryptpad.model.IObserver;
+import de.dasoftware.cryptpad.settings.AppSettings;
 import de.dasoftware.updater.UpdaterData;
 import de.dasoftware.updater.ui.UpdaterDialog;
 import de.dasoftware.cryptpad.i18n.Messages;
@@ -172,10 +173,16 @@ public class MainWindow extends JFrame implements IObserver {
         contentEditor.setTabSize(4);
         contentEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
-        // Apply theme
+        // Apply theme based on settings
         try {
-            Theme theme = Theme.load(getClass().getResourceAsStream(
-                "/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
+            String themePath;
+            if (AppSettings.isDarkTheme()) {
+                themePath = "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml";
+            } else {
+                themePath = "/org/fife/ui/rsyntaxtextarea/themes/default.xml";
+            }
+            
+            Theme theme = Theme.load(getClass().getResourceAsStream(themePath));
             theme.apply(contentEditor);
         } catch (Exception e) {
             System.err.println("Could not load RSyntaxTextArea theme: " + e.getMessage());

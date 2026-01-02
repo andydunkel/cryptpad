@@ -21,6 +21,7 @@ public class SettingsDialog extends JDialog {
     
     // Original values (for cancel)
     private String originalLanguage;
+    private String originalTheme;
     /**
      * Constructor
      * 
@@ -31,6 +32,7 @@ public class SettingsDialog extends JDialog {
         
         // Store original values
         originalLanguage = AppSettings.getLanguage();
+        originalTheme = AppSettings.getTheme();
         AppSettings.getTheme();
         
         initComponents();
@@ -58,14 +60,16 @@ public class SettingsDialog extends JDialog {
         };
         languageComboBox = new JComboBox<>(languages);
         
-        // Theme combo box (for future use)
         String[] themes = {
-            "System",
-            "FlatLaf Light",
-            "FlatLaf Dark"
-        };
+        	    "System",           
+        	    "FlatLaf Light",    
+        	    "FlatLaf Dark",     
+        	    "FlatLaf IntelliJ", 
+        	    "FlatLaf Darcula",  
+        	    "Nimbus",           
+        	    "Metal"             
+        	};
         themeComboBox = new JComboBox<>(themes);
-        themeComboBox.setEnabled(false); // Disabled for now
         
         // Buttons
         okButton = new JButton(Messages.getString("button.ok"));
@@ -178,32 +182,26 @@ public class SettingsDialog extends JDialog {
         // Get selected language
         String newLanguage;
         switch (languageComboBox.getSelectedIndex()) {
-            case 0:
-                newLanguage = "system";
-                break;
-            case 1:
-                newLanguage = "en";
-                break;
-            case 2:
-                newLanguage = "de";
-                break;
-            default:
-                newLanguage = "system";
+            case 0: newLanguage = "system"; break;
+            case 1: newLanguage = "en"; break;
+            case 2: newLanguage = "de"; break;
+            default: newLanguage = "system";
         }
         
         // Get selected theme
         String newTheme = (String) themeComboBox.getSelectedItem();
         
-        // Check if language changed
+        // Check if anything changed
         boolean languageChanged = !newLanguage.equals(originalLanguage);
+        boolean themeChanged = !newTheme.equals(originalTheme);
         
         // Save settings
         AppSettings.setLanguage(newLanguage);
         AppSettings.setTheme(newTheme);
         AppSettings.save();
         
-        // Show restart message if language changed
-        if (languageChanged) {
+        // Show restart message if anything changed
+        if (languageChanged || themeChanged) {
             JOptionPane.showMessageDialog(
                 this,
                 Messages.getString("settings.restart.message"),
