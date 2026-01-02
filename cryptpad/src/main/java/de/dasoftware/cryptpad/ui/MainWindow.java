@@ -21,7 +21,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Arrays;
-import de.dasoftware.cryptpad.ui.SettingsDialog;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -117,6 +116,17 @@ public class MainWindow extends JFrame implements IObserver {
     }
     
     /**
+     * Gets the themed icon path based on current theme setting
+     * 
+     * @param iconName Icon filename (e.g., "mainnode.png")
+     * @return Full icon path with theme folder
+     */
+    private String getThemedIcon(String iconName) {
+        String themeFolder = AppSettings.isDarkTheme() ? "dark" : "light";
+        return "/icons/" + themeFolder + "/" + iconName;
+    }
+    
+    /**
      * Initializes all components
      */
     private void initComponents() {
@@ -148,9 +158,9 @@ public class MainWindow extends JFrame implements IObserver {
         
         // Tree icons
         try {
-            ImageIcon leafIcon = new ImageIcon(getClass().getResource("/icons/leaf.png"));
-            ImageIcon folderIcon = new ImageIcon(getClass().getResource("/icons/folder_closed16.png"));
-            ImageIcon openIcon = new ImageIcon(getClass().getResource("/icons/folder_open16.png"));
+            ImageIcon leafIcon = new ImageIcon(getClass().getResource(getThemedIcon("leaf.png")));
+            ImageIcon folderIcon = new ImageIcon(getClass().getResource(getThemedIcon("folder_closed16.png")));
+            ImageIcon openIcon = new ImageIcon(getClass().getResource(getThemedIcon("folder_open16.png")));
             
             DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
             renderer.setLeafIcon(leafIcon);
@@ -208,10 +218,10 @@ public class MainWindow extends JFrame implements IObserver {
     private void setApplicationIcon() {
         try {
             // Load icon image(s)
-            ImageIcon icon16 = new ImageIcon(getClass().getResource("/icons/app-icon-16.png"));
-            ImageIcon icon32 = new ImageIcon(getClass().getResource("/icons/app-icon-32.png"));
-            ImageIcon icon48 = new ImageIcon(getClass().getResource("/icons/app-icon-48.png"));
-            ImageIcon icon64 = new ImageIcon(getClass().getResource("/icons/app-icon-64.png"));
+            ImageIcon icon16 = new ImageIcon(getClass().getResource(getThemedIcon("app-icon-16.png")));
+            ImageIcon icon32 = new ImageIcon(getClass().getResource(getThemedIcon("app-icon-32.png")));
+            ImageIcon icon48 = new ImageIcon(getClass().getResource(getThemedIcon("app-icon-48.png")));
+            ImageIcon icon64 = new ImageIcon(getClass().getResource(getThemedIcon("app-icon-64.png")));
             
             // Set multiple icon sizes (for different contexts)
             java.util.List<Image> icons = new java.util.ArrayList<>();
@@ -227,7 +237,7 @@ public class MainWindow extends JFrame implements IObserver {
             
             // Fallback: Try to load just one icon
             try {
-                ImageIcon icon = new ImageIcon(getClass().getResource("/icons/app-icon.png"));
+                ImageIcon icon = new ImageIcon(getClass().getResource(getThemedIcon("app-icon.png")));
                 setIconImage(icon.getImage());
             } catch (Exception ex) {
                 System.err.println("Could not load fallback icon: " + ex.getMessage());
@@ -243,11 +253,11 @@ public class MainWindow extends JFrame implements IObserver {
         toolBar.setFloatable(false);
 
         // File operations
-        btnNew = createToolBarButton("/icons/tb_new.png", 
+        btnNew = createToolBarButton(getThemedIcon("tb_new.png"), 
             Messages.getString("tooltip.new"));
-        btnOpen = createToolBarButton("/icons/tb_open.png", 
+        btnOpen = createToolBarButton(getThemedIcon("tb_open.png"), 
             Messages.getString("tooltip.open"));
-        btnSave = createToolBarButton("/icons/tb_save.png", 
+        btnSave = createToolBarButton(getThemedIcon("tb_save.png"), 
             Messages.getString("tooltip.save"));
 
         toolBar.add(btnNew);
@@ -256,15 +266,15 @@ public class MainWindow extends JFrame implements IObserver {
         toolBar.addSeparator();
 
         // Node operations
-        btnNewMainNode = createToolBarButton("/icons/mainnode.png", 
+        btnNewMainNode = createToolBarButton(getThemedIcon("mainnode.png"), 
             Messages.getString("tooltip.newmainnode"));
-        btnNewSibling = createToolBarButton("/icons/sibling.png", 
+        btnNewSibling = createToolBarButton(getThemedIcon("sibling.png"), 
             Messages.getString("tooltip.newsibling"));
-        btnNewChild = createToolBarButton("/icons/childnode.png", 
+        btnNewChild = createToolBarButton(getThemedIcon("childnode.png"), 
             Messages.getString("tooltip.newchild"));
-        btnEditNode = createToolBarButton("/icons/edit.png", 
+        btnEditNode = createToolBarButton(getThemedIcon("edit.png"), 
             Messages.getString("tooltip.editnode"));
-        btnDeleteNode = createToolBarButton("/icons/delete16.png", 
+        btnDeleteNode = createToolBarButton(getThemedIcon("delete16.png"), 
             Messages.getString("tooltip.deletenode"));
 
         toolBar.add(btnNewMainNode);
@@ -275,11 +285,11 @@ public class MainWindow extends JFrame implements IObserver {
         toolBar.addSeparator();
 
         // Edit operations
-        btnCut = createToolBarButton("/icons/cut16.png", 
+        btnCut = createToolBarButton(getThemedIcon("cut16.png"), 
             Messages.getString("tooltip.cut"));
-        btnCopy = createToolBarButton("/icons/copy16.png", 
+        btnCopy = createToolBarButton(getThemedIcon("copy16.png"), 
             Messages.getString("tooltip.copy"));
-        btnPaste = createToolBarButton("/icons/paste16.png", 
+        btnPaste = createToolBarButton(getThemedIcon("paste16.png"), 
             Messages.getString("tooltip.paste"));
 
         toolBar.add(btnCut);
@@ -288,7 +298,7 @@ public class MainWindow extends JFrame implements IObserver {
         toolBar.addSeparator();
 
         // Help
-        btnAbout = createToolBarButton("/icons/Info.png", 
+        btnAbout = createToolBarButton(getThemedIcon("Info.png"), 
             Messages.getString("tooltip.about", Constants.APP_NAME));
         toolBar.add(btnAbout);
     }
@@ -319,27 +329,26 @@ public class MainWindow extends JFrame implements IObserver {
         menuBar = new JMenuBar();
         
         // File menu
-     // File menu
         menuFile = new JMenu(Messages.getString("menu.file"));
         menuFile.setMnemonic(Messages.getMnemonic("menu.file.mnemonic"));
 
         menuItemNew = createMenuItem(
             Messages.getString("menu.file.new"), 
-            "/icons/tb_new.png", 
+            getThemedIcon("tb_new.png"), 
             Messages.getMnemonic("menu.file.new.mnemonic"),
             KeyStroke.getKeyStroke("control N")
         );
 
         menuItemOpen = createMenuItem(
             Messages.getString("menu.file.open"),
-            "/icons/tb_open.png", 
+            getThemedIcon("tb_open.png"), 
             Messages.getMnemonic("menu.file.open.mnemonic"),
             KeyStroke.getKeyStroke("control O")
         );
 
         menuItemSave = createMenuItem(
             Messages.getString("menu.file.save"),
-            "/icons/tb_save.png", 
+            getThemedIcon("tb_save.png"), 
             Messages.getMnemonic("menu.file.save.mnemonic"),
             KeyStroke.getKeyStroke("control S")
         );
@@ -353,7 +362,7 @@ public class MainWindow extends JFrame implements IObserver {
 
         menuItemExit = createMenuItem(
             Messages.getString("menu.file.exit"),
-            "/icons/exit.png", 
+            getThemedIcon("exit.png"), 
             Messages.getMnemonic("menu.file.exit.mnemonic"),
             KeyStroke.getKeyStroke("alt F4")
         );
@@ -371,38 +380,38 @@ public class MainWindow extends JFrame implements IObserver {
 
         menuItemCut = createMenuItem(
             Messages.getString("menu.edit.cut"),
-            "/icons/cut16.png", 
+            getThemedIcon("cut16.png"), 
             Messages.getMnemonic("menu.edit.cut.mnemonic"),
             KeyStroke.getKeyStroke("control X")
         );
 
         menuItemCopy = createMenuItem(
             Messages.getString("menu.edit.copy"),
-            "/icons/copy16.png", 
+            getThemedIcon("copy16.png"), 
             Messages.getMnemonic("menu.edit.copy.mnemonic"),
             KeyStroke.getKeyStroke("control C")
         );
 
         menuItemPaste = createMenuItem(
             Messages.getString("menu.edit.paste"),
-            "/icons/paste16.png", 
+            getThemedIcon("paste16.png"), 
             Messages.getMnemonic("menu.edit.paste.mnemonic"),
             KeyStroke.getKeyStroke("control V")
         );
 
         menuItemDeleteNode = createMenuItem(
             Messages.getString("menu.edit.deletenode"),
-            "/icons/delete16.png", 
+            getThemedIcon("delete16.png"), 
             Messages.getMnemonic("menu.edit.deletenode.mnemonic"),
             null
         );
         
         menuItemSettings = createMenuItem(
-        	    Messages.getString("menu.edit.settings"),
-        	    null, 
-        	    Messages.getMnemonic("menu.edit.settings.mnemonic"),
-        	    KeyStroke.getKeyStroke("control COMMA")  // Strg+, wie in vielen Apps
-        	);
+            Messages.getString("menu.edit.settings"),
+            null, 
+            Messages.getMnemonic("menu.edit.settings.mnemonic"),
+            KeyStroke.getKeyStroke("control COMMA")
+        );
 
         menuEdit.add(menuItemCut);
         menuEdit.add(menuItemCopy);
@@ -456,7 +465,7 @@ public class MainWindow extends JFrame implements IObserver {
 
         menuItemAbout = createMenuItem(
             Messages.getString("menu.help.about", Constants.APP_NAME),
-            "/icons/Info.png", 
+            getThemedIcon("Info.png"), 
             Messages.getMnemonic("menu.help.about.mnemonic"),
             null
         );
@@ -481,11 +490,11 @@ public class MainWindow extends JFrame implements IObserver {
     private void onCheckUpdates(ActionEvent e) {    
         UpdaterData data = new UpdaterData();
         data.setUpdateUrl("https://da-software.net/versions/cryptpad.php");
-        data.setVersionString(Constants.APP_VERSION); // z.B. "0.0.1"
+        data.setVersionString(Constants.APP_VERSION);
         data.setAppTitle(Constants.APP_NAME);
         data.setUpdaterTitle(Constants.APP_NAME + " Updater");
-        data.setAutoUpdate(false);  // Manual update
-        data.setAutoClose(false);   // Keep dialog open
+        data.setAutoUpdate(false);
+        data.setAutoClose(false);
         
         UpdaterDialog dialog = new UpdaterDialog(this, data);
         dialog.setVisible(true);
@@ -532,35 +541,35 @@ public class MainWindow extends JFrame implements IObserver {
 
         popupNewMainNode = createMenuItem(
             Messages.getString("popup.newmainnode"),
-            "/icons/mainnode.png", 
+            getThemedIcon("mainnode.png"), 
             (char)0, 
             null
         );
         
         popupNewSibling = createMenuItem(
             Messages.getString("popup.newsibling"),
-            "/icons/sibling.png", 
+            getThemedIcon("sibling.png"), 
             (char)0, 
             null
         );
         
         popupNewChild = createMenuItem(
             Messages.getString("popup.newchild"),
-            "/icons/childnode.png", 
+            getThemedIcon("childnode.png"), 
             (char)0, 
             null
         );
         
         popupEditNode = createMenuItem(
             Messages.getString("popup.editnode"),
-            "/icons/edit.png", 
+            getThemedIcon("edit.png"), 
             (char)0, 
             null
         );
         
         popupDeleteNode = createMenuItem(
             Messages.getString("popup.deletenode"),
-            "/icons/delete16.png", 
+            getThemedIcon("delete16.png"), 
             (char)0, 
             null
         );

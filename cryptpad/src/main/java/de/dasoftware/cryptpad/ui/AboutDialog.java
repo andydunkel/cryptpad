@@ -88,7 +88,6 @@ public class AboutDialog extends JDialog {
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        centerPanel.setBackground(Color.WHITE);
         
         // Add components with alignment
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -103,16 +102,12 @@ public class AboutDialog extends JDialog {
         
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
         buttonPanel.add(okButton);
         
         // Add panels to dialog
         getContentPane().add(centerPanel, BorderLayout.CENTER);
-        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-        
-        // Set background
-        getContentPane().setBackground(Color.WHITE);
+        getContentPane().add(buttonPanel, BorderLayout.SOUTH);        
     }
     
     /**
