@@ -14,19 +14,20 @@ public class Messages {
     private static ResourceBundle resourceBundle;
     private static Locale currentLocale;
     
-    static {
-        // Initialize with system default locale
-        setLocale(Locale.getDefault());
-    }
-    
     /**
      * Sets the current locale
-     * 
+     *
      * @param locale Locale to use
      */
     public static void setLocale(Locale locale) {
         currentLocale = locale;
-        resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, locale);
+        
+        // Special handling for English: use default properties without locale suffix
+        if (locale.getLanguage().equals("en")) {
+            resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, Locale.ROOT);
+        } else {
+            resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, locale);
+        }
     }
     
     /**

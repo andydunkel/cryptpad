@@ -21,12 +21,18 @@ public class Messages {
     
     /**
      * Sets the current locale
-     * 
+     *
      * @param locale Locale to use
      */
     public static void setLocale(Locale locale) {
         currentLocale = locale;
-        resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, locale);
+        
+        // Special handling for English: use default properties without locale suffix
+        if (locale.getLanguage().equals("en")) {
+            resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, Locale.ROOT);
+        } else {
+            resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, locale);
+        }
     }
     
     /**
@@ -46,7 +52,9 @@ public class Messages {
      */
     public static String getString(String key) {
         try {
-            return resourceBundle.getString(key);
+        	Locale current = currentLocale;
+        	String s = resourceBundle.getString(key);
+            return s;
         } catch (Exception e) {
             return "!" + key + "!";
         }

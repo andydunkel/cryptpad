@@ -3,7 +3,11 @@ package de.dasoftware.cryptpad;
 import com.formdev.flatlaf.FlatLightLaf;
 import de.dasoftware.cryptpad.ui.MainWindow;
 import de.dasoftware.cryptpad.ui.SplashScreen;
+import de.dasoftware.cryptpad.i18n.Messages;
 import de.dasoftware.cryptpad.model.DataModel;
+import de.dasoftware.cryptpad.settings.AppSettings;
+
+import java.util.Locale;
 
 import javax.swing.*;
 
@@ -19,6 +23,16 @@ public class CryptPadMain {
      * @param args Command line arguments (optional: file to open)
      */
     public static void main(String[] args) {
+        // Load settings first
+        AppSettings.load();
+        
+        // Apply language setting
+        Locale locale = AppSettings.getLocale();
+        Messages.setLocale(locale);
+        
+        // Also set for updater
+        de.dasoftware.updater.i18n.Messages.setLocale(locale);
+    	    	
         // Show splash screen
         SplashScreen splash = new SplashScreen();
         splash.setVisible(true);    	

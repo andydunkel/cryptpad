@@ -20,7 +20,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Arrays;
-import java.util.Locale;
+import de.dasoftware.cryptpad.ui.SettingsDialog;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -80,6 +80,7 @@ public class MainWindow extends JFrame implements IObserver {
     private JMenuItem menuItemCopy;
     private JMenuItem menuItemPaste;
     private JMenuItem menuItemDeleteNode;
+    private JMenuItem menuItemSettings;
     
     // Encryption menu items
     private JMenuItem menuItemSetPassword;
@@ -388,12 +389,21 @@ public class MainWindow extends JFrame implements IObserver {
             Messages.getMnemonic("menu.edit.deletenode.mnemonic"),
             null
         );
+        
+        menuItemSettings = createMenuItem(
+        	    Messages.getString("menu.edit.settings"),
+        	    null, 
+        	    Messages.getMnemonic("menu.edit.settings.mnemonic"),
+        	    KeyStroke.getKeyStroke("control COMMA")  // Strg+, wie in vielen Apps
+        	);
 
         menuEdit.add(menuItemCut);
         menuEdit.add(menuItemCopy);
         menuEdit.add(menuItemPaste);
         menuEdit.addSeparator();
         menuEdit.add(menuItemDeleteNode);
+        menuEdit.addSeparator();
+        menuEdit.add(menuItemSettings);
         
         // Encryption menu
         menuEncryption = new JMenu(Messages.getString("menu.encryption"));
@@ -472,6 +482,13 @@ public class MainWindow extends JFrame implements IObserver {
         
         UpdaterDialog dialog = new UpdaterDialog(this, data);
         dialog.setVisible(true);
+    }
+    
+    /**
+     * Handler for Settings
+     */
+    private void onSettings(ActionEvent e) {
+        SettingsDialog.showDialog(this);
     }
     
     /**
@@ -612,6 +629,7 @@ public class MainWindow extends JFrame implements IObserver {
         menuItemSave.addActionListener(this::onSave);
         menuItemSaveAs.addActionListener(this::onSaveAs);
         menuItemExit.addActionListener(this::onExit);
+        menuItemSettings.addActionListener(this::onSettings);
         
         // Menu items - Edit
         menuItemCut.addActionListener(this::onCut);
