@@ -13,4 +13,22 @@ Place the JRE in the JRE folder. The installier signed, remove signing from .iss
 
 ## Linux
 
-TODO
+### Install app image tool
+
+    wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+    chmod +x appimagetool-x86_64.AppImage
+    sudo mv appimagetool-x86_64.AppImage /usr/local/bin/appimagetool
+
+### JAR and JRE
+
+Create the JAR, download the JRE and place them in the folder "linux":
+
+    linux
+    ├── cryptpad.jar
+    └── jre
+
+Other files are in "appimage-resources". 
+
+Run:
+
+    ./build-appimage.sh

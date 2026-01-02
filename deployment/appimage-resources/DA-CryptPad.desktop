@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=DA-CryptPad
 Comment=Secure encryption and file management
-Exec=da-cryptpad
-Icon=da-cryptpad
+Exec=cryptpad
+Icon=cryptpad
 Type=Application
 Categories=Utility;Security;
 Terminal=false
