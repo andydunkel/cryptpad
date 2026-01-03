@@ -2,8 +2,12 @@ package de.dasoftware.cryptpad.settings;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import de.dasoftware.cryptpad.Constants;
 
@@ -19,10 +23,15 @@ public class AppSettings {
     // Setting keys
     private static final String KEY_LANGUAGE = "language";
     private static final String KEY_THEME = "theme";
+    private static final String RECENT_FILES_KEY = "recent.files";
     
     // Default values
     private static final String DEFAULT_LANGUAGE = "system";
     private static final String DEFAULT_THEME = "System";
+    
+    // Recent files settings
+    private static final int MAX_RECENT_FILES = 10;
+    private static final String RECENT_FILES_SEPARATOR = "|";
     
     private static Properties properties = new Properties();
     
@@ -189,5 +198,91 @@ public class AppSettings {
     public static boolean isDarkTheme() {
         String theme = getTheme();
         return theme.contains("Dark") || theme.equals("FlatLaf Darcula");
+    }
+    
+    // ========== Recent Files ==========
+    
+    /**
+     * Adds a file to the recent files list.
+     * If the file already exists in the list, it will be moved to the front.
+     * 
+     * @param file The file to add
+     */
+    public static void addRecentFile(File file) {
+        if (file == null || !file.exists()) {
+            return;
+        }
+        
+        List<File> recentFiles = getRecentFiles();
+        String absolutePath = file.getAbsolutePath();
+        
+        // Remove if already exists (we'll add it to the front)
+        recentFiles.removeIf(f -> f.getAbsolutePath().equals(absolutePath));
+        
+        // Add to front
+        recentFiles.add(0, file);
+        
+        // Keep only MAX_RECENT_FILES
+        if (recentFiles.size() > MAX_RECENT_FILES) {
+            recentFiles = recentFiles.subList(0, MAX_RECENT_FILES);
+        }
+        
+        // Save
+        saveRecentFiles(recentFiles);
+    }
+    
+    /**
+     * Gets the list of recent files.
+     * Non-existing files are automatically removed from the list.
+     * 
+     * @return List of recent files (most recent first)
+     */
+    public static List<File> getRecentFiles() {
+        String value = properties.getProperty(RECENT_FILES_KEY, "");
+        List<File> files = new ArrayList<>();
+        
+        if (!value.isEmpty()) {
+            String[] paths = value.split(Pattern.quote(RECENT_FILES_SEPARATOR));
+            for (String path : paths) {
+                if (!path.trim().isEmpty()) {
+                    File file = new File(path.trim());
+                    if (file.exists()) {
+                        files.add(file);
+                    }
+                }
+            }
+            
+            // If any files were removed, save the cleaned list
+            if (files.size() != paths.length) {
+                saveRecentFiles(files);
+            }
+        }
+        
+        return files;
+    }
+    
+    /**
+     * Clears all recent files.
+     */
+    public static void clearRecentFiles() {
+        properties.remove(RECENT_FILES_KEY);
+        save();
+    }
+    
+    /**
+     * Saves the recent files list to properties.
+     * 
+     * @param files List of files to save
+     */
+    private static void saveRecentFiles(List<File> files) {
+        if (files.isEmpty()) {
+            properties.remove(RECENT_FILES_KEY);
+        } else {
+            String value = files.stream()
+                .map(File::getAbsolutePath)
+                .collect(Collectors.joining(RECENT_FILES_SEPARATOR));
+            properties.setProperty(RECENT_FILES_KEY, value);
+        }
+        save();
     }
 }

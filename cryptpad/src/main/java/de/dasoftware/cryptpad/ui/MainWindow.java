@@ -21,6 +21,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -74,6 +75,9 @@ public class MainWindow extends JFrame implements IObserver {
     private JMenuItem menuItemSave;
     private JMenuItem menuItemSaveAs;
     private JMenuItem menuItemExit;
+    
+    // Recent Files menu
+    private JMenu recentFilesMenu;    
     
     // Edit menu items
     private JMenuItem menuItemCut;
@@ -407,6 +411,14 @@ public class MainWindow extends JFrame implements IObserver {
         menuFile.add(menuItemOpen);
         menuFile.add(menuItemSave);
         menuFile.add(menuItemSaveAs);
+        menuFile.addSeparator();
+        
+        // Recent Files submenu
+        recentFilesMenu = new JMenu(Messages.getString("menu.file.recent"));
+        recentFilesMenu.setMnemonic(Messages.getMnemonic("menu.file.recent.mnemonic"));
+        menuFile.add(recentFilesMenu);
+        updateRecentFilesMenu();
+        
         menuFile.addSeparator();
         menuFile.add(menuItemExit);
         
@@ -1120,6 +1132,10 @@ public class MainWindow extends JFrame implements IObserver {
                 savedFileName = filename;
                 contentEditor.setText("");
                 updateTitle();
+                
+                // Add to recent files
+                AppSettings.addRecentFile(new File(filename));
+                updateRecentFilesMenu();
 
                 // Expand first level of tree
                 for (int i = 0; i < navigationTree.getRowCount(); i++) {
@@ -1244,6 +1260,10 @@ public class MainWindow extends JFrame implements IObserver {
             dirty = false;
             savedFileName = fileName;
             updateTitle();
+            
+            // Add to recent files
+            AppSettings.addRecentFile(new File(fileName));
+            updateRecentFilesMenu();
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
@@ -1405,5 +1425,76 @@ public class MainWindow extends JFrame implements IObserver {
         }
         
         return new TreePath(newPath);
+    }
+    
+    /**
+     * Updates the recent files menu with current list.
+     */
+    private void updateRecentFilesMenu() {
+        recentFilesMenu.removeAll();
+        
+        List<File> recentFiles = AppSettings.getRecentFiles();
+        
+        if (recentFiles.isEmpty()) {
+            JMenuItem emptyItem = new JMenuItem(Messages.getString("menu.file.recent.empty"));
+            emptyItem.setEnabled(false);
+            recentFilesMenu.add(emptyItem);
+        } else {
+            // Add recent file entries
+            for (int i = 0; i < recentFiles.size() && i < 10; i++) {
+                final File file = recentFiles.get(i);
+                
+                JMenuItem item = new JMenuItem(file.getName());
+                item.setToolTipText(file.getAbsolutePath());
+                
+                // Set mnemonic (1-9, then 0 for the 10th item)
+                if (i < 9) {
+                    item.setMnemonic('1' + i);
+                    item.setDisplayedMnemonicIndex(0);
+                } else if (i == 9) {
+                    item.setMnemonic('0');
+                    item.setDisplayedMnemonicIndex(0);
+                }
+                
+                item.addActionListener(e -> openRecentFile(file));
+                recentFilesMenu.add(item);
+            }
+            
+            // Add separator and clear option
+            recentFilesMenu.addSeparator();
+            JMenuItem clearItem = new JMenuItem(Messages.getString("menu.file.recent.clear"));
+            clearItem.addActionListener(e -> {
+                AppSettings.clearRecentFiles();
+                updateRecentFilesMenu();
+            });
+            recentFilesMenu.add(clearItem);
+        }
+    }
+    
+    /**
+     * Opens a file from the recent files list.
+     * 
+     * @param file The file to open
+     */
+    private void openRecentFile(File file) {
+        if (!file.exists()) {
+            JOptionPane.showMessageDialog(
+                this,
+                java.text.MessageFormat.format(
+                    Messages.getString("menu.file.recent.notfound"), 
+                    file.getName()
+                ),
+                Messages.getString("dialog.error.title"),
+                JOptionPane.ERROR_MESSAGE
+            );
+            updateRecentFilesMenu(); // Refresh menu (file will be removed by getRecentFiles())
+            return;
+        }
+        
+        // Check if current file needs to be saved
+        int result = showSaveConfirmation();
+        if (result != JOptionPane.CANCEL_OPTION) {
+            openFile(file.getAbsolutePath());
+        }
     }
 }
