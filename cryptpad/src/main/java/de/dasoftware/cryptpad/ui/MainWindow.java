@@ -1285,11 +1285,16 @@ public class MainWindow extends JFrame implements IObserver {
             return;
         }
         
-        // Save currently selected path
+        // Save currently selected path and expanded state
         TreePath selectedPath = navigationTree.getSelectionPath();
+        java.util.List<TreePath> expandedPaths = getExpandedPaths();
         
         DefaultTreeModel treeModel = (DefaultTreeModel) navigationTree.getModel();
         treeModel.reload();
+        
+        // Restore expanded state
+        restoreExpandedPaths(expandedPaths);
+        
         navigationTree.repaint();
         
         // Try to restore selection
@@ -1300,5 +1305,105 @@ public class MainWindow extends JFrame implements IObserver {
             // No selection - select first node
             selectFirstNode();
         }
+    }
+    
+    /**
+     * Gets all currently expanded tree paths
+     * 
+     * @return List of expanded TreePaths
+     */
+    private java.util.List<TreePath> getExpandedPaths() {
+        java.util.List<TreePath> expandedPaths = new java.util.ArrayList<>();
+        
+        EntryTreeNode root = model.getRootNode();
+        if (root == null) {
+            return expandedPaths;
+        }
+        
+        // Check all rows
+        for (int i = 0; i < navigationTree.getRowCount(); i++) {
+            TreePath path = navigationTree.getPathForRow(i);
+            if (path != null && navigationTree.isExpanded(path)) {
+                expandedPaths.add(path);
+            }
+        }
+        
+        return expandedPaths;
+    }
+    
+    /**
+     * Restores previously expanded tree paths
+     * 
+     * @param expandedPaths List of TreePaths to expand
+     */
+    private void restoreExpandedPaths(java.util.List<TreePath> expandedPaths) {
+        if (expandedPaths == null || expandedPaths.isEmpty()) {
+            return;
+        }
+        
+        // Expand paths
+        for (TreePath path : expandedPaths) {
+            if (path != null) {
+                // Recreate path based on node titles (in case node objects changed)
+                TreePath newPath = findPathByTitles(path);
+                if (newPath != null) {
+                    navigationTree.expandPath(newPath);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Finds a tree path by matching node titles from an old path
+     * 
+     * @param oldPath The old TreePath (before reload)
+     * @return The new TreePath with same node titles, or null if not found
+     */
+    private TreePath findPathByTitles(TreePath oldPath) {
+        if (oldPath == null) {
+            return null;
+        }
+        
+        // Extract titles from old path
+        Object[] oldComponents = oldPath.getPath();
+        String[] titles = new String[oldComponents.length];
+        
+        for (int i = 0; i < oldComponents.length; i++) {
+            if (oldComponents[i] instanceof EntryTreeNode) {
+                titles[i] = ((EntryTreeNode) oldComponents[i]).getUserObject().toString();
+            }
+        }
+        
+        // Find matching path in current tree
+        EntryTreeNode root = model.getRootNode();
+        if (root == null || titles.length == 0) {
+            return null;
+        }
+        
+        // Start with root (skip first title as it's the root)
+        EntryTreeNode current = root;
+        Object[] newPath = new Object[titles.length];
+        newPath[0] = root;
+        
+        // Navigate through children matching titles
+        for (int i = 1; i < titles.length; i++) {
+            boolean found = false;
+            
+            for (int j = 0; j < current.getChildCount(); j++) {
+                EntryTreeNode child = (EntryTreeNode) current.getChildAt(j);
+                if (child.getUserObject().toString().equals(titles[i])) {
+                    current = child;
+                    newPath[i] = child;
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found) {
+                return null; // Path no longer exists
+            }
+        }
+        
+        return new TreePath(newPath);
     }
 }
