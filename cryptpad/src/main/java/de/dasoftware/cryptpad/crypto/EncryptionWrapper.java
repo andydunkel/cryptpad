@@ -16,6 +16,9 @@ public class EncryptionWrapper {
     private static final String BEGIN_ENC = "-----BEGIN-----";
     private static final String VERSION_INFO = "Version: " + Constants.APP_NAME + " " + Constants.APP_VERSION;
     
+    // Line wrapping for encrypted content (PGP-style: 64 characters per line)
+    private static final int LINE_WIDTH = 64;
+    
     private final IEncryption encryption;
     
     /**
@@ -105,10 +108,48 @@ public class EncryptionWrapper {
         output.append(beginMarker).append("\n");
         output.append(VERSION_INFO).append("\n\n");
         output.append(BEGIN_ENC).append("\n");
-        output.append(encryption.encryptString(key, content)).append("\n");
-        output.append(END_MESSAGE);
+        
+        // Encrypt and wrap content into lines
+        String encryptedContent = encryption.encryptString(key, content);
+        output.append(wrapLines(encryptedContent, LINE_WIDTH));
+        
+        output.append("\n").append(END_MESSAGE);
         
         return output.toString();
+    }
+    
+    /**
+     * Wraps a long string into multiple lines with specified width
+     * 
+     * @param text Text to wrap
+     * @param lineWidth Maximum characters per line
+     * @return Wrapped text with line breaks
+     */
+    private String wrapLines(String text, int lineWidth) {
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+        
+        StringBuilder wrapped = new StringBuilder();
+        int length = text.length();
+        int pos = 0;
+        
+        while (pos < length) {
+            // Calculate end position for this line
+            int endPos = Math.min(pos + lineWidth, length);
+            
+            // Append line
+            wrapped.append(text.substring(pos, endPos));
+            
+            // Add newline if not last line
+            if (endPos < length) {
+                wrapped.append("\n");
+            }
+            
+            pos = endPos;
+        }
+        
+        return wrapped.toString();
     }
     
     /**
