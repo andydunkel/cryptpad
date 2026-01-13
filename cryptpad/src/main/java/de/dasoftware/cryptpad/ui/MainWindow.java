@@ -812,6 +812,8 @@ public class MainWindow extends JFrame implements IObserver {
             navigationTree.setSelectionPath(path);
             navigationTree.scrollPathToVisible(path);
             
+            initializeNewNodeEditor(title);
+            
             markDirty();
         }
     }
@@ -843,6 +845,8 @@ public class MainWindow extends JFrame implements IObserver {
             TreePath newPath = new TreePath(model.getTreeModel().getPathToRoot(newNode));
             navigationTree.setSelectionPath(newPath);
             navigationTree.scrollPathToVisible(newPath);
+            
+            initializeNewNodeEditor(title);
 
             markDirty();
         }
@@ -875,9 +879,22 @@ public class MainWindow extends JFrame implements IObserver {
             TreePath newPath = new TreePath(model.getTreeModel().getPathToRoot(newNode));
             navigationTree.setSelectionPath(newPath);
             navigationTree.scrollPathToVisible(newPath);
+            
+            initializeNewNodeEditor(title);
 
             markDirty();
         }
+    }
+    
+    /**
+     * Initializes the editor for a newly created node with a header template
+     * @param title The node title to use as header
+     */
+    private void initializeNewNodeEditor(String title) {
+        String header = "# " + title;
+        contentEditor.setText(header);
+        contentEditor.setCaretPosition(header.length());
+        contentEditor.requestFocusInWindow();
     }
     
     /**

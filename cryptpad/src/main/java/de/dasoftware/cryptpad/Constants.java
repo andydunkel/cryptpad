@@ -2,15 +2,12 @@ package de.dasoftware.cryptpad;
 
 /**
  * Application constants
- * 
- * @author DA-Software
- * @version 1.0.0
  */
 public final class Constants {
     
     // Application info
     public static final String APP_NAME = "DA-CryptPad";
-    public static final String APP_VERSION = "1.0.0";
+    public static final String APP_VERSION = "1.1.0";
     public static final String APP_VENDOR = "DA-Software";
     
     // File handling
