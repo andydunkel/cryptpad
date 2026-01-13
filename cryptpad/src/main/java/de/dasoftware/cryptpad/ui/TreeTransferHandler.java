@@ -169,6 +169,15 @@ public class TreeTransferHandler extends TransferHandler {
         EntryTreeNode oldParent = (EntryTreeNode) node.getParent();
         int oldIndex = oldParent.getIndex(node);
         
+        DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
+        
+        // Save expanded state of ALL affected subtrees (old parent, new parent, and moved node)
+        java.util.Set<EntryTreeNode> expandedNodes = new java.util.HashSet<>();
+        saveExpandedNodes(oldParent, treeModel, expandedNodes);
+        if (oldParent != newParent) {
+            saveExpandedNodes(newParent, treeModel, expandedNodes);
+        }
+        
         // Remove from old parent
         oldParent.remove(node);
         
@@ -187,15 +196,49 @@ public class TreeTransferHandler extends TransferHandler {
         }
         
         // Notify model
-        DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
         treeModel.nodeStructureChanged(oldParent);
         if (oldParent != newParent) {
             treeModel.nodeStructureChanged(newParent);
         }
         
-        // Expand the new parent
-        TreePath parentPath = new TreePath(treeModel.getPathToRoot(newParent));
-        tree.expandPath(parentPath);
+        // Restore expanded state of all affected nodes
+        restoreExpandedNodes(expandedNodes, treeModel);
+    }
+
+    /**
+     * Saves all expanded nodes in a subtree
+     * 
+     * @param node The root node to start from
+     * @param treeModel The tree model
+     * @param expandedNodes Set to store expanded nodes
+     */
+    private void saveExpandedNodes(EntryTreeNode node, DefaultTreeModel treeModel, 
+                                    java.util.Set<EntryTreeNode> expandedNodes) {
+        TreePath path = new TreePath(treeModel.getPathToRoot(node));
+        
+        if (tree.isExpanded(path)) {
+            expandedNodes.add(node);
+        }
+        
+        // Recursively check children
+        for (int i = 0; i < node.getChildCount(); i++) {
+            EntryTreeNode child = (EntryTreeNode) node.getChildAt(i);
+            saveExpandedNodes(child, treeModel, expandedNodes);
+        }
+    }
+
+    /**
+     * Restores expanded state after a move operation
+     * 
+     * @param expandedNodes Set of nodes that were expanded
+     * @param treeModel The tree model
+     */
+    private void restoreExpandedNodes(java.util.Set<EntryTreeNode> expandedNodes, 
+                                       DefaultTreeModel treeModel) {
+        for (EntryTreeNode node : expandedNodes) {
+            TreePath path = new TreePath(treeModel.getPathToRoot(node));
+            tree.expandPath(path);
+        }
     }
     
     /**
