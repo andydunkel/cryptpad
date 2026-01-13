@@ -184,6 +184,8 @@ public class MainWindow extends JFrame implements IObserver {
         contentEditor.setCodeFoldingEnabled(true);
         contentEditor.setAntiAliasingEnabled(true);
         contentEditor.setAutoIndentEnabled(true);
+        contentEditor.setLineWrap(true);
+        contentEditor.setWrapStyleWord(true); // Wrap at word boundaries, not mid-word
         contentEditor.setTabSize(4);
 
         // Apply theme based on settings
