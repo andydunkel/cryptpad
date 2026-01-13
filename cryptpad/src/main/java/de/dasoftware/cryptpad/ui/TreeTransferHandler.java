@@ -82,12 +82,7 @@ public class TreeTransferHandler extends TransferHandler {
             
             if (isNodeDescendant(draggedNode, target)) {
                 return false;
-            }
-            
-            // Don't allow dropping on root
-            if (target == model.getRootNode()) {
-                return false;
-            }
+            }                    
         }
         
         return true;
@@ -170,13 +165,21 @@ public class TreeTransferHandler extends TransferHandler {
      * @param index Index in parent's children, or -1 to append
      */
     private void moveNode(EntryTreeNode node, EntryTreeNode newParent, int index) {
-        // Remove from old parent
+        // Remember old parent and position
         EntryTreeNode oldParent = (EntryTreeNode) node.getParent();
+        int oldIndex = oldParent.getIndex(node);
+        
+        // Remove from old parent
         oldParent.remove(node);
         
+        // Adjust index if moving within same parent and target was after the removed node
+        if (oldParent == newParent && index > oldIndex) {
+            index--;
+        }
+        
         // Add to new parent
-        if (index == -1) {
-            // Drop on node (append as last child)
+        if (index == -1 || index > newParent.getChildCount()) {
+            // Drop on node (append as last child) or index out of bounds
             newParent.add(node);
         } else {
             // Drop between nodes
@@ -186,7 +189,9 @@ public class TreeTransferHandler extends TransferHandler {
         // Notify model
         DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
         treeModel.nodeStructureChanged(oldParent);
-        treeModel.nodeStructureChanged(newParent);
+        if (oldParent != newParent) {
+            treeModel.nodeStructureChanged(newParent);
+        }
         
         // Expand the new parent
         TreePath parentPath = new TreePath(treeModel.getPathToRoot(newParent));
