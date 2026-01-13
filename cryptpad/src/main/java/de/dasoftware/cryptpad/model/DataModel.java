@@ -18,15 +18,23 @@ public class DataModel implements IDataModel {
     private IXMLManager xmlManager;
     
     public DataModel() {
-        rootNode = new EntryTreeNode(Messages.getString("tree.rootnode"));
         observers = new ArrayList<>();
+        initializeNewDocument();
+        treeModel = new DefaultTreeModel(rootNode);
+    }
+    
+    /**
+     * Initializes a new empty document with default node
+     */
+    private void initializeNewDocument() {
+        rootNode = new EntryTreeNode(Messages.getString("tree.rootnode"));
         
-        // Add default node with better name
+        // Add default node with content
         EntryTreeNode defaultNode = new EntryTreeNode(Messages.getString("tree.defaultnode"));
         defaultNode.setContent(Messages.getString("tree.defaultcontent"));
         rootNode.add(defaultNode);
         
-        treeModel = new DefaultTreeModel(rootNode);
+        password = "";
     }
     
     /**
@@ -187,11 +195,11 @@ public class DataModel implements IDataModel {
     
     /**
      * Clears all data from the model
-     * Creates a new empty tree structure
+     * Creates a new empty tree structure with a default node
      */
     @Override
     public void clearModel() {
-        rootNode = new EntryTreeNode(Messages.getString("tree.rootnode"));
+        initializeNewDocument();
         treeModel.setRoot(rootNode);
         refreshObservers();
     }
