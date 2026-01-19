@@ -57,6 +57,8 @@ public class MainWindow extends JFrame implements IObserver {
     private JButton btnNewChild;
     private JButton btnEditNode;
     private JButton btnDeleteNode;
+    private JButton btnMoveUp;
+    private JButton btnMoveDown;    
     private JButton btnCut;
     private JButton btnCopy;
     private JButton btnPaste;
@@ -85,6 +87,8 @@ public class MainWindow extends JFrame implements IObserver {
     private JMenuItem menuItemPaste;
     private JMenuItem menuItemDeleteNode;
     private JMenuItem menuItemSettings;
+    private JMenuItem menuItemMoveUp;
+    private JMenuItem menuItemMoveDown;    
     
     // Encryption menu items
     private JMenuItem menuItemSetPassword;
@@ -101,6 +105,8 @@ public class MainWindow extends JFrame implements IObserver {
     private JMenuItem popupNewChild;
     private JMenuItem popupEditNode;
     private JMenuItem popupDeleteNode;
+    private JMenuItem popupMoveUp;
+    private JMenuItem popupMoveDown;    
     
     /**
      * Constructor
@@ -318,12 +324,19 @@ public class MainWindow extends JFrame implements IObserver {
             Messages.getString("tooltip.editnode"));
         btnDeleteNode = createToolBarButton(getThemedIcon("delete16.png"), 
             Messages.getString("tooltip.deletenode"));
+        btnMoveUp = createToolBarButton(getThemedIcon("move-up.png"), 
+                Messages.getString("tooltip.moveup"));
+            btnMoveDown = createToolBarButton(getThemedIcon("move-down.png"), 
+                Messages.getString("tooltip.movedown"));        
 
         toolBar.add(btnNewMainNode);
         toolBar.add(btnNewSibling);
         toolBar.add(btnNewChild);
         toolBar.add(btnEditNode);
         toolBar.add(btnDeleteNode);
+        toolBar.addSeparator();
+        toolBar.add(btnMoveUp);  
+        toolBar.add(btnMoveDown);        
         toolBar.addSeparator();
 
         // Edit operations
@@ -456,6 +469,20 @@ public class MainWindow extends JFrame implements IObserver {
             null
         );
         
+        menuItemMoveUp = createMenuItem(
+                Messages.getString("menu.edit.moveup"),
+                getThemedIcon("move-up.png"), 
+                Messages.getMnemonic("menu.edit.moveup.mnemonic"),
+                KeyStroke.getKeyStroke("control UP")
+            );
+
+            menuItemMoveDown = createMenuItem(
+                Messages.getString("menu.edit.movedown"),
+                getThemedIcon("move-down.png"), 
+                Messages.getMnemonic("menu.edit.movedown.mnemonic"),
+                KeyStroke.getKeyStroke("control DOWN")
+            );        
+        
         menuItemSettings = createMenuItem(
             Messages.getString("menu.edit.settings"),
             null, 
@@ -468,6 +495,8 @@ public class MainWindow extends JFrame implements IObserver {
         menuEdit.add(menuItemPaste);
         menuEdit.addSeparator();
         menuEdit.add(menuItemDeleteNode);
+        menuEdit.add(menuItemMoveUp);
+        menuEdit.add(menuItemMoveDown);        
         menuEdit.addSeparator();
         menuEdit.add(menuItemSettings);
         
@@ -621,8 +650,22 @@ public class MainWindow extends JFrame implements IObserver {
             Messages.getString("popup.deletenode"),
             getThemedIcon("delete16.png"), 
             (char)0, 
-            null
+            null            
         );
+
+        popupMoveUp = createMenuItem(
+                Messages.getString("popup.moveup"),
+                getThemedIcon("move-up.png"), 
+                (char)0, 
+                null
+            );
+            
+            popupMoveDown = createMenuItem(
+                Messages.getString("popup.movedown"),
+                getThemedIcon("move-down.png"), 
+                (char)0, 
+                null
+            );        
 
         treePopupMenu.add(popupNewMainNode);
         treePopupMenu.add(popupNewSibling);
@@ -630,6 +673,10 @@ public class MainWindow extends JFrame implements IObserver {
         treePopupMenu.addSeparator();
         treePopupMenu.add(popupEditNode);
         treePopupMenu.add(popupDeleteNode);
+        treePopupMenu.addSeparator();
+        treePopupMenu.add(popupMoveUp);
+        treePopupMenu.add(popupMoveDown);
+        
     }
     
     /**
@@ -702,6 +749,16 @@ public class MainWindow extends JFrame implements IObserver {
         menuItemCopy.addActionListener(this::onCopy);
         menuItemPaste.addActionListener(this::onPaste);
         menuItemDeleteNode.addActionListener(this::onDeleteNode);
+        btnMoveUp.addActionListener(this::onMoveUp);
+        btnMoveDown.addActionListener(this::onMoveDown);
+
+        // Auch bei Menu Items (nach menuItemDeleteNode):
+        menuItemMoveUp.addActionListener(this::onMoveUp);
+        menuItemMoveDown.addActionListener(this::onMoveDown);
+
+        // Und bei Popup Menu (nach popupDeleteNode):
+        popupMoveUp.addActionListener(this::onMoveUp);
+        popupMoveDown.addActionListener(this::onMoveDown);        
         
         // Menu items - Encryption
         menuItemSetPassword.addActionListener(this::onSetPassword);
@@ -1514,6 +1571,90 @@ public class MainWindow extends JFrame implements IObserver {
         int result = showSaveConfirmation();
         if (result != JOptionPane.CANCEL_OPTION) {
             openFile(file.getAbsolutePath());
+        }
+    }
+    
+    /**
+     * Handler for Move Up
+     */
+    private void onMoveUp(ActionEvent e) {
+        TreePath path = navigationTree.getSelectionPath();
+        if (path == null) {
+            JOptionPane.showMessageDialog(this,
+                    Messages.getString("dialog.noselection.message"),
+                    Messages.getString("dialog.noselection.title"),
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        EntryTreeNode node = (EntryTreeNode) path.getLastPathComponent();
+        EntryTreeNode parent = (EntryTreeNode) node.getParent();
+        
+        if (parent == null) {
+            return; // Root node cannot be moved
+        }
+
+        int index = parent.getIndex(node);
+        
+        if (index > 0) {
+            // Remove node from current position
+            parent.remove(index);
+            
+            // Insert at new position (one up)
+            parent.insert(node, index - 1);
+            
+            // Update tree model
+            DefaultTreeModel treeModel = (DefaultTreeModel) navigationTree.getModel();
+            treeModel.nodeStructureChanged(parent);
+            
+            // Restore selection
+            TreePath newPath = new TreePath(treeModel.getPathToRoot(node));
+            navigationTree.setSelectionPath(newPath);
+            navigationTree.scrollPathToVisible(newPath);
+            
+            markDirty();
+        }
+    }
+    
+    /**
+     * Handler for Move Down
+     */
+    private void onMoveDown(ActionEvent e) {
+        TreePath path = navigationTree.getSelectionPath();
+        if (path == null) {
+            JOptionPane.showMessageDialog(this,
+                    Messages.getString("dialog.noselection.message"),
+                    Messages.getString("dialog.noselection.title"),
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        EntryTreeNode node = (EntryTreeNode) path.getLastPathComponent();
+        EntryTreeNode parent = (EntryTreeNode) node.getParent();
+        
+        if (parent == null) {
+            return; // Root node cannot be moved
+        }
+
+        int index = parent.getIndex(node);
+        
+        if (index < parent.getChildCount() - 1) {
+            // Remove node from current position
+            parent.remove(index);
+            
+            // Insert at new position (one down)
+            parent.insert(node, index + 1);
+            
+            // Update tree model
+            DefaultTreeModel treeModel = (DefaultTreeModel) navigationTree.getModel();
+            treeModel.nodeStructureChanged(parent);
+            
+            // Restore selection
+            TreePath newPath = new TreePath(treeModel.getPathToRoot(node));
+            navigationTree.setSelectionPath(newPath);
+            navigationTree.scrollPathToVisible(newPath);
+            
+            markDirty();
         }
     }
 }
