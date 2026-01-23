@@ -1266,18 +1266,21 @@ public class MainWindow extends JFrame implements IObserver {
         return result;
     }
     
-    /**
-     * Creates a new file
-     */
     private void createNewFile() {
         model.clearModel();
+        model.setPassword("");
+        
+        EntryTreeNode defaultNode = new EntryTreeNode(Messages.getString("tree.defaultnode"));
+        defaultNode.setContent(Messages.getString("tree.defaultcontent"));
+        model.getRootNode().add(defaultNode);
+        model.refreshObservers();
+        
         contentEditor.setText("");
         saved = false;
         dirty = false;
         savedFileName = "";
         updateTitle();
         
-        // Select first node after creating new file
         selectFirstNode();
     }
     

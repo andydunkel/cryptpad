@@ -20,6 +20,7 @@ public class DataModel implements IDataModel {
     public DataModel() {
         observers = new ArrayList<>();
         initializeNewDocument();
+        addDefaultNode(); // Default-Node für neues Dokument
         treeModel = new DefaultTreeModel(rootNode);
     }
     
@@ -28,14 +29,18 @@ public class DataModel implements IDataModel {
      */
     private void initializeNewDocument() {
         rootNode = new EntryTreeNode(Messages.getString("tree.rootnode"));
-        
-        // Add default node with content
+        password = "";
+    }
+    
+    /**
+     * Adds the default "Notes" node (only for new documents)
+     */
+    private void addDefaultNode() {
         EntryTreeNode defaultNode = new EntryTreeNode(Messages.getString("tree.defaultnode"));
         defaultNode.setContent(Messages.getString("tree.defaultcontent"));
         rootNode.add(defaultNode);
-        
-        password = "";
     }
+
     
     /**
      * Saves the data to an encrypted file
@@ -194,13 +199,15 @@ public class DataModel implements IDataModel {
     }
     
     /**
-     * Clears all data from the model
-     * Creates a new empty tree structure with a default node
-     */
-    @Override
-    public void clearModel() {
-        initializeNewDocument();
-        treeModel.setRoot(rootNode);
-        refreshObservers();
-    }
+	 * Clears all data from the model
+	 * Creates a new empty tree structure (without default node)
+	 */
+	@Override
+	public void clearModel() {
+	    String savedPassword = this.password;
+	    initializeNewDocument();
+	    treeModel.setRoot(rootNode);
+	    this.password = savedPassword;
+	    refreshObservers();
+	}
 }
