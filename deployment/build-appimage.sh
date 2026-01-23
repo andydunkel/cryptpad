@@ -2,7 +2,7 @@
 
 # Configuration
 APP_NAME="DA-CryptPad"
-VERSION="1.0.0"
+VERSION="1.1.0"
 LINUX_DIR="linux"
 JAR_FILE="$LINUX_DIR/cryptpad.jar"
 JRE_DIR="$LINUX_DIR/jre"
