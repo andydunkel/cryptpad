@@ -25,7 +25,7 @@ Pre-built installers for Windows, Linux, and macOS are available at:
 
 ## Building from Source
 ```bash
-git clone https://github.com/YOUR_USERNAME/cryptpad.git
+git clone https://github.com/andydunkel/cryptpad.git
 cd cryptpad
 mvn clean package
 ```
