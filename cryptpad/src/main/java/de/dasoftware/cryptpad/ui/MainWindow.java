@@ -4,6 +4,8 @@ import de.dasoftware.cryptpad.Constants;
 import de.dasoftware.cryptpad.model.EntryTreeNode;
 import de.dasoftware.cryptpad.model.IDataModel;
 import de.dasoftware.cryptpad.model.IObserver;
+import de.dasoftware.cryptpad.model.SearchResult;
+import de.dasoftware.cryptpad.service.SearchService;
 import de.dasoftware.cryptpad.settings.AppSettings;
 import de.dasoftware.updater.UpdaterData;
 import de.dasoftware.updater.ui.UpdaterDialog;
@@ -19,6 +21,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.Insets;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -97,6 +100,14 @@ public class MainWindow extends JFrame implements IObserver {
     
     // Help menu items
     private JMenuItem menuItemAbout;
+    
+    // Search components
+    private JTextField searchField;
+    private JButton btnClearSearch;    
+
+    private SearchResultPanel searchResultPanel;
+    private JSplitPane rightSplitPane;
+    private SearchService searchService;    
     
     // Popup menu for tree
     private JPopupMenu treePopupMenu;
@@ -183,6 +194,11 @@ public class MainWindow extends JFrame implements IObserver {
         
         treeScrollPane = new JScrollPane(navigationTree);
         treeScrollPane.setMinimumSize(new Dimension(200, 300));
+
+        // Initialize search components
+        searchService = new SearchService();
+        searchResultPanel = new SearchResultPanel();
+        searchResultPanel.setVisible(false);
         
         // Initialize editor with Markdown syntax highlighting
         contentEditor = new RSyntaxTextArea();
@@ -217,8 +233,13 @@ public class MainWindow extends JFrame implements IObserver {
         editorScrollPane.setLineNumbersEnabled(true);
         editorScrollPane.setFoldIndicatorEnabled(true);        
         
-        // Initialize split pane
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, editorScrollPane);
+        // Right side: search results + editor in vertical split
+        rightSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, searchResultPanel, editorScrollPane);
+        rightSplitPane.setResizeWeight(0.0);
+        rightSplitPane.setDividerSize(5);
+
+        // Initialize main split pane
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, rightSplitPane);
         splitPane.setDividerLocation(240);
         
         // Initialize tree popup menu
@@ -356,6 +377,24 @@ public class MainWindow extends JFrame implements IObserver {
         btnAbout = createToolBarButton(getThemedIcon("Info.png"), 
             Messages.getString("tooltip.about", Constants.APP_NAME));
         toolBar.add(btnAbout);
+        
+        // Search field (right-aligned with glue)
+        toolBar.add(Box.createHorizontalGlue());
+        
+        JLabel searchLabel = new JLabel(Messages.getString("toolbar.search"));
+        searchLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+        toolBar.add(searchLabel);
+        
+        searchField = new JTextField(15);
+        searchField.setMaximumSize(new Dimension(200, 28));
+        searchField.setToolTipText(Messages.getString("tooltip.search"));
+        toolBar.add(searchField);
+        
+        btnClearSearch = new JButton("✕");
+        btnClearSearch.setToolTipText(Messages.getString("tooltip.clearsearch"));
+        btnClearSearch.setFocusable(false);
+        btnClearSearch.setMargin(new Insets(2, 6, 2, 6));
+        toolBar.add(btnClearSearch);        
     }
     
     /**
@@ -775,6 +814,78 @@ public class MainWindow extends JFrame implements IObserver {
         popupNewChild.addActionListener(this::onNewChildNode);
         popupEditNode.addActionListener(this::onEditNode);
         popupDeleteNode.addActionListener(this::onDeleteNode);
+        
+        // Search field listeners
+        btnClearSearch.addActionListener(e -> {
+            searchField.setText("");
+            searchResultPanel.clearResults();
+            searchResultPanel.setVisible(false);
+            navigationTree.requestFocusInWindow();
+        });
+        
+        // ESC clears search and returns focus to tree
+        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ESCAPE) {
+                    searchField.setText("");
+                    navigationTree.requestFocusInWindow();
+                }
+            }
+        });
+        
+        // Incremental search on text change
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                performSearch();
+            }
+            
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                performSearch();
+            }
+            
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                performSearch();
+            }
+        });
+        
+        // Search result selection - navigate to node
+        searchResultPanel.getResultList().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                SearchResult selected = searchResultPanel.getResultList().getSelectedValue();
+                if (selected != null) {
+                    navigateToNode(selected.getNode());
+                }
+            }
+        });       
+        
+        // ESC in result list closes search
+        searchResultPanel.getResultList().addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ESCAPE) {
+                    searchField.setText("");
+                    searchResultPanel.clearResults();
+                    searchResultPanel.setVisible(false);
+                    rightSplitPane.setDividerLocation(0);
+                    navigationTree.requestFocusInWindow();
+                }
+            }
+        });        
+        
+        // Ctrl+F focuses search field
+        KeyStroke ctrlF = KeyStroke.getKeyStroke("control F");
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ctrlF, "focusSearch");
+        getRootPane().getActionMap().put("focusSearch", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchField.requestFocusInWindow();
+                searchField.selectAll();
+            }
+        });        
     }
     
     // ========== Event Handlers ==========
@@ -1656,5 +1767,51 @@ public class MainWindow extends JFrame implements IObserver {
             
             markDirty();
         }
+    }
+    
+    /**
+     * Performs the search and updates results panel
+     */
+    private void performSearch() {
+        String searchText = searchField.getText().trim();
+        
+        if (searchText.isEmpty()) {
+            searchResultPanel.clearResults();
+            searchResultPanel.setVisible(false);
+            rightSplitPane.setDividerLocation(0);
+            return;
+        }
+        
+        // Minimum 2 characters to search
+        if (searchText.length() < 2) {
+            searchResultPanel.clearResults();
+            searchResultPanel.setVisible(false);
+            return;
+        }
+        
+        // Perform search
+        java.util.List<SearchResult> results = searchService.search(model.getRootNode(), searchText);
+        
+        // Show results panel
+        searchResultPanel.setResults(results, searchText);
+        searchResultPanel.setVisible(true);
+        rightSplitPane.setDividerLocation(300);
+    }
+    
+    /**
+     * Navigates to a specific node in the tree
+     */
+    private void navigateToNode(de.dasoftware.cryptpad.model.EntryTreeNode node) {
+        if (node == null) {
+            return;
+        }
+        
+        // Build path to node
+        TreePath path = new TreePath(model.getTreeModel().getPathToRoot(node));
+        
+        // Expand and select
+        navigationTree.expandPath(path.getParentPath());
+        navigationTree.setSelectionPath(path);
+        navigationTree.scrollPathToVisible(path);
     }
 }
