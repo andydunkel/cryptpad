@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, StdCtrls,
-  Clipbrd, LCLProc,
+  ComCtrls, ImgList, Clipbrd, LCLProc,
   umessages, ucryptpadcrypto, upasswordpromptform, uencryptpasswordform;
 
 type
@@ -16,6 +16,19 @@ type
 
   TEncryptionForm = class(TForm)
     FEditor: TMemo;
+    FToolBar: TToolBar;
+    FToolImages: TImageList;
+    ToolButtonNew: TToolButton;
+    ToolButtonOpen: TToolButton;
+    ToolButtonSave: TToolButton;
+    ToolButtonSep1: TToolButton;
+    ToolButtonCut: TToolButton;
+    ToolButtonCopy: TToolButton;
+    ToolButtonPaste: TToolButton;
+    ToolButtonSep2: TToolButton;
+    ToolButtonEncrypt: TToolButton;
+    ToolButtonSep3: TToolButton;
+    ToolButtonExit: TToolButton;
     MainMenu1: TMainMenu;
     MenuFile: TMenuItem;
     MenuFileNew: TMenuItem;
@@ -87,6 +100,15 @@ end;
 
 procedure TEncryptionForm.ApplyTranslations;
 begin
+  ToolButtonNew.Hint := GetString('encryption.tooltip.new');
+  ToolButtonOpen.Hint := GetString('encryption.tooltip.open');
+  ToolButtonSave.Hint := GetString('encryption.tooltip.save');
+  ToolButtonCut.Hint := GetString('encryption.tooltip.cut');
+  ToolButtonCopy.Hint := GetString('encryption.tooltip.copy');
+  ToolButtonPaste.Hint := GetString('encryption.tooltip.paste');
+  ToolButtonEncrypt.Hint := GetString('encryption.tooltip.encrypt');
+  ToolButtonExit.Hint := GetString('encryption.tooltip.exit');
+
   MenuFile.Caption := GetString('encryption.menu.file');
   MenuFileNew.Caption := GetString('encryption.menu.file.new');
   MenuFileNew.ShortCut := TextToShortCut('Ctrl+N');
