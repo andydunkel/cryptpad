@@ -27,7 +27,10 @@ type
     ActionDelete: TAction;
     ActionExit: TAction;
     ActionList: TActionList;
+    ActionMoveDown: TAction;
+    ActionMoveUp: TAction;
     ActionNew: TAction;
+    ActionNewSibling: TAction;
     ActionOpen: TAction;
     ActionPaste: TAction;
     ActionPasswordGen: TAction;
@@ -58,9 +61,12 @@ type
     MenuEditPaste: TMenuItem;
     MenuNode: TMenuItem;
     MenuNodeAddSibling: TMenuItem;
+    MenuNodeNewSibling: TMenuItem;
     MenuNodeAddChild: TMenuItem;
     MenuNodeRename: TMenuItem;
     MenuNodeDelete: TMenuItem;
+    MenuNodeMoveUp: TMenuItem;
+    MenuNodeMoveDown: TMenuItem;
     MenuTools: TMenuItem;
     MenuToolsPasswordGen: TMenuItem;
     MenuToolsSearch: TMenuItem;
@@ -80,9 +86,13 @@ type
     ToolButtonPaste: TToolButton;
     ToolButtonSep3: TToolButton;
     ToolButtonAddSibling: TToolButton;
+    ToolButtonNewSibling: TToolButton;
     ToolButtonAddChild: TToolButton;
     ToolButtonDelete: TToolButton;
     ToolButtonEncrypt: TToolButton;
+    ToolButtonSep4: TToolButton;
+    ToolButtonMoveUp: TToolButton;
+    ToolButtonMoveDown: TToolButton;
 
     procedure ActionAboutExecute(Sender: TObject);
     procedure ActionCutExecute(Sender: TObject);
@@ -94,9 +104,12 @@ type
     procedure ActionSaveAsExecute(Sender: TObject);
     procedure ActionExitExecute(Sender: TObject);
     procedure ActionAddSiblingExecute(Sender: TObject);
+    procedure ActionNewSiblingExecute(Sender: TObject);
     procedure ActionAddChildExecute(Sender: TObject);
     procedure ActionRenameExecute(Sender: TObject);
     procedure ActionDeleteExecute(Sender: TObject);
+    procedure ActionMoveUpExecute(Sender: TObject);
+    procedure ActionMoveDownExecute(Sender: TObject);
     procedure ActionSettingsExecute(Sender: TObject);
     procedure ActionTextEncryptionExecute(Sender: TObject);
     procedure ActionPasswordGenExecute(Sender: TObject);
@@ -201,11 +214,25 @@ end;
 procedure TMainForm.ApplyTranslations;
 begin
   ActionNew.Hint := GetString('tooltip.new');
+  ActionNew.ShortCut := TextToShortCut('Ctrl+N');
   ActionOpen.Hint := GetString('tooltip.open');
+  ActionOpen.ShortCut := TextToShortCut('Ctrl+O');
   ActionSave.Hint := GetString('tooltip.save');
-  ActionAddSibling.Hint := GetString('tooltip.newsibling');
+  ActionSave.ShortCut := TextToShortCut('Ctrl+S');
+  ActionSaveAs.ShortCut := TextToShortCut('Ctrl+Shift+S');
+  // ActionAddSibling always inserts at root level (like Java's onNewMainNode),
+  // so it uses the "main node" tooltip; ActionNewSibling is the true sibling insert.
+  ActionAddSibling.Hint := GetString('tooltip.newmainnode');
+  ActionNewSibling.Caption := GetString('popup.newsibling');
+  ActionNewSibling.Hint := GetString('tooltip.newsibling');
   ActionAddChild.Hint := GetString('tooltip.newchild');
   ActionDelete.Hint := GetString('tooltip.deletenode');
+  ActionMoveUp.Caption := GetString('menu.edit.moveup');
+  ActionMoveUp.Hint := GetString('tooltip.moveup');
+  ActionMoveUp.ShortCut := TextToShortCut('Ctrl+Up');
+  ActionMoveDown.Caption := GetString('menu.edit.movedown');
+  ActionMoveDown.Hint := GetString('tooltip.movedown');
+  ActionMoveDown.ShortCut := TextToShortCut('Ctrl+Down');
 
   ActionCut.Caption := GetString('menu.edit.cut');
   ActionCut.Hint := GetString('tooltip.cut');
@@ -505,6 +532,25 @@ begin
   LoadNodeIntoEditor(newNode);
 end;
 
+procedure TMainForm.ActionNewSiblingExecute(Sender: TObject);
+var
+  title: string;
+  newNode: TEntryTreeNode;
+begin
+  if FSelectedModelNode = nil then
+  begin
+    MessageDlg(GetString('dialog.noselection.message'), mtWarning, [mbOK], 0);
+    Exit;
+  end;
+
+  if not PromptText(GetString('nodetitle.new.title'), GetString('nodetitle.label'), '', title) then Exit;
+  if title = '' then Exit;
+
+  newNode := FModel.AddNode(FSelectedModelNode.Parent, title);
+  RebuildTree;
+  LoadNodeIntoEditor(newNode);
+end;
+
 procedure TMainForm.ActionAddChildExecute(Sender: TObject);
 var
   title: string;
@@ -545,6 +591,52 @@ begin
   FSelectedModelNode := nil;
   RebuildTree;
   LoadNodeIntoEditor(nil);
+end;
+
+procedure TMainForm.ActionMoveUpExecute(Sender: TObject);
+var
+  parentNode, node: TEntryTreeNode;
+  idx: Integer;
+begin
+  if FSelectedModelNode = nil then
+  begin
+    Exit;
+  end;
+
+  node := FSelectedModelNode;
+  parentNode := node.Parent;
+  if parentNode = nil then Exit;
+
+  idx := parentNode.IndexOfChild(node);
+  if idx <= 0 then Exit;
+
+  parentNode.Remove(node);
+  parentNode.Insert(idx - 1, node);
+  RebuildTree;
+  SelectModelNode(node);
+end;
+
+procedure TMainForm.ActionMoveDownExecute(Sender: TObject);
+var
+  parentNode, node: TEntryTreeNode;
+  idx: Integer;
+begin
+  if FSelectedModelNode = nil then
+  begin
+    Exit;
+  end;
+
+  node := FSelectedModelNode;
+  parentNode := node.Parent;
+  if parentNode = nil then Exit;
+
+  idx := parentNode.IndexOfChild(node);
+  if (idx < 0) or (idx >= parentNode.ChildCount - 1) then Exit;
+
+  parentNode.Remove(node);
+  parentNode.Insert(idx + 1, node);
+  RebuildTree;
+  SelectModelNode(node);
 end;
 
 procedure TMainForm.ActionSettingsExecute(Sender: TObject);
