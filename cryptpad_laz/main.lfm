@@ -19,23 +19,17 @@ object MainForm: TMainForm
     object ToolButtonNew: TToolButton
       Left = 1
       Top = 2
-      Caption = 'ToolButtonNew'
-      ImageIndex = 0
-      OnClick = DoNew
+      Action = ActionNew
     end
     object ToolButtonOpen: TToolButton
       Left = 24
       Top = 2
-      Caption = 'ToolButtonOpen'
-      ImageIndex = 1
-      OnClick = DoOpen
+      Action = ActionOpen
     end
     object ToolButtonSave: TToolButton
       Left = 47
       Top = 2
-      Caption = 'ToolButtonSave'
-      ImageIndex = 2
-      OnClick = DoSave
+      Action = ActionSave
     end
     object ToolButtonSep1: TToolButton
       Left = 70
@@ -44,40 +38,47 @@ object MainForm: TMainForm
       Caption = 'ToolButtonSep1'
       Style = tbsSeparator
     end
+    object ToolButtonCut: TToolButton
+      Left = 186
+      Top = 2
+      Action = ActionCut
+    end
+    object ToolButtonCopy: TToolButton
+      Left = 209
+      Top = 2
+      Action = ActionCopy
+    end
+    object ToolButtonPaste: TToolButton
+      Left = 232
+      Top = 2
+      Action = ActionPaste
+    end
+    object ToolButtonSep3: TToolButton
+      Left = 147
+      Height = 22
+      Top = 2
+      Caption = 'ToolButtonSep3'
+      Style = tbsSeparator
+    end
     object ToolButtonAddSibling: TToolButton
       Left = 78
       Top = 2
-      Caption = 'ToolButtonAddSibling'
-      ImageIndex = 3
-      OnClick = DoAddSiblingNode
+      Action = ActionAddSibling
     end
     object ToolButtonAddChild: TToolButton
       Left = 101
       Top = 2
-      Caption = 'ToolButtonAddChild'
-      ImageIndex = 4
-      OnClick = DoAddChildNode
+      Action = ActionAddChild
     end
     object ToolButtonDelete: TToolButton
       Left = 124
       Top = 2
-      Caption = 'ToolButtonDelete'
-      ImageIndex = 5
-      OnClick = DoDeleteNode
-    end
-    object ToolButtonSep2: TToolButton
-      Left = 147
-      Height = 22
-      Top = 2
-      Caption = 'ToolButtonSep2'
-      Style = tbsSeparator
+      Action = ActionDelete
     end
     object ToolButtonEncrypt: TToolButton
       Left = 155
       Top = 2
-      Caption = 'ToolButtonEncrypt'
-      ImageIndex = 6
-      OnClick = DoTextEncryption
+      Action = ActionTextEncryption
     end
     object ToolButton1: TToolButton
       Left = 178
@@ -87,9 +88,16 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton2: TToolButton
-      Left = 186
+      Left = 263
       Top = 2
       Action = ActionAbout
+    end
+    object ToolButton3: TToolButton
+      Left = 255
+      Height = 22
+      Top = 2
+      Caption = 'ToolButton3'
+      Style = tbsSeparator
     end
   end
   object FTreeView: TTreeView
@@ -101,8 +109,10 @@ object MainForm: TMainForm
     DragMode = dmAutomatic
     Images = FToolImages
     TabOrder = 1
+    OnCollapsed = TreeCollapsed
     OnDragDrop = TreeDragDrop
     OnDragOver = TreeDragOver
+    OnExpanded = TreeExpanded
     OnSelectionChanged = TreeSelectionChanged
   end
   object FSplitter: TSplitter
@@ -125,11 +135,10 @@ object MainForm: TMainForm
     ParentColor = False
     ParentFont = False
     TabOrder = 2
-    Gutter.Width = 55
+    Gutter.Width = 70
     Gutter.MouseActions = <>
     RightGutter.Width = 0
     RightGutter.MouseActions = <>
-    Keystrokes = <>
     MouseActions = <>
     MouseTextActions = <>
     MouseSelActions = <>
@@ -164,7 +173,8 @@ object MainForm: TMainForm
         MarkupInfo.Foreground = clNone
       end
       object SynGutterLineNumber1: TSynGutterLineNumber
-        Width = 15
+        Width = 30
+        Visible = True
         MouseActions = <>
         MarkupInfo.Background = clBtnFace
         MarkupInfo.Foreground = clNone
@@ -357,68 +367,64 @@ object MainForm: TMainForm
     object MenuFile: TMenuItem
       Caption = '&File'
       object MenuFileNew: TMenuItem
-        Caption = '&New'
-        ImageIndex = 0
-        OnClick = DoNew
+        Action = ActionNew
       end
       object MenuFileOpen: TMenuItem
-        Caption = '&Open...'
-        ImageIndex = 1
-        OnClick = DoOpen
+        Action = ActionOpen
       end
       object MenuFileSave: TMenuItem
-        Caption = '&Save'
-        ImageIndex = 2
-        OnClick = DoSave
+        Action = ActionSave
       end
       object MenuFileSaveAs: TMenuItem
-        Caption = 'Save &As...'
-        OnClick = DoSaveAs
+        Action = ActionSaveAs
       end
       object MenuFileSep1: TMenuItem
         Caption = '-'
       end
       object MenuFileExit: TMenuItem
-        Caption = 'E&xit'
-        OnClick = MenuFileExitClick
+        Action = ActionExit
+      end
+    end
+    object MenuEdit: TMenuItem
+      Caption = '&Edit'
+      object MenuEditCut: TMenuItem
+        Action = ActionCut
+      end
+      object MenuEditCopy: TMenuItem
+        Action = ActionCopy
+      end
+      object MenuEditPaste: TMenuItem
+        Action = ActionPaste
       end
     end
     object MenuNode: TMenuItem
       Caption = '&Node'
       object MenuNodeAddSibling: TMenuItem
-        Caption = 'Add &Sibling Node'
-        OnClick = DoAddSiblingNode
+        Action = ActionAddSibling
       end
       object MenuNodeAddChild: TMenuItem
-        Caption = 'Add &Child Node'
-        OnClick = DoAddChildNode
+        Action = ActionAddChild
       end
       object MenuNodeRename: TMenuItem
-        Caption = '&Rename Node'
-        OnClick = DoRenameNode
+        Action = ActionRename
       end
       object MenuNodeDelete: TMenuItem
-        Caption = '&Delete Node'
-        OnClick = DoDeleteNode
+        Action = ActionDelete
       end
     end
     object MenuTools: TMenuItem
       Caption = '&Tools'
       object MenuToolsPasswordGen: TMenuItem
-        Caption = 'MenuToolsPasswordGen'
-        OnClick = DoPasswordGenerator
+        Action = ActionPasswordGen
       end
       object MenuToolsSearch: TMenuItem
-        Caption = 'MenuToolsSearch'
-        OnClick = DoSearch
+        Action = ActionSearch
       end
       object MenuToolsSettings: TMenuItem
-        Caption = 'MenuToolsSettings'
-        OnClick = DoSettings
+        Action = ActionSettings
       end
       object MenuToolsTextEncryption: TMenuItem
-        Caption = 'MenuToolsTextEncryption'
-        OnClick = DoTextEncryption
+        Action = ActionTextEncryption
       end
     end
     object MenuHelp: TMenuItem
@@ -442,8 +448,83 @@ object MainForm: TMainForm
   end
   object ActionList: TActionList
     Images = FToolImages
-    Left = 408
-    Top = 179
+    Left = 416
+    Top = 176
+    object ActionNew: TAction
+      Caption = '&New'
+      ImageIndex = 0
+      OnExecute = ActionNewExecute
+    end
+    object ActionOpen: TAction
+      Caption = '&Open...'
+      ImageIndex = 1
+      OnExecute = ActionOpenExecute
+    end
+    object ActionSave: TAction
+      Caption = '&Save'
+      ImageIndex = 2
+      OnExecute = ActionSaveExecute
+    end
+    object ActionSaveAs: TAction
+      Caption = 'Save &As...'
+      OnExecute = ActionSaveAsExecute
+    end
+    object ActionExit: TAction
+      Caption = 'E&xit'
+      ImageIndex = 10
+      OnExecute = ActionExitExecute
+    end
+    object ActionCut: TAction
+      Caption = 'Cu&t'
+      ImageIndex = 9
+      OnExecute = ActionCutExecute
+    end
+    object ActionCopy: TAction
+      Caption = '&Copy'
+      ImageIndex = 8
+      OnExecute = ActionCopyExecute
+    end
+    object ActionPaste: TAction
+      Caption = '&Paste'
+      ImageIndex = 17
+      OnExecute = ActionPasteExecute
+    end
+    object ActionAddSibling: TAction
+      Caption = 'Add &Sibling Node'
+      ImageIndex = 3
+      OnExecute = ActionAddSiblingExecute
+    end
+    object ActionAddChild: TAction
+      Caption = 'Add &Child Node'
+      ImageIndex = 4
+      OnExecute = ActionAddChildExecute
+    end
+    object ActionRename: TAction
+      Caption = '&Rename Node'
+      OnExecute = ActionRenameExecute
+    end
+    object ActionDelete: TAction
+      Caption = '&Delete Node'
+      ImageIndex = 5
+      OnExecute = ActionDeleteExecute
+    end
+    object ActionPasswordGen: TAction
+      Caption = 'ActionPasswordGen'
+      OnExecute = ActionPasswordGenExecute
+    end
+    object ActionSearch: TAction
+      Caption = 'ActionSearch'
+      OnExecute = ActionSearchExecute
+    end
+    object ActionSettings: TAction
+      Caption = 'ActionSettings'
+      OnExecute = ActionSettingsExecute
+    end
+    object ActionTextEncryption: TAction
+      Caption = 'ActionTextEncryption'
+      ImageIndex = 6
+      OnExecute = ActionTextEncryptionExecute
+    end
     object ActionAbout: TAction
       Caption = '&About'
       ImageIndex = 20

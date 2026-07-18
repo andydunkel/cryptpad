@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
-  ExtCtrls, SynEdit, ImgList, ActnList, uabout,
+  ExtCtrls, SynEdit, ImgList, ActnList, LCLProc, uabout,
   {$IFDEF WINDOWS}Windows,{$ENDIF}
   uentrytreenode, udatamodel, uxmlmanager, umessages, uappsettings,
   usynhighlightermarkdown,
@@ -20,7 +20,23 @@ type
 
   TMainForm = class(TForm)
     ActionAbout: TAction;
+    ActionAddChild: TAction;
+    ActionAddSibling: TAction;
+    ActionCopy: TAction;
+    ActionCut: TAction;
+    ActionDelete: TAction;
+    ActionExit: TAction;
     ActionList: TActionList;
+    ActionNew: TAction;
+    ActionOpen: TAction;
+    ActionPaste: TAction;
+    ActionPasswordGen: TAction;
+    ActionRename: TAction;
+    ActionSave: TAction;
+    ActionSaveAs: TAction;
+    ActionSearch: TAction;
+    ActionSettings: TAction;
+    ActionTextEncryption: TAction;
     FEditor: TSynEdit;
     FOpenDialog: TOpenDialog;
     FSaveDialog: TSaveDialog;
@@ -36,6 +52,10 @@ type
     MenuFileSaveAs: TMenuItem;
     MenuFileSep1: TMenuItem;
     MenuFileExit: TMenuItem;
+    MenuEdit: TMenuItem;
+    MenuEditCut: TMenuItem;
+    MenuEditCopy: TMenuItem;
+    MenuEditPaste: TMenuItem;
     MenuNode: TMenuItem;
     MenuNodeAddSibling: TMenuItem;
     MenuNodeAddChild: TMenuItem;
@@ -50,36 +70,44 @@ type
     MenuHelpAbout: TMenuItem;
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
     ToolButtonNew: TToolButton;
     ToolButtonOpen: TToolButton;
     ToolButtonSave: TToolButton;
     ToolButtonSep1: TToolButton;
+    ToolButtonCut: TToolButton;
+    ToolButtonCopy: TToolButton;
+    ToolButtonPaste: TToolButton;
+    ToolButtonSep3: TToolButton;
     ToolButtonAddSibling: TToolButton;
     ToolButtonAddChild: TToolButton;
     ToolButtonDelete: TToolButton;
-    ToolButtonSep2: TToolButton;
     ToolButtonEncrypt: TToolButton;
 
     procedure ActionAboutExecute(Sender: TObject);
+    procedure ActionCutExecute(Sender: TObject);
+    procedure ActionCopyExecute(Sender: TObject);
+    procedure ActionPasteExecute(Sender: TObject);
+    procedure ActionNewExecute(Sender: TObject);
+    procedure ActionOpenExecute(Sender: TObject);
+    procedure ActionSaveExecute(Sender: TObject);
+    procedure ActionSaveAsExecute(Sender: TObject);
+    procedure ActionExitExecute(Sender: TObject);
+    procedure ActionAddSiblingExecute(Sender: TObject);
+    procedure ActionAddChildExecute(Sender: TObject);
+    procedure ActionRenameExecute(Sender: TObject);
+    procedure ActionDeleteExecute(Sender: TObject);
+    procedure ActionSettingsExecute(Sender: TObject);
+    procedure ActionTextEncryptionExecute(Sender: TObject);
+    procedure ActionPasswordGenExecute(Sender: TObject);
+    procedure ActionSearchExecute(Sender: TObject);
+
     procedure TreeSelectionChanged(Sender: TObject);
+    procedure TreeExpanded(Sender: TObject; Node: TTreeNode);
+    procedure TreeCollapsed(Sender: TObject; Node: TTreeNode);
     procedure EditorChange(Sender: TObject);
     procedure TreeDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
     procedure TreeDragDrop(Sender, Source: TObject; X, Y: Integer);
-
-    procedure DoNew(Sender: TObject);
-    procedure DoOpen(Sender: TObject);
-    procedure DoSave(Sender: TObject);
-    procedure DoSaveAs(Sender: TObject);
-
-    procedure DoAddSiblingNode(Sender: TObject);
-    procedure DoAddChildNode(Sender: TObject);
-    procedure DoRenameNode(Sender: TObject);
-    procedure DoDeleteNode(Sender: TObject);
-    procedure DoSettings(Sender: TObject);
-    procedure DoTextEncryption(Sender: TObject);
-    procedure DoPasswordGenerator(Sender: TObject);
-    procedure DoSearch(Sender: TObject);
-    procedure MenuFileExitClick(Sender: TObject);
   private
     FModel: TDataModel;
     FCurrentFileName: string;
@@ -89,11 +117,11 @@ type
     // created and assigned in code instead (see Create).
     FMarkdownHighlighter: TSynMarkdownSyn;
 
-    procedure ApplyToolBarHints;
     procedure ApplyTranslations;
 
     procedure RebuildTree;
     procedure PopulateTreeNode(ParentTVNode: TTreeNode; ModelNode: TEntryTreeNode);
+    procedure SyncNodeIcons(TVNode: TTreeNode);
     function GetSelectedTVModelNode(TVNode: TTreeNode): TEntryTreeNode;
     function IsAncestor(Ancestor, Node: TEntryTreeNode): Boolean;
     function PromptText(const ATitle, APrompt, ADefault: string; out AValue: string): Boolean;
@@ -151,7 +179,13 @@ begin
   FMarkdownHighlighter := TSynMarkdownSyn.Create(Self);
   FEditor.Highlighter := FMarkdownHighlighter;
 
-  ApplyToolBarHints;
+  // SynEdit only auto-populates its default keyboard bindings (arrow keys, Home/End,
+  // Ctrl+Home/End, etc.) when created directly in code. When streamed from a .lfm (as
+  // FEditor is), that step is skipped because the .lfm is expected to carry the full
+  // Keystrokes list itself -- and ours currently stores an empty one, leaving the editor
+  // with no cursor/navigation keys at all. Force the defaults back in explicitly.
+  FEditor.Keystrokes.ResetDefaults;
+
   ApplyTranslations;
 
   RebuildTree;
@@ -164,24 +198,36 @@ begin
   inherited Destroy;
 end;
 
-procedure TMainForm.ApplyToolBarHints;
-begin
-  ToolButtonNew.Hint := GetString('tooltip.new');
-  ToolButtonOpen.Hint := GetString('tooltip.open');
-  ToolButtonSave.Hint := GetString('tooltip.save');
-  ToolButtonAddSibling.Hint := GetString('tooltip.newsibling');
-  ToolButtonAddChild.Hint := GetString('tooltip.newchild');
-  ToolButtonDelete.Hint := GetString('tooltip.deletenode');
-  ToolButtonEncrypt.Hint := GetString('menu.encryption.textencryption');
-end;
-
 procedure TMainForm.ApplyTranslations;
 begin
-  MenuToolsPasswordGen.Caption := GetString('menu.encryption.passwordgen');
-  MenuToolsSearch.Caption := GetString('menu.tools.search');
-  MenuToolsSettings.Caption := GetString('menu.edit.settings');
-  MenuToolsTextEncryption.Caption := GetString('menu.encryption.textencryption');
+  ActionNew.Hint := GetString('tooltip.new');
+  ActionOpen.Hint := GetString('tooltip.open');
+  ActionSave.Hint := GetString('tooltip.save');
+  ActionAddSibling.Hint := GetString('tooltip.newsibling');
+  ActionAddChild.Hint := GetString('tooltip.newchild');
+  ActionDelete.Hint := GetString('tooltip.deletenode');
+
+  ActionCut.Caption := GetString('menu.edit.cut');
+  ActionCut.Hint := GetString('tooltip.cut');
+  ActionCut.ShortCut := TextToShortCut('Ctrl+X');
+  ActionCopy.Caption := GetString('menu.edit.copy');
+  ActionCopy.Hint := GetString('tooltip.copy');
+  ActionCopy.ShortCut := TextToShortCut('Ctrl+C');
+  ActionPaste.Caption := GetString('menu.edit.paste');
+  ActionPaste.Hint := GetString('tooltip.paste');
+  ActionPaste.ShortCut := TextToShortCut('Ctrl+V');
+
+  ActionPasswordGen.Caption := GetString('menu.encryption.passwordgen');
+  ActionSearch.Caption := GetString('menu.tools.search');
+  ActionSettings.Caption := GetString('menu.edit.settings');
+  ActionTextEncryption.Caption := GetString('menu.encryption.textencryption');
+  ActionTextEncryption.Hint := GetString('menu.encryption.textencryption');
 end;
+
+const
+  IMG_FOLDER_CLOSED = 11;
+  IMG_FOLDER_OPEN = 12;
+  IMG_LEAF = 13;
 
 procedure TMainForm.RebuildTree;
 var
@@ -192,6 +238,27 @@ begin
     PopulateTreeNode(nil, FModel.RootNode.Children[i]);
   if FTreeView.Items.Count > 0 then
     FTreeView.Items[0].Expand(True);
+  SyncNodeIcons(FTreeView.Items.GetFirstNode);
+end;
+
+procedure TMainForm.SyncNodeIcons(TVNode: TTreeNode);
+begin
+  while TVNode <> nil do
+  begin
+    if TVNode.HasChildren then
+    begin
+      if TVNode.Expanded then
+        TVNode.ImageIndex := IMG_FOLDER_OPEN
+      else
+        TVNode.ImageIndex := IMG_FOLDER_CLOSED;
+    end
+    else
+      TVNode.ImageIndex := IMG_LEAF;
+    TVNode.SelectedIndex := TVNode.ImageIndex;
+
+    SyncNodeIcons(TVNode.GetFirstChild);
+    TVNode := TVNode.GetNextSibling;
+  end;
 end;
 
 procedure TMainForm.PopulateTreeNode(ParentTVNode: TTreeNode; ModelNode: TEntryTreeNode);
@@ -206,6 +273,20 @@ begin
 
   for i := 0 to ModelNode.ChildCount - 1 do
     PopulateTreeNode(tvNode, ModelNode.Children[i]);
+end;
+
+procedure TMainForm.TreeExpanded(Sender: TObject; Node: TTreeNode);
+begin
+  if Node = nil then Exit;
+  Node.ImageIndex := IMG_FOLDER_OPEN;
+  Node.SelectedIndex := IMG_FOLDER_OPEN;
+end;
+
+procedure TMainForm.TreeCollapsed(Sender: TObject; Node: TTreeNode);
+begin
+  if Node = nil then Exit;
+  Node.ImageIndex := IMG_FOLDER_CLOSED;
+  Node.SelectedIndex := IMG_FOLDER_CLOSED;
 end;
 
 function TMainForm.GetSelectedTVModelNode(TVNode: TTreeNode): TEntryTreeNode;
@@ -239,6 +320,21 @@ end;
 procedure TMainForm.ActionAboutExecute(Sender: TObject);
 begin
   FormAbout.ShowModal;
+end;
+
+procedure TMainForm.ActionCutExecute(Sender: TObject);
+begin
+  FEditor.CutToClipboard;
+end;
+
+procedure TMainForm.ActionCopyExecute(Sender: TObject);
+begin
+  FEditor.CopyToClipboard;
+end;
+
+procedure TMainForm.ActionPasteExecute(Sender: TObject);
+begin
+  FEditor.PasteFromClipboard;
 end;
 
 procedure TMainForm.EditorChange(Sender: TObject);
@@ -316,7 +412,7 @@ begin
   Caption := fn + ' - DA-CryptPad';
 end;
 
-procedure TMainForm.DoNew(Sender: TObject);
+procedure TMainForm.ActionNewExecute(Sender: TObject);
 begin
   FModel.Free;
   FModel := TDataModel.Create;
@@ -327,7 +423,7 @@ begin
   UpdateTitle;
 end;
 
-procedure TMainForm.DoOpen(Sender: TObject);
+procedure TMainForm.ActionOpenExecute(Sender: TObject);
 var
   pw: string;
 begin
@@ -365,13 +461,13 @@ begin
   end;
 end;
 
-procedure TMainForm.DoSave(Sender: TObject);
+procedure TMainForm.ActionSaveExecute(Sender: TObject);
 var
   pw: string;
 begin
   if FCurrentFileName = '' then
   begin
-    DoSaveAs(Sender);
+    ActionSaveAsExecute(Sender);
     Exit;
   end;
 
@@ -384,7 +480,7 @@ begin
   SaveToFile(FCurrentFileName);
 end;
 
-procedure TMainForm.DoSaveAs(Sender: TObject);
+procedure TMainForm.ActionSaveAsExecute(Sender: TObject);
 var
   pw: string;
 begin
@@ -396,7 +492,7 @@ begin
   SaveToFile(FSaveDialog.FileName);
 end;
 
-procedure TMainForm.DoAddSiblingNode(Sender: TObject);
+procedure TMainForm.ActionAddSiblingExecute(Sender: TObject);
 var
   title: string;
   newNode: TEntryTreeNode;
@@ -409,14 +505,14 @@ begin
   LoadNodeIntoEditor(newNode);
 end;
 
-procedure TMainForm.DoAddChildNode(Sender: TObject);
+procedure TMainForm.ActionAddChildExecute(Sender: TObject);
 var
   title: string;
   newNode: TEntryTreeNode;
 begin
   if FSelectedModelNode = nil then
   begin
-    DoAddSiblingNode(Sender);
+    ActionAddSiblingExecute(Sender);
     Exit;
   end;
 
@@ -428,7 +524,7 @@ begin
   LoadNodeIntoEditor(newNode);
 end;
 
-procedure TMainForm.DoRenameNode(Sender: TObject);
+procedure TMainForm.ActionRenameExecute(Sender: TObject);
 var
   title: string;
 begin
@@ -440,7 +536,7 @@ begin
   RebuildTree;
 end;
 
-procedure TMainForm.DoDeleteNode(Sender: TObject);
+procedure TMainForm.ActionDeleteExecute(Sender: TObject);
 begin
   if FSelectedModelNode = nil then Exit;
   if MessageDlg(GetString('dialog.deletenode.message'), mtConfirmation, [mbYes, mbNo], 0) <> mrYes then Exit;
@@ -451,17 +547,17 @@ begin
   LoadNodeIntoEditor(nil);
 end;
 
-procedure TMainForm.DoSettings(Sender: TObject);
+procedure TMainForm.ActionSettingsExecute(Sender: TObject);
 begin
   usettingsform.ShowSettingsDialog(Self);
 end;
 
-procedure TMainForm.DoTextEncryption(Sender: TObject);
+procedure TMainForm.ActionTextEncryptionExecute(Sender: TObject);
 begin
   uencryptiondialog.ShowEncryptionWindow;
 end;
 
-procedure TMainForm.DoPasswordGenerator(Sender: TObject);
+procedure TMainForm.ActionPasswordGenExecute(Sender: TObject);
 begin
   upasswordgenform.ShowPasswordGenerator(Self);
 end;
@@ -491,7 +587,7 @@ begin
   TreeSelectionChanged(nil);
 end;
 
-procedure TMainForm.DoSearch(Sender: TObject);
+procedure TMainForm.ActionSearchExecute(Sender: TObject);
 var
   node: TEntryTreeNode;
 begin
@@ -500,7 +596,7 @@ begin
     SelectModelNode(node);
 end;
 
-procedure TMainForm.MenuFileExitClick(Sender: TObject);
+procedure TMainForm.ActionExitExecute(Sender: TObject);
 begin
   Close;
 end;
