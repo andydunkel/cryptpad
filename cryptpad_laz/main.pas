@@ -159,6 +159,7 @@ type
     function SaveToFile(const FileName: string): Boolean;
     function FindTVNode(ModelNode: TEntryTreeNode): TTreeNode;
     procedure SelectModelNode(ModelNode: TEntryTreeNode);
+    procedure SelectFirstNode;
     procedure MarkDirty;
     function ShowSaveConfirmation: TModalResult; // mrYes/mrNo/mrCancel
 
@@ -228,6 +229,7 @@ begin
   UpdateRecentFilesMenu;
 
   RebuildTree;
+  SelectFirstNode;
   UpdateTitle;
 end;
 
@@ -574,7 +576,7 @@ begin
   FDirty := False;
   FSelectedModelNode := nil;
   RebuildTree;
-  LoadNodeIntoEditor(nil);
+  SelectFirstNode;
   UpdateTitle;
 end;
 
@@ -601,7 +603,7 @@ begin
     uappsettings.AddRecentFile(FCurrentFileName);
     UpdateRecentFilesMenu;
     RebuildTree;
-    LoadNodeIntoEditor(nil);
+    SelectFirstNode;
     UpdateTitle;
   except
     on E: Exception do
@@ -882,6 +884,14 @@ begin
   tvNode.MakeVisible;
   FTreeView.Selected := tvNode;
   TreeSelectionChanged(nil);
+end;
+
+procedure TMainForm.SelectFirstNode;
+begin
+  if FModel.RootNode.ChildCount > 0 then
+    SelectModelNode(FModel.RootNode.Children[0])
+  else
+    LoadNodeIntoEditor(nil);
 end;
 
 procedure TMainForm.ActionSearchExecute(Sender: TObject);
