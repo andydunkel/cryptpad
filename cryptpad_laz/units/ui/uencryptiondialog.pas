@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, StdCtrls,
-  ComCtrls, ImgList, Clipbrd, LCLProc,
+  ComCtrls, ImgList, Clipbrd, LCLProc, ActnList,
   umessages, ucryptpadcrypto, upasswordpromptform, uencryptpasswordform;
 
 type
@@ -15,6 +15,17 @@ type
   { TEncryptionForm }
 
   TEncryptionForm = class(TForm)
+    ActionList: TActionList;
+    ActionNew: TAction;
+    ActionOpen: TAction;
+    ActionSave: TAction;
+    ActionSaveAs: TAction;
+    ActionCut: TAction;
+    ActionCopy: TAction;
+    ActionPaste: TAction;
+    ActionEncrypt: TAction;
+    ActionDecrypt: TAction;
+    ActionExit: TAction;
     FEditor: TMemo;
     FToolBar: TToolBar;
     FToolImages: TImageList;
@@ -46,16 +57,16 @@ type
     MenuEncryptionDecrypt: TMenuItem;
     FOpenDialog: TOpenDialog;
     FSaveDialog: TSaveDialog;
-    procedure DoNew(Sender: TObject);
-    procedure DoOpen(Sender: TObject);
-    procedure DoSave(Sender: TObject);
-    procedure DoSaveAs(Sender: TObject);
-    procedure DoCut(Sender: TObject);
-    procedure DoCopy(Sender: TObject);
-    procedure DoPaste(Sender: TObject);
-    procedure DoEncrypt(Sender: TObject);
-    procedure DoDecrypt(Sender: TObject);
-    procedure MenuFileExitClick(Sender: TObject);
+    procedure ActionNewExecute(Sender: TObject);
+    procedure ActionOpenExecute(Sender: TObject);
+    procedure ActionSaveExecute(Sender: TObject);
+    procedure ActionSaveAsExecute(Sender: TObject);
+    procedure ActionCutExecute(Sender: TObject);
+    procedure ActionCopyExecute(Sender: TObject);
+    procedure ActionPasteExecute(Sender: TObject);
+    procedure ActionEncryptExecute(Sender: TObject);
+    procedure ActionDecryptExecute(Sender: TObject);
+    procedure ActionExitExecute(Sender: TObject);
     procedure FormCloseHandler(Sender: TObject; var CloseAction: TCloseAction);
   private
     FSaved: Boolean;
@@ -100,36 +111,36 @@ end;
 
 procedure TEncryptionForm.ApplyTranslations;
 begin
-  ToolButtonNew.Hint := GetString('encryption.tooltip.new');
-  ToolButtonOpen.Hint := GetString('encryption.tooltip.open');
-  ToolButtonSave.Hint := GetString('encryption.tooltip.save');
-  ToolButtonCut.Hint := GetString('encryption.tooltip.cut');
-  ToolButtonCopy.Hint := GetString('encryption.tooltip.copy');
-  ToolButtonPaste.Hint := GetString('encryption.tooltip.paste');
-  ToolButtonEncrypt.Hint := GetString('encryption.tooltip.encrypt');
-  ToolButtonExit.Hint := GetString('encryption.tooltip.exit');
-
   MenuFile.Caption := GetString('encryption.menu.file');
-  MenuFileNew.Caption := GetString('encryption.menu.file.new');
-  MenuFileNew.ShortCut := TextToShortCut('Ctrl+N');
-  MenuFileOpen.Caption := GetString('encryption.menu.file.open');
-  MenuFileOpen.ShortCut := TextToShortCut('Ctrl+O');
-  MenuFileSave.Caption := GetString('encryption.menu.file.save');
-  MenuFileSave.ShortCut := TextToShortCut('Ctrl+S');
-  MenuFileSaveAs.Caption := GetString('encryption.menu.file.saveas');
-  MenuFileExit.Caption := GetString('encryption.menu.file.exit');
-
   MenuEdit.Caption := GetString('encryption.menu.edit');
-  MenuEditCut.Caption := GetString('encryption.menu.edit.cut');
-  MenuEditCut.ShortCut := TextToShortCut('Ctrl+X');
-  MenuEditCopy.Caption := GetString('encryption.menu.edit.copy');
-  MenuEditCopy.ShortCut := TextToShortCut('Ctrl+C');
-  MenuEditPaste.Caption := GetString('encryption.menu.edit.paste');
-  MenuEditPaste.ShortCut := TextToShortCut('Ctrl+V');
-
   MenuEncryption.Caption := GetString('encryption.menu.encryption');
-  MenuEncryptionEncrypt.Caption := GetString('encryption.menu.encryption.encrypt');
-  MenuEncryptionDecrypt.Caption := GetString('encryption.menu.encryption.decrypt');
+
+  ActionNew.Caption := GetString('encryption.menu.file.new');
+  ActionNew.Hint := GetString('encryption.tooltip.new');
+  ActionNew.ShortCut := TextToShortCut('Ctrl+N');
+  ActionOpen.Caption := GetString('encryption.menu.file.open');
+  ActionOpen.Hint := GetString('encryption.tooltip.open');
+  ActionOpen.ShortCut := TextToShortCut('Ctrl+O');
+  ActionSave.Caption := GetString('encryption.menu.file.save');
+  ActionSave.Hint := GetString('encryption.tooltip.save');
+  ActionSave.ShortCut := TextToShortCut('Ctrl+S');
+  ActionSaveAs.Caption := GetString('encryption.menu.file.saveas');
+  ActionExit.Caption := GetString('encryption.menu.file.exit');
+  ActionExit.Hint := GetString('encryption.tooltip.exit');
+
+  ActionCut.Caption := GetString('encryption.menu.edit.cut');
+  ActionCut.Hint := GetString('encryption.tooltip.cut');
+  ActionCut.ShortCut := TextToShortCut('Ctrl+X');
+  ActionCopy.Caption := GetString('encryption.menu.edit.copy');
+  ActionCopy.Hint := GetString('encryption.tooltip.copy');
+  ActionCopy.ShortCut := TextToShortCut('Ctrl+C');
+  ActionPaste.Caption := GetString('encryption.menu.edit.paste');
+  ActionPaste.Hint := GetString('encryption.tooltip.paste');
+  ActionPaste.ShortCut := TextToShortCut('Ctrl+V');
+
+  ActionEncrypt.Caption := GetString('encryption.menu.encryption.encrypt');
+  ActionEncrypt.Hint := GetString('encryption.tooltip.encrypt');
+  ActionDecrypt.Caption := GetString('encryption.menu.encryption.decrypt');
 end;
 
 procedure TEncryptionForm.UpdateTitle;
@@ -152,7 +163,7 @@ begin
     Exit;
   end;
 
-  Result := MessageDlg(GetString('encryption.save.title'), GetString('encryption.save.message'),
+  Result := MessageDlg(GetString('encryption.save.message'), GetString('encryption.save.title'),
     mtConfirmation, [mbYes, mbNo, mbCancel], 0);
 
   if Result = mrYes then
@@ -228,7 +239,7 @@ begin
     WriteFile(FSavedFileName);
 end;
 
-procedure TEncryptionForm.DoNew(Sender: TObject);
+procedure TEncryptionForm.ActionNewExecute(Sender: TObject);
 begin
   if ShowSaveConfirmation = mrCancel then Exit;
   FEditor.Text := '';
@@ -237,39 +248,39 @@ begin
   UpdateTitle;
 end;
 
-procedure TEncryptionForm.DoOpen(Sender: TObject);
+procedure TEncryptionForm.ActionOpenExecute(Sender: TObject);
 begin
   if ShowSaveConfirmation = mrCancel then Exit;
   if not FOpenDialog.Execute then Exit;
   LoadFile(FOpenDialog.FileName);
 end;
 
-procedure TEncryptionForm.DoSave(Sender: TObject);
+procedure TEncryptionForm.ActionSaveExecute(Sender: TObject);
 begin
   DoSaveInternal(False);
 end;
 
-procedure TEncryptionForm.DoSaveAs(Sender: TObject);
+procedure TEncryptionForm.ActionSaveAsExecute(Sender: TObject);
 begin
   DoSaveInternal(True);
 end;
 
-procedure TEncryptionForm.DoCut(Sender: TObject);
+procedure TEncryptionForm.ActionCutExecute(Sender: TObject);
 begin
   FEditor.CutToClipboard;
 end;
 
-procedure TEncryptionForm.DoCopy(Sender: TObject);
+procedure TEncryptionForm.ActionCopyExecute(Sender: TObject);
 begin
   FEditor.CopyToClipboard;
 end;
 
-procedure TEncryptionForm.DoPaste(Sender: TObject);
+procedure TEncryptionForm.ActionPasteExecute(Sender: TObject);
 begin
   FEditor.PasteFromClipboard;
 end;
 
-procedure TEncryptionForm.DoEncrypt(Sender: TObject);
+procedure TEncryptionForm.ActionEncryptExecute(Sender: TObject);
 var
   pw, encrypted: string;
 begin
@@ -294,7 +305,7 @@ begin
   end;
 end;
 
-procedure TEncryptionForm.DoDecrypt(Sender: TObject);
+procedure TEncryptionForm.ActionDecryptExecute(Sender: TObject);
 var
   pw, decrypted: string;
 begin
@@ -322,7 +333,7 @@ begin
   end;
 end;
 
-procedure TEncryptionForm.MenuFileExitClick(Sender: TObject);
+procedure TEncryptionForm.ActionExitExecute(Sender: TObject);
 begin
   Close;
 end;

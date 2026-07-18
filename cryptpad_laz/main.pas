@@ -55,6 +55,8 @@ type
     MenuFileSave: TMenuItem;
     MenuFileSaveAs: TMenuItem;
     MenuFileSep1: TMenuItem;
+    MenuFileRecent: TMenuItem;
+    MenuFileSep2: TMenuItem;
     MenuFileExit: TMenuItem;
     MenuEdit: TMenuItem;
     MenuEditCut: TMenuItem;
@@ -135,9 +137,11 @@ type
     procedure EditorChange(Sender: TObject);
     procedure TreeDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
     procedure TreeDragDrop(Sender, Source: TObject; X, Y: Integer);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     FModel: TDataModel;
     FCurrentFileName: string;
+    FDirty: Boolean;
     FSelectedModelNode: TEntryTreeNode;
     FSuppressEditorChange: Boolean;
     // Not registered as an IDE package, so it can't be a .lfm-streamed component;
@@ -155,9 +159,16 @@ type
     function SaveToFile(const FileName: string): Boolean;
     function FindTVNode(ModelNode: TEntryTreeNode): TTreeNode;
     procedure SelectModelNode(ModelNode: TEntryTreeNode);
+    procedure MarkDirty;
+    function ShowSaveConfirmation: TModalResult; // mrYes/mrNo/mrCancel
 
     procedure UpdateTitle;
     procedure LoadNodeIntoEditor(ModelNode: TEntryTreeNode);
+
+    procedure DoOpenFile(const AFileName: string);
+    procedure DoOpenRecentFile(Sender: TObject);
+    procedure DoClearRecentFiles(Sender: TObject);
+    procedure UpdateRecentFilesMenu;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -214,6 +225,7 @@ begin
   FEditor.Keystrokes.ResetDefaults;
 
   ApplyTranslations;
+  UpdateRecentFilesMenu;
 
   RebuildTree;
   UpdateTitle;
@@ -244,6 +256,7 @@ begin
   ActionSave.ShortCut := TextToShortCut('Ctrl+S');
   ActionSaveAs.Caption := GetString('menu.file.saveas');
   ActionSaveAs.ShortCut := TextToShortCut('Ctrl+Shift+S');
+  MenuFileRecent.Caption := GetString('menu.file.recent');
   ActionExit.Caption := GetString('menu.file.exit');
   ActionAbout.Caption := GetStringF('menu.help.about', ['DA-CryptPad']);
   ActionAbout.Hint := GetStringF('tooltip.about', ['DA-CryptPad']);
@@ -426,6 +439,7 @@ procedure TMainForm.EditorChange(Sender: TObject);
 begin
   if FSuppressEditorChange or (FSelectedModelNode = nil) then Exit;
   FModel.SetNodeContent(FSelectedModelNode, UTF8String(FEditor.Lines.Text));
+  MarkDirty;
 end;
 
 function TMainForm.IsAncestor(Ancestor, Node: TEntryTreeNode): Boolean;
@@ -471,6 +485,7 @@ begin
 
   targetModelNode.Add(draggedModelNode); // Add() detaches from its current parent first
 
+  MarkDirty;
   RebuildTree;
   SelectModelNode(draggedModelNode);
 end;
@@ -495,13 +510,68 @@ begin
   else
     fn := ExtractFileName(FCurrentFileName);
   Caption := fn + ' - DA-CryptPad';
+  if FDirty then
+    Caption := Caption + ' *';
+end;
+
+procedure TMainForm.MarkDirty;
+begin
+  if not FDirty then
+  begin
+    FDirty := True;
+    UpdateTitle;
+  end;
+end;
+
+function TMainForm.ShowSaveConfirmation: TModalResult;
+begin
+  if not FDirty then
+  begin
+    Result := mrNo;
+    Exit;
+  end;
+
+  Result := MessageDlg(GetString('dialog.save.message'), GetString('dialog.save.title'),
+    mtConfirmation, [mbYes, mbNo, mbCancel], 0);
+
+  if Result = mrYes then
+    ActionSaveExecute(Self);
+end;
+
+procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := True;
+
+  if FDirty and (FCurrentFileName <> '') and (FModel.Password <> '') then
+  begin
+    try
+      FModel.SaveFile(FCurrentFileName);
+      FDirty := False;
+    except
+      on E: Exception do
+      begin
+        MessageDlg(GetStringF('dialog.error.autosave', [E.Message]), GetString('dialog.error.title'),
+          mtError, [mbOK], 0);
+        CanClose := MessageDlg(GetString('dialog.confirmexit.message'), GetString('dialog.confirmexit.title'),
+          mtWarning, [mbYes, mbNo], 0) = mrYes;
+      end;
+    end;
+  end
+  else
+  begin
+    if ShowSaveConfirmation = mrCancel then
+      CanClose := False;
+  end;
 end;
 
 procedure TMainForm.ActionNewExecute(Sender: TObject);
 begin
+  if ShowSaveConfirmation = mrCancel then Exit;
+
   FModel.Free;
   FModel := TDataModel.Create;
   FCurrentFileName := '';
+  FDirty := False;
   FSelectedModelNode := nil;
   RebuildTree;
   LoadNodeIntoEditor(nil);
@@ -509,19 +579,27 @@ begin
 end;
 
 procedure TMainForm.ActionOpenExecute(Sender: TObject);
+begin
+  if ShowSaveConfirmation = mrCancel then Exit;
+  if not FOpenDialog.Execute then Exit;
+  DoOpenFile(FOpenDialog.FileName);
+end;
+
+procedure TMainForm.DoOpenFile(const AFileName: string);
 var
   pw: string;
 begin
-  if not FOpenDialog.Execute then Exit;
   if not upasswordpromptform.PromptPassword(Self, GetString('password.decrypt.title'), GetString('password.decrypt.label'), pw) then Exit;
 
   try
     FModel.Free;
     FModel := TDataModel.Create;
     FModel.Password := UTF8String(pw);
-    FModel.LoadFile(FOpenDialog.FileName);
-    FCurrentFileName := FOpenDialog.FileName;
+    FModel.LoadFile(AFileName);
+    FCurrentFileName := AFileName;
+    FDirty := False;
     uappsettings.AddRecentFile(FCurrentFileName);
+    UpdateRecentFilesMenu;
     RebuildTree;
     LoadNodeIntoEditor(nil);
     UpdateTitle;
@@ -531,13 +609,75 @@ begin
   end;
 end;
 
+procedure TMainForm.DoOpenRecentFile(Sender: TObject);
+var
+  fileName: string;
+begin
+  fileName := (Sender as TMenuItem).Hint;
+  if not FileExists(fileName) then
+  begin
+    MessageDlg(GetStringF('menu.file.recent.notfound', [ExtractFileName(fileName)]), GetString('dialog.error.title'),
+      mtError, [mbOK], 0);
+    UpdateRecentFilesMenu; // stale entry gets pruned by GetRecentFiles
+    Exit;
+  end;
+
+  if ShowSaveConfirmation = mrCancel then Exit;
+  DoOpenFile(fileName);
+end;
+
+procedure TMainForm.DoClearRecentFiles(Sender: TObject);
+begin
+  uappsettings.ClearRecentFiles;
+  UpdateRecentFilesMenu;
+end;
+
+procedure TMainForm.UpdateRecentFilesMenu;
+var
+  files: TStringArray;
+  i: Integer;
+  item: TMenuItem;
+begin
+  MenuFileRecent.Clear;
+  files := uappsettings.GetRecentFiles;
+
+  if Length(files) = 0 then
+  begin
+    item := TMenuItem.Create(MenuFileRecent);
+    item.Caption := GetString('menu.file.recent.empty');
+    item.Enabled := False;
+    MenuFileRecent.Add(item);
+    Exit;
+  end;
+
+  for i := 0 to High(files) do
+  begin
+    item := TMenuItem.Create(MenuFileRecent);
+    item.Caption := StringReplace(ExtractFileName(files[i]), '&', '&&', [rfReplaceAll]);
+    item.Hint := files[i];
+    item.OnClick := @DoOpenRecentFile;
+    MenuFileRecent.Add(item);
+  end;
+
+  item := TMenuItem.Create(MenuFileRecent);
+  item.Caption := '-';
+  MenuFileRecent.Add(item);
+
+  item := TMenuItem.Create(MenuFileRecent);
+  item.Caption := GetString('menu.file.recent.clear');
+  item.OnClick := @DoClearRecentFiles;
+  MenuFileRecent.Add(item);
+end;
+
 function TMainForm.SaveToFile(const FileName: string): Boolean;
 begin
   Result := False;
   try
     FModel.SaveFile(FileName);
     FCurrentFileName := FileName;
+    FDirty := False;
     uappsettings.AddRecentFile(FCurrentFileName);
+    UpdateRecentFilesMenu;
     UpdateTitle;
     Result := True;
   except
@@ -586,6 +726,7 @@ begin
   if title = '' then Exit;
 
   newNode := FModel.AddNode(nil, title);
+  MarkDirty;
   RebuildTree;
   LoadNodeIntoEditor(newNode);
 end;
@@ -605,6 +746,7 @@ begin
   if title = '' then Exit;
 
   newNode := FModel.AddNode(FSelectedModelNode.Parent, title);
+  MarkDirty;
   RebuildTree;
   LoadNodeIntoEditor(newNode);
 end;
@@ -624,6 +766,7 @@ begin
   if title = '' then Exit;
 
   newNode := FModel.AddNode(FSelectedModelNode, title);
+  MarkDirty;
   RebuildTree;
   LoadNodeIntoEditor(newNode);
 end;
@@ -637,6 +780,7 @@ begin
   if title = '' then Exit;
 
   FModel.SetNodeTitle(FSelectedModelNode, title);
+  MarkDirty;
   RebuildTree;
 end;
 
@@ -647,6 +791,7 @@ begin
 
   FModel.DeleteNode(FSelectedModelNode);
   FSelectedModelNode := nil;
+  MarkDirty;
   RebuildTree;
   LoadNodeIntoEditor(nil);
 end;
@@ -670,6 +815,7 @@ begin
 
   parentNode.Remove(node);
   parentNode.Insert(idx - 1, node);
+  MarkDirty;
   RebuildTree;
   SelectModelNode(node);
 end;
@@ -693,6 +839,7 @@ begin
 
   parentNode.Remove(node);
   parentNode.Insert(idx + 1, node);
+  MarkDirty;
   RebuildTree;
   SelectModelNode(node);
 end;

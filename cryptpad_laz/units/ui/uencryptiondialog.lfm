@@ -23,20 +23,17 @@ object EncryptionForm: TEncryptionForm
     object ToolButtonNew: TToolButton
       Left = 1
       Top = 2
-      ImageIndex = 0
-      OnClick = DoNew
+      Action = ActionNew
     end
     object ToolButtonOpen: TToolButton
       Left = 24
       Top = 2
-      ImageIndex = 1
-      OnClick = DoOpen
+      Action = ActionOpen
     end
     object ToolButtonSave: TToolButton
       Left = 47
       Top = 2
-      ImageIndex = 2
-      OnClick = DoSave
+      Action = ActionSave
     end
     object ToolButtonSep1: TToolButton
       Left = 70
@@ -48,20 +45,17 @@ object EncryptionForm: TEncryptionForm
     object ToolButtonCut: TToolButton
       Left = 78
       Top = 2
-      ImageIndex = 9
-      OnClick = DoCut
+      Action = ActionCut
     end
     object ToolButtonCopy: TToolButton
       Left = 101
       Top = 2
-      ImageIndex = 8
-      OnClick = DoCopy
+      Action = ActionCopy
     end
     object ToolButtonPaste: TToolButton
       Left = 124
       Top = 2
-      ImageIndex = 17
-      OnClick = DoPaste
+      Action = ActionPaste
     end
     object ToolButtonSep2: TToolButton
       Left = 147
@@ -73,8 +67,7 @@ object EncryptionForm: TEncryptionForm
     object ToolButtonEncrypt: TToolButton
       Left = 155
       Top = 2
-      ImageIndex = 6
-      OnClick = DoEncrypt
+      Action = ActionEncrypt
     end
     object ToolButtonSep3: TToolButton
       Left = 178
@@ -86,8 +79,7 @@ object EncryptionForm: TEncryptionForm
     object ToolButtonExit: TToolButton
       Left = 186
       Top = 2
-      ImageIndex = 10
-      OnClick = MenuFileExitClick
+      Action = ActionExit
     end
   end
   object FEditor: TMemo
@@ -110,53 +102,43 @@ object EncryptionForm: TEncryptionForm
     object MenuFile: TMenuItem
       Caption = 'File'
       object MenuFileNew: TMenuItem
-        Caption = 'New'
-        OnClick = DoNew
+        Action = ActionNew
       end
       object MenuFileOpen: TMenuItem
-        Caption = 'Open'
-        OnClick = DoOpen
+        Action = ActionOpen
       end
       object MenuFileSave: TMenuItem
-        Caption = 'Save'
-        OnClick = DoSave
+        Action = ActionSave
       end
       object MenuFileSaveAs: TMenuItem
-        Caption = 'Save As'
-        OnClick = DoSaveAs
+        Action = ActionSaveAs
       end
       object MenuFileSep1: TMenuItem
         Caption = '-'
       end
       object MenuFileExit: TMenuItem
-        Caption = 'Exit'
-        OnClick = MenuFileExitClick
+        Action = ActionExit
       end
     end
     object MenuEdit: TMenuItem
       Caption = 'Edit'
       object MenuEditCut: TMenuItem
-        Caption = 'Cut'
-        OnClick = DoCut
+        Action = ActionCut
       end
       object MenuEditCopy: TMenuItem
-        Caption = 'Copy'
-        OnClick = DoCopy
+        Action = ActionCopy
       end
       object MenuEditPaste: TMenuItem
-        Caption = 'Paste'
-        OnClick = DoPaste
+        Action = ActionPaste
       end
     end
     object MenuEncryption: TMenuItem
       Caption = 'Encryption'
       object MenuEncryptionEncrypt: TMenuItem
-        Caption = 'Encrypt'
-        OnClick = DoEncrypt
+        Action = ActionEncrypt
       end
       object MenuEncryptionDecrypt: TMenuItem
-        Caption = 'Decrypt'
-        OnClick = DoDecrypt
+        Action = ActionDecrypt
       end
     end
   end
@@ -321,5 +303,58 @@ object EncryptionForm: TEncryptionForm
     Filter = 'Text files (*.txt)|*.txt|All Files (*.*)|*.*'
     Left = 420
     Top = 16
+  end
+  object ActionList: TActionList
+    Images = FToolImages
+    Left = 298
+    Top = 82
+    object ActionNew: TAction
+      Caption = 'ActionNew'
+      ImageIndex = 0
+      OnExecute = ActionNewExecute
+    end
+    object ActionOpen: TAction
+      Caption = 'ActionOpen'
+      ImageIndex = 1
+      OnExecute = ActionOpenExecute
+    end
+    object ActionSave: TAction
+      Caption = 'ActionSave'
+      ImageIndex = 2
+      OnExecute = ActionSaveExecute
+    end
+    object ActionSaveAs: TAction
+      Caption = 'ActionSaveAs'
+      OnExecute = ActionSaveAsExecute
+    end
+    object ActionCut: TAction
+      Caption = 'ActionCut'
+      ImageIndex = 9
+      OnExecute = ActionCutExecute
+    end
+    object ActionCopy: TAction
+      Caption = 'ActionCopy'
+      ImageIndex = 8
+      OnExecute = ActionCopyExecute
+    end
+    object ActionPaste: TAction
+      Caption = 'ActionPaste'
+      ImageIndex = 17
+      OnExecute = ActionPasteExecute
+    end
+    object ActionEncrypt: TAction
+      Caption = 'ActionEncrypt'
+      ImageIndex = 6
+      OnExecute = ActionEncryptExecute
+    end
+    object ActionDecrypt: TAction
+      Caption = 'ActionDecrypt'
+      OnExecute = ActionDecryptExecute
+    end
+    object ActionExit: TAction
+      Caption = 'ActionExit'
+      ImageIndex = 10
+      OnExecute = ActionExitExecute
+    end
   end
 end

@@ -9,6 +9,7 @@ object MainForm: TMainForm
   Menu = MainMenu1
   Position = poScreenCenter
   LCLVersion = '4.6.0.0'
+  OnCloseQuery = FormCloseQuery
   object FToolBar: TToolBar
     Left = 0
     Height = 26
@@ -402,6 +403,12 @@ object MainForm: TMainForm
         Action = ActionSaveAs
       end
       object MenuFileSep1: TMenuItem
+        Caption = '-'
+      end
+      object MenuFileRecent: TMenuItem
+        Caption = 'Recent Files'
+      end
+      object MenuFileSep2: TMenuItem
         Caption = '-'
       end
       object MenuFileExit: TMenuItem
