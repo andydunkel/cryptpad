@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
-  ExtCtrls, SynEdit, ImgList, ActnList, LCLProc, uabout,
+  ExtCtrls, SynEdit, ImgList, ActnList, LCLProc, Process, uabout,
   {$IFDEF WINDOWS}Windows,{$ENDIF}
   uentrytreenode, udatamodel, uxmlmanager, umessages, uappsettings,
   usynhighlightermarkdown,
@@ -22,6 +22,7 @@ type
     ActionAbout: TAction;
     ActionAddChild: TAction;
     ActionAddSibling: TAction;
+    ActionCheckUpdates: TAction;
     ActionCopy: TAction;
     ActionCut: TAction;
     ActionDelete: TAction;
@@ -73,6 +74,8 @@ type
     MenuToolsSettings: TMenuItem;
     MenuToolsTextEncryption: TMenuItem;
     MenuHelp: TMenuItem;
+    MenuHelpCheckUpdates: TMenuItem;
+    MenuHelpSep1: TMenuItem;
     MenuHelpAbout: TMenuItem;
     TreePopupMenu: TPopupMenu;
     PopupNewMainNode: TMenuItem;
@@ -105,6 +108,7 @@ type
     ToolButtonMoveDown: TToolButton;
 
     procedure ActionAboutExecute(Sender: TObject);
+    procedure ActionCheckUpdatesExecute(Sender: TObject);
     procedure ActionCutExecute(Sender: TObject);
     procedure ActionCopyExecute(Sender: TObject);
     procedure ActionPasteExecute(Sender: TObject);
@@ -243,6 +247,7 @@ begin
   ActionExit.Caption := GetString('menu.file.exit');
   ActionAbout.Caption := GetStringF('menu.help.about', ['DA-CryptPad']);
   ActionAbout.Hint := GetStringF('tooltip.about', ['DA-CryptPad']);
+  ActionCheckUpdates.Caption := GetString('menu.help.checkupdates');
   // ActionAddSibling always inserts at root level (like Java's onNewMainNode),
   // so it uses the "main node" caption/tooltip; ActionNewSibling is the true sibling insert.
   ActionAddSibling.Caption := GetString('popup.newmainnode');
@@ -375,6 +380,31 @@ end;
 procedure TMainForm.ActionAboutExecute(Sender: TObject);
 begin
   FormAbout.ShowModal;
+end;
+
+procedure TMainForm.ActionCheckUpdatesExecute(Sender: TObject);
+var
+  updaterPath: string;
+  proc: TProcess;
+begin
+  updaterPath := ExtractFilePath(ParamStr(0)) + 'updater.exe';
+  if not FileExists(updaterPath) then
+  begin
+    MessageDlg(GetStringF('menu.help.checkupdates.notfound', [updaterPath]), GetString('dialog.error.title'),
+      mtError, [mbOK], 0);
+    Exit;
+  end;
+
+  proc := TProcess.Create(nil);
+  try
+    proc.Executable := updaterPath;
+    proc.CurrentDirectory := ExtractFilePath(updaterPath);
+    proc.Parameters.Add('updater.ini');
+    proc.Parameters.Add(ResolveLanguage(uappsettings.GetLanguage));
+    proc.Execute;
+  finally
+    proc.Free;
+  end;
 end;
 
 procedure TMainForm.ActionCutExecute(Sender: TObject);

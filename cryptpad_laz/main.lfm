@@ -461,6 +461,12 @@ object MainForm: TMainForm
     end
     object MenuHelp: TMenuItem
       Caption = '&Help'
+      object MenuHelpCheckUpdates: TMenuItem
+        Action = ActionCheckUpdates
+      end
+      object MenuHelpSep1: TMenuItem
+        Caption = '-'
+      end
       object MenuHelpAbout: TMenuItem
         Action = ActionAbout
       end
@@ -608,6 +614,10 @@ object MainForm: TMainForm
       Caption = '&About'
       ImageIndex = 20
       OnExecute = ActionAboutExecute
+    end
+    object ActionCheckUpdates: TAction
+      Caption = 'ActionCheckUpdates'
+      OnExecute = ActionCheckUpdatesExecute
     end
   end
 end
