@@ -15,6 +15,8 @@ object MainForm: TMainForm
     Top = 0
     Width = 1100
     Images = FToolImages
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 0
     object ToolButtonNew: TToolButton
       Left = 1
@@ -130,6 +132,7 @@ object MainForm: TMainForm
     Align = alLeft
     DragMode = dmAutomatic
     Images = FToolImages
+    PopupMenu = TreePopupMenu
     TabOrder = 1
     OnCollapsed = TreeCollapsed
     OnDragDrop = TreeDragDrop
@@ -461,6 +464,38 @@ object MainForm: TMainForm
       object MenuHelpAbout: TMenuItem
         Action = ActionAbout
       end
+    end
+  end
+  object TreePopupMenu: TPopupMenu
+    Images = FToolImages
+    Left = 480
+    Top = 176
+    object PopupNewMainNode: TMenuItem
+      Action = ActionAddSibling
+    end
+    object PopupNewSibling: TMenuItem
+      Action = ActionNewSibling
+    end
+    object PopupNewChild: TMenuItem
+      Action = ActionAddChild
+    end
+    object PopupSep1: TMenuItem
+      Caption = '-'
+    end
+    object PopupEditNode: TMenuItem
+      Action = ActionRename
+    end
+    object PopupDeleteNode: TMenuItem
+      Action = ActionDelete
+    end
+    object PopupSep2: TMenuItem
+      Caption = '-'
+    end
+    object PopupMoveUp: TMenuItem
+      Action = ActionMoveUp
+    end
+    object PopupMoveDown: TMenuItem
+      Action = ActionMoveDown
     end
   end
   object FOpenDialog: TOpenDialog

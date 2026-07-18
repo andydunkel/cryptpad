@@ -90,6 +90,8 @@ begin
   Result := GF128Mul(Result, H);
 end;
 
+// The GCM 32-bit block counter is defined to wrap at $FFFFFFFF -> 0.
+{$PUSH}{$R-}{$Q-}
 procedure IncrCounter(var Block: TAESBlock); inline;
 var
   counter: UInt32;
@@ -102,6 +104,7 @@ begin
   Block[14] := Byte(counter shr 8);
   Block[15] := Byte(counter);
 end;
+{$POP}
 
 procedure GCTR(const Ctx: TAES256Context; StartCounter: TAESBlock; const Input: TBytes;
   out Output: TBytes);

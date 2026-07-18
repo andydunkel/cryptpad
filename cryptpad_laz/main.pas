@@ -74,6 +74,16 @@ type
     MenuToolsTextEncryption: TMenuItem;
     MenuHelp: TMenuItem;
     MenuHelpAbout: TMenuItem;
+    TreePopupMenu: TPopupMenu;
+    PopupNewMainNode: TMenuItem;
+    PopupNewSibling: TMenuItem;
+    PopupNewChild: TMenuItem;
+    PopupSep1: TMenuItem;
+    PopupEditNode: TMenuItem;
+    PopupDeleteNode: TMenuItem;
+    PopupSep2: TMenuItem;
+    PopupMoveUp: TMenuItem;
+    PopupMoveDown: TMenuItem;
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
@@ -213,19 +223,37 @@ end;
 
 procedure TMainForm.ApplyTranslations;
 begin
+  MenuFile.Caption := GetString('menu.file');
+  MenuEdit.Caption := GetString('menu.edit');
+  MenuNode.Caption := GetString('menu.node');
+  MenuTools.Caption := GetString('menu.tools');
+  MenuHelp.Caption := GetString('menu.help');
+
+  ActionNew.Caption := GetString('menu.file.new');
   ActionNew.Hint := GetString('tooltip.new');
   ActionNew.ShortCut := TextToShortCut('Ctrl+N');
+  ActionOpen.Caption := GetString('menu.file.open');
   ActionOpen.Hint := GetString('tooltip.open');
   ActionOpen.ShortCut := TextToShortCut('Ctrl+O');
+  ActionSave.Caption := GetString('menu.file.save');
   ActionSave.Hint := GetString('tooltip.save');
   ActionSave.ShortCut := TextToShortCut('Ctrl+S');
+  ActionSaveAs.Caption := GetString('menu.file.saveas');
   ActionSaveAs.ShortCut := TextToShortCut('Ctrl+Shift+S');
+  ActionExit.Caption := GetString('menu.file.exit');
+  ActionAbout.Caption := GetStringF('menu.help.about', ['DA-CryptPad']);
+  ActionAbout.Hint := GetStringF('tooltip.about', ['DA-CryptPad']);
   // ActionAddSibling always inserts at root level (like Java's onNewMainNode),
-  // so it uses the "main node" tooltip; ActionNewSibling is the true sibling insert.
+  // so it uses the "main node" caption/tooltip; ActionNewSibling is the true sibling insert.
+  ActionAddSibling.Caption := GetString('popup.newmainnode');
   ActionAddSibling.Hint := GetString('tooltip.newmainnode');
   ActionNewSibling.Caption := GetString('popup.newsibling');
   ActionNewSibling.Hint := GetString('tooltip.newsibling');
+  ActionAddChild.Caption := GetString('popup.newchild');
   ActionAddChild.Hint := GetString('tooltip.newchild');
+  ActionRename.Caption := GetString('popup.editnode');
+  ActionRename.Hint := GetString('tooltip.editnode');
+  ActionDelete.Caption := GetString('popup.deletenode');
   ActionDelete.Hint := GetString('tooltip.deletenode');
   ActionMoveUp.Caption := GetString('menu.edit.moveup');
   ActionMoveUp.Hint := GetString('tooltip.moveup');

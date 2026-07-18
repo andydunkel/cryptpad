@@ -65,6 +65,11 @@ begin
   Ctx.State[7] := $5be0cd19;
 end;
 
+// SHA-256's word expansion and state accumulation are defined as mod-2^32
+// arithmetic, so this function relies on UInt32 wraparound on overflow.
+// Range/overflow checking (enabled in the Debug build mode) would otherwise
+// raise a spurious RunError(201) on the very first block.
+{$PUSH}{$R-}{$Q-}
 procedure SHA256Transform(var Ctx: TSHA256Context; const Block: array of Byte);
 var
   W: array[0..63] of UInt32;
@@ -101,6 +106,7 @@ begin
   Ctx.State[6] := Ctx.State[6] + g;
   Ctx.State[7] := Ctx.State[7] + h;
 end;
+{$POP}
 
 procedure SHA256Update(var Ctx: TSHA256Context; const Data; DataLen: PtrUInt);
 var

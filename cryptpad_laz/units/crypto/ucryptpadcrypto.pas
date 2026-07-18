@@ -10,7 +10,7 @@ uses
 
 const
   APP_NAME = 'DA-CryptPad';
-  APP_VERSION = '1.1.0';
+  APP_VERSION = '1.2.0';
 
   FORMAT_VERSION: Byte = 1;
   SALT_LENGTH = 16;

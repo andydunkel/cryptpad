@@ -22,6 +22,7 @@ begin
   RequireDerivedFormResource:=True;
   Application.Title:='DA-CryptPad';
   Application.Scaled:=True;
+  Application.ShowHint:=True;
   {$PUSH}{$WARN 5044 OFF}
   Application.MainFormOnTaskbar:=True;
   {$POP}
