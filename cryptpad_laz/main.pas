@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
-  ExtCtrls, SynEdit, ImgList,
+  ExtCtrls, SynEdit, ImgList, ActnList, uabout,
   {$IFDEF WINDOWS}Windows,{$ENDIF}
   uentrytreenode, udatamodel, uxmlmanager, umessages, uappsettings,
   usynhighlightermarkdown,
@@ -19,6 +19,8 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ActionAbout: TAction;
+    ActionList: TActionList;
     FEditor: TSynEdit;
     FOpenDialog: TOpenDialog;
     FSaveDialog: TSaveDialog;
@@ -46,6 +48,8 @@ type
     MenuToolsTextEncryption: TMenuItem;
     MenuHelp: TMenuItem;
     MenuHelpAbout: TMenuItem;
+    ToolButton1: TToolButton;
+    ToolButton2: TToolButton;
     ToolButtonNew: TToolButton;
     ToolButtonOpen: TToolButton;
     ToolButtonSave: TToolButton;
@@ -56,6 +60,7 @@ type
     ToolButtonSep2: TToolButton;
     ToolButtonEncrypt: TToolButton;
 
+    procedure ActionAboutExecute(Sender: TObject);
     procedure TreeSelectionChanged(Sender: TObject);
     procedure EditorChange(Sender: TObject);
     procedure TreeDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
@@ -70,7 +75,6 @@ type
     procedure DoAddChildNode(Sender: TObject);
     procedure DoRenameNode(Sender: TObject);
     procedure DoDeleteNode(Sender: TObject);
-    procedure DoAbout(Sender: TObject);
     procedure DoSettings(Sender: TObject);
     procedure DoTextEncryption(Sender: TObject);
     procedure DoPasswordGenerator(Sender: TObject);
@@ -230,6 +234,11 @@ procedure TMainForm.TreeSelectionChanged(Sender: TObject);
 begin
   FSelectedModelNode := GetSelectedTVModelNode(FTreeView.Selected);
   LoadNodeIntoEditor(FSelectedModelNode);
+end;
+
+procedure TMainForm.ActionAboutExecute(Sender: TObject);
+begin
+  FormAbout.ShowModal;
 end;
 
 procedure TMainForm.EditorChange(Sender: TObject);
@@ -440,12 +449,6 @@ begin
   FSelectedModelNode := nil;
   RebuildTree;
   LoadNodeIntoEditor(nil);
-end;
-
-procedure TMainForm.DoAbout(Sender: TObject);
-begin
-  MessageDlg(GetStringF('menu.help.about', ['DA-CryptPad']) + LineEnding +
-    'Lazarus/FreePascal port', mtInformation, [mbOK], 0);
 end;
 
 procedure TMainForm.DoSettings(Sender: TObject);

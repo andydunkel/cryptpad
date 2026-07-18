@@ -13,18 +13,20 @@ uses
   Forms, main, uaes256, uaesgcm, ucryptpadcrypto, usha256, udatamodel,
   uentrytreenode, usearchservice, uxmlmanager, uappsettings, uencryptiondialog,
   uencryptpasswordform, upasswordgenform, upasswordpromptform, usearchform,
-  usettingsform, usynhighlightermarkdown, upasswordgenerator
+  usettingsform, usynhighlightermarkdown, upasswordgenerator, uabout
   { you can add units after this };
 
 {$R *.res}
 
 begin
   RequireDerivedFormResource:=True;
+  Application.Title:='DA-CryptPad';
   Application.Scaled:=True;
   {$PUSH}{$WARN 5044 OFF}
   Application.MainFormOnTaskbar:=True;
   {$POP}
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TFormAbout, FormAbout);
   Application.Run;
 end.
