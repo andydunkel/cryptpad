@@ -5,7 +5,7 @@ unit ucryptpadcrypto;
 interface
 
 uses
-  Classes, SysUtils, base64, usha256, uaes256, uaesgcm, uappinfo
+  Classes, SysUtils, base64, usha256, uaes256, uaesgcm, uappinfo, Dialogs
   {$IFDEF WINDOWS}, Windows{$ENDIF};
 
 const
@@ -161,6 +161,8 @@ var
   ctLen: Integer;
 begin
   decoded := Base64DecodeBytes(EncryptedBase64);
+
+  ShowMessage(IntToStr(Length(decoded)));
 
   if Length(decoded) < 1 + SALT_LENGTH + GCM_IV_LENGTH + GCM_TAG_LENGTH then
     raise ECryptPadCrypto.Create('Encrypted payload too short');

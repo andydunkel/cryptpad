@@ -248,7 +248,7 @@ var
   hLen: Integer;
   blockCount, i, j, k: Integer;
   saltPlusInt: TBytes;
-  u, t: TSHA256Digest;
+  u, uNext, t: TSHA256Digest;
   pwPtr: PByte;
   pwLen: PtrUInt;
   outPos: Integer;
@@ -278,7 +278,11 @@ begin
 
     for j := 2 to Iterations do
     begin
-      HMACSHA256(pwPtr^, pwLen, u[0], 32, u);
+      // u must not also be passed as the out param: HMACSHA256 is free to clear
+      // Digest's memory before reading Data, which would corrupt this input if
+      // they aliased the same variable (only manifests with trashed locals).
+      HMACSHA256(pwPtr^, pwLen, u[0], 32, uNext);
+      u := uNext;
       for k := 0 to 31 do
         t[k] := t[k] xor u[k];
     end;
