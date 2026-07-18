@@ -1,18 +1,21 @@
 object EncryptionForm: TEncryptionForm
   Left = 300
-  Height = 450
+  Height = 551
   Top = 150
-  Width = 600
+  Width = 926
+  BorderStyle = bsSingle
   Caption = 'Text Encryption'
-  ClientHeight = 450
-  ClientWidth = 600
-  OnClose = FormCloseHandler
+  ClientHeight = 551
+  ClientWidth = 926
+  Menu = MainMenu1
   Position = poScreenCenter
+  LCLVersion = '4.6.0.0'
+  OnClose = FormCloseHandler
   object FToolBar: TToolBar
     Left = 0
     Height = 26
     Top = 0
-    Width = 600
+    Width = 926
     Images = FToolImages
     ParentShowHint = False
     ShowHint = True
@@ -89,17 +92,21 @@ object EncryptionForm: TEncryptionForm
   end
   object FEditor: TMemo
     Left = 0
-    Height = 424
+    Height = 525
     Top = 26
-    Width = 600
+    Width = 926
     Align = alClient
+    Font.CharSet = ANSI_CHARSET
+    Font.Name = 'Consolas'
+    Font.Pitch = fpFixed
+    Font.Quality = fqDraft
+    ParentFont = False
     ScrollBars = ssBoth
     TabOrder = 0
-    WordWrap = True
   end
   object MainMenu1: TMainMenu
-    left = 300
-    top = 16
+    Left = 300
+    Top = 16
     object MenuFile: TMenuItem
       Caption = 'File'
       object MenuFileNew: TMenuItem
@@ -306,13 +313,13 @@ object EncryptionForm: TEncryptionForm
   end
   object FOpenDialog: TOpenDialog
     Filter = 'Text files (*.txt, *.etf)|*.txt;*.etf|All Files (*.*)|*.*'
-    left = 360
-    top = 16
+    Left = 360
+    Top = 16
   end
   object FSaveDialog: TSaveDialog
-    DefaultExt = 'txt'
+    DefaultExt = '.txt'
     Filter = 'Text files (*.txt)|*.txt|All Files (*.*)|*.*'
-    left = 420
-    top = 16
+    Left = 420
+    Top = 16
   end
 end

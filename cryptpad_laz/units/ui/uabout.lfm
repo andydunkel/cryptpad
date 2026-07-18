@@ -483,6 +483,7 @@ object FormAbout: TFormAbout
     E1FEE3C7E4FFE007E6FFF00FE8FFF81FEAFE
   }
   Position = poOwnerFormCenter
+  OnCreate = FormCreate
   LCLVersion = '4.6.0.0'
   object ImageAbout: TImage
     Left = 8
@@ -2908,7 +2909,7 @@ object FormAbout: TFormAbout
     Height = 15
     Top = 280
     Width = 65
-    Caption = 'Version 1.2.0'
+    Caption = 'Version'
   end
   object Label2: TLabel
     Left = 112

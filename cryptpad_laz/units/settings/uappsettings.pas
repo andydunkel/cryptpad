@@ -6,7 +6,7 @@ unit uappsettings;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, uappinfo;
 
 function GetLanguage: string; // 'en', 'de', or 'system'
 procedure SetLanguage(const Lang: string);
@@ -27,7 +27,6 @@ procedure SaveSettings;
 implementation
 
 const
-  APP_NAME = 'DA-CryptPad';
   SETTINGS_FILENAME = 'settings.properties';
   KEY_LANGUAGE = 'language';
   KEY_THEME = 'theme';

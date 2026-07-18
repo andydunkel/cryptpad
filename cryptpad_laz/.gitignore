@@ -1,5 +1,5 @@
 # Lazarus compiler-generated binaries (safe to delete)
-*.exe
+cryptpad.exe
 *.so
 *.dylib
 *.lrs

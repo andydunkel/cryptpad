@@ -6,7 +6,8 @@ unit upasswordpromptform;
 interface
 
 uses
-  Classes, SysUtils, Forms, StdCtrls, Controls;
+  Classes, SysUtils, Forms, StdCtrls, Controls,
+  umessages;
 
 type
 
@@ -38,6 +39,8 @@ begin
   try
     frm.Caption := ATitle;
     frm.LabelPrompt.Caption := APromptLabel;
+    frm.ButtonOK.Caption := GetString('button.ok');
+    frm.ButtonCancel.Caption := GetString('button.cancel');
     if frm.ShowModal = mrOK then
     begin
       APassword := frm.EditPassword.Text;

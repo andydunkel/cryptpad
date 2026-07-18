@@ -5,13 +5,10 @@ unit ucryptpadcrypto;
 interface
 
 uses
-  Classes, SysUtils, base64, usha256, uaes256, uaesgcm
+  Classes, SysUtils, base64, usha256, uaes256, uaesgcm, uappinfo
   {$IFDEF WINDOWS}, Windows{$ENDIF};
 
 const
-  APP_NAME = 'DA-CryptPad';
-  APP_VERSION = '1.2.0';
-
   FORMAT_VERSION: Byte = 1;
   SALT_LENGTH = 16;
   PBKDF2_ITERATIONS = 100000;

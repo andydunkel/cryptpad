@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Laz2_DOM, Laz2_XMLRead, Laz2_XMLWrite,
-  uentrytreenode, udatamodel, ucryptpadcrypto;
+  uentrytreenode, udatamodel, ucryptpadcrypto, uappinfo;
 
 procedure XMLManagerSave(const FileName: string; Model: TDataModel);
 procedure XMLManagerLoad(const FileName: string; Model: TDataModel);
@@ -15,7 +15,6 @@ implementation
 
 const
   XML_VERSION = '1';
-  XML_APP_NAME = 'DA-CryptPad';
 
 function NodeToXML(Doc: TXMLDocument; Node: TEntryTreeNode): TDOMElement;
 var
@@ -65,7 +64,7 @@ begin
     fileInfo := doc.CreateElement('fileinfo');
     appNameEl := doc.CreateElement('appname');
     appNameEl.SetAttribute('version', XML_VERSION);
-    appNameEl.AppendChild(doc.CreateTextNode(XML_APP_NAME));
+    appNameEl.AppendChild(doc.CreateTextNode(APP_NAME));
     fileInfo.AppendChild(appNameEl);
     rootEl.AppendChild(fileInfo);
 

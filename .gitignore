@@ -28,7 +28,6 @@ replay_pid*
 .settings/
 .classpath
 .project
-bin/
 
 # Maven
 target/
@@ -47,7 +46,6 @@ buildNumber.properties
 *.iml
 *.iws
 *.ipr
-out/
 
 # VS Code
 .vscode/

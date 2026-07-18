@@ -39,6 +39,10 @@ begin
   frm := TEncryptPasswordForm.Create(AOwner);
   try
     frm.Caption := ATitle;
+    frm.LabelPrompt1.Caption := GetString('password.encrypt.label1');
+    frm.LabelPrompt2.Caption := GetString('password.encrypt.label2');
+    frm.ButtonOK.Caption := GetString('button.ok');
+    frm.ButtonCancel.Caption := GetString('button.cancel');
     if frm.ShowModal = mrOK then
     begin
       APassword := frm.EditPassword1.Text;

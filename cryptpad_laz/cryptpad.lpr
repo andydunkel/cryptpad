@@ -13,7 +13,7 @@ uses
   Forms, main, uaes256, uaesgcm, ucryptpadcrypto, usha256, udatamodel,
   uentrytreenode, usearchservice, uxmlmanager, uappsettings, uencryptiondialog,
   uencryptpasswordform, upasswordgenform, upasswordpromptform, usearchform,
-  usettingsform, usynhighlightermarkdown, upasswordgenerator, uabout
+  usettingsform, usynhighlightermarkdown, upasswordgenerator, uabout, uappinfo
   { you can add units after this };
 
 {$R *.res}

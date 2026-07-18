@@ -5,7 +5,8 @@ unit uabout;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, lclintf;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, lclintf,
+  uappinfo;
 
 type
 
@@ -18,6 +19,7 @@ type
     Label2: TLabel;
     Label3: TLabel;
     procedure Button1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure Label3Click(Sender: TObject);
   private
 
@@ -33,6 +35,11 @@ implementation
 {$R *.lfm}
 
 { TFormAbout }
+
+procedure TFormAbout.FormCreate(Sender: TObject);
+begin
+  Label1.Caption := 'Version ' + APP_VERSION;
+end;
 
 procedure TFormAbout.Button1Click(Sender: TObject);
 begin
