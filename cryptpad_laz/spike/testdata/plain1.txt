@@ -1,0 +1,2 @@
+<xml><entries><entry><title>Bankkonto</title><content>Benutzer: müller
+Passwort: g3h€im!äöüß</content></entry></entries></xml>

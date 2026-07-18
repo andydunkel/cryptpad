@@ -1,0 +1,88 @@
+object EncryptionForm: TEncryptionForm
+  Left = 300
+  Height = 450
+  Top = 150
+  Width = 600
+  Caption = 'Text Encryption'
+  ClientHeight = 450
+  ClientWidth = 600
+  OnClose = FormCloseHandler
+  Position = poScreenCenter
+  object FEditor: TMemo
+    Left = 0
+    Height = 450
+    Top = 0
+    Width = 600
+    Align = alClient
+    ScrollBars = ssBoth
+    TabOrder = 0
+    WordWrap = True
+  end
+  object MainMenu1: TMainMenu
+    left = 300
+    top = 16
+    object MenuFile: TMenuItem
+      Caption = 'File'
+      object MenuFileNew: TMenuItem
+        Caption = 'New'
+        OnClick = DoNew
+      end
+      object MenuFileOpen: TMenuItem
+        Caption = 'Open'
+        OnClick = DoOpen
+      end
+      object MenuFileSave: TMenuItem
+        Caption = 'Save'
+        OnClick = DoSave
+      end
+      object MenuFileSaveAs: TMenuItem
+        Caption = 'Save As'
+        OnClick = DoSaveAs
+      end
+      object MenuFileSep1: TMenuItem
+        Caption = '-'
+      end
+      object MenuFileExit: TMenuItem
+        Caption = 'Exit'
+        OnClick = MenuFileExitClick
+      end
+    end
+    object MenuEdit: TMenuItem
+      Caption = 'Edit'
+      object MenuEditCut: TMenuItem
+        Caption = 'Cut'
+        OnClick = DoCut
+      end
+      object MenuEditCopy: TMenuItem
+        Caption = 'Copy'
+        OnClick = DoCopy
+      end
+      object MenuEditPaste: TMenuItem
+        Caption = 'Paste'
+        OnClick = DoPaste
+      end
+    end
+    object MenuEncryption: TMenuItem
+      Caption = 'Encryption'
+      object MenuEncryptionEncrypt: TMenuItem
+        Caption = 'Encrypt'
+        OnClick = DoEncrypt
+      end
+      object MenuEncryptionDecrypt: TMenuItem
+        Caption = 'Decrypt'
+        OnClick = DoDecrypt
+      end
+    end
+  end
+  object FOpenDialog: TOpenDialog
+    Filter = 'Text files (*.txt, *.etf)|*.txt;*.etf|All Files (*.*)|*.*'
+    left = 360
+    top = 16
+  end
+  object FSaveDialog: TSaveDialog
+    DefaultExt = 'txt'
+    Filter = 'Text files (*.txt)|*.txt|All Files (*.*)|*.*'
+    left = 420
+    top = 16
+  end
+end
