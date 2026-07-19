@@ -37,10 +37,6 @@ OutputBaseFilename=cryptpad
 Compression=lzma2
 SolidCompression=yes
 
-; Architecture
-ArchitecturesAllowed=x64
-ArchitecturesInstallIn64BitMode=x64
-
 ; UI
 WizardStyle=modern
 ShowLanguageDialog=auto
@@ -51,8 +47,8 @@ ShowUndisplayableLanguages=false
 ChangesAssociations=true
 
 ; Code Signing
-;SignTool=yubikey /d $q{#MyAppName}$q /du $q{#MyAppURL}$q /v $f
-;SignedUninstaller=yes
+SignTool=yubikey /d $q{#MyAppName}$q /du $q{#MyAppURL}$q /v $f
+SignedUninstaller=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -62,11 +58,7 @@ Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-; Main Application
-Source: "{#MyAppExeName}"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
-
-; Bundled JRE
-Source: "jre\*"; DestDir: "{app}\jre"; Flags: overwritereadonly ignoreversion replacesameversion recursesubdirs createallsubdirs
+Source: "..\cryptpad_laz\out\*"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion recursesubdirs createallsubdirs
 
 ; Icons
 Source: "..\res\DA-CryptPadFile.ico"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
@@ -92,7 +84,7 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
-Type: filesandordirs; Name: "{localappdata}\{#MyAppName}"
+Type: filesandordirs; Name: "{userappdata}\{#MyAppName}"
 
 [Code]
 function GetUninstallString(): String;
