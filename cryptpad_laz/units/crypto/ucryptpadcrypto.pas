@@ -162,8 +162,6 @@ var
 begin
   decoded := Base64DecodeBytes(EncryptedBase64);
 
-  ShowMessage(IntToStr(Length(decoded)));
-
   if Length(decoded) < 1 + SALT_LENGTH + GCM_IV_LENGTH + GCM_TAG_LENGTH then
     raise ECryptPadCrypto.Create('Encrypted payload too short');
 

@@ -39,6 +39,7 @@ type
     ActionSave: TAction;
     ActionSaveAs: TAction;
     ActionSearch: TAction;
+    ActionSetPassword: TAction;
     ActionSettings: TAction;
     ActionTextEncryption: TAction;
     FEditor: TSynEdit;
@@ -73,12 +74,16 @@ type
     MenuTools: TMenuItem;
     MenuToolsPasswordGen: TMenuItem;
     MenuToolsSearch: TMenuItem;
+    MenuToolsSep1: TMenuItem;
     MenuToolsSettings: TMenuItem;
+    MenuToolsSetPassword: TMenuItem;
     MenuToolsTextEncryption: TMenuItem;
     MenuHelp: TMenuItem;
     MenuHelpCheckUpdates: TMenuItem;
     MenuHelpSep1: TMenuItem;
     MenuHelpAbout: TMenuItem;
+    ToolButton4: TToolButton;
+    ToolButton5: TToolButton;
     TreePopupMenu: TPopupMenu;
     PopupNewMainNode: TMenuItem;
     PopupNewSibling: TMenuItem;
@@ -129,6 +134,7 @@ type
     procedure ActionSettingsExecute(Sender: TObject);
     procedure ActionTextEncryptionExecute(Sender: TObject);
     procedure ActionPasswordGenExecute(Sender: TObject);
+    procedure ActionSetPasswordExecute(Sender: TObject);
     procedure ActionSearchExecute(Sender: TObject);
 
     procedure TreeSelectionChanged(Sender: TObject);
@@ -158,8 +164,8 @@ type
     function PromptText(const ATitle, APrompt, ADefault: string; out AValue: string): Boolean;
     function SaveToFile(const FileName: string): Boolean;
     function FindTVNode(ModelNode: TEntryTreeNode): TTreeNode;
-    procedure SelectModelNode(ModelNode: TEntryTreeNode);
-    procedure SelectFirstNode;
+    procedure SelectModelNode(ModelNode: TEntryTreeNode; FocusEditor: Boolean = True);
+    procedure SelectFirstNode(FocusEditor: Boolean = True);
     procedure MarkDirty;
     function ShowSaveConfirmation: TModalResult; // mrYes/mrNo/mrCancel
 
@@ -229,8 +235,13 @@ begin
   UpdateRecentFilesMenu;
 
   RebuildTree;
-  SelectFirstNode;
+  SelectFirstNode(False);
   UpdateTitle;
+
+  // Support opening a .cryptpad file passed on the command line (e.g. via
+  // the file association / "Open with" registry entry, or double-click).
+  if (ParamCount >= 1) and (ParamStr(1) <> '') and FileExists(ParamStr(1)) then
+    DoOpenFile(ParamStr(1));
 end;
 
 destructor TMainForm.Destroy;
@@ -295,6 +306,8 @@ begin
   ActionPasswordGen.Caption := GetString('menu.encryption.passwordgen');
   ActionSearch.Caption := GetString('menu.tools.search');
   ActionSettings.Caption := GetString('menu.edit.settings');
+  ActionSetPassword.Caption := GetString('menu.encryption.setpassword');
+  ActionSetPassword.Hint := GetString('menu.encryption.setpassword');
   ActionTextEncryption.Caption := GetString('menu.encryption.textencryption');
   ActionTextEncryption.Hint := GetString('menu.encryption.textencryption');
 end;
@@ -719,6 +732,24 @@ begin
   SaveToFile(FSaveDialog.FileName);
 end;
 
+procedure TMainForm.ActionSetPasswordExecute(Sender: TObject);
+var
+  pw: string;
+begin
+  if not uencryptpasswordform.PromptNewPassword(Self, GetString('password.encrypt.title'), pw) then Exit;
+  FModel.Password := UTF8String(pw);
+  MarkDirty;
+
+  if FCurrentFileName = '' then
+  begin
+    if not FSaveDialog.Execute then Exit;
+    FCurrentFileName := FSaveDialog.FileName;
+  end;
+
+  if SaveToFile(FCurrentFileName) then
+    MessageDlg(GetString('dialog.success.password'), GetString('dialog.success.title'), mtInformation, [mbOK], 0);
+end;
+
 procedure TMainForm.ActionAddSiblingExecute(Sender: TObject);
 var
   title: string;
@@ -730,7 +761,7 @@ begin
   newNode := FModel.AddNode(nil, title);
   MarkDirty;
   RebuildTree;
-  LoadNodeIntoEditor(newNode);
+  SelectModelNode(newNode);
 end;
 
 procedure TMainForm.ActionNewSiblingExecute(Sender: TObject);
@@ -750,7 +781,7 @@ begin
   newNode := FModel.AddNode(FSelectedModelNode.Parent, title);
   MarkDirty;
   RebuildTree;
-  LoadNodeIntoEditor(newNode);
+  SelectModelNode(newNode);
 end;
 
 procedure TMainForm.ActionAddChildExecute(Sender: TObject);
@@ -770,7 +801,7 @@ begin
   newNode := FModel.AddNode(FSelectedModelNode, title);
   MarkDirty;
   RebuildTree;
-  LoadNodeIntoEditor(newNode);
+  SelectModelNode(newNode);
 end;
 
 procedure TMainForm.ActionRenameExecute(Sender: TObject);
@@ -874,7 +905,7 @@ begin
     end;
 end;
 
-procedure TMainForm.SelectModelNode(ModelNode: TEntryTreeNode);
+procedure TMainForm.SelectModelNode(ModelNode: TEntryTreeNode; FocusEditor: Boolean);
 var
   tvNode: TTreeNode;
 begin
@@ -882,14 +913,20 @@ begin
   if tvNode = nil then Exit;
 
   tvNode.MakeVisible;
+  if tvNode.HasChildren then
+    tvNode.Expand(True);
+  SyncNodeIcons(FTreeView.Items.GetFirstNode);
+
   FTreeView.Selected := tvNode;
   TreeSelectionChanged(nil);
+  if FocusEditor and Visible and FEditor.CanFocus then
+    FEditor.SetFocus;
 end;
 
-procedure TMainForm.SelectFirstNode;
+procedure TMainForm.SelectFirstNode(FocusEditor: Boolean);
 begin
   if FModel.RootNode.ChildCount > 0 then
-    SelectModelNode(FModel.RootNode.Children[0])
+    SelectModelNode(FModel.RootNode.Children[0], FocusEditor)
   else
     LoadNodeIntoEditor(nil);
 end;

@@ -6,7 +6,7 @@ unit usearchform;
 interface
 
 uses
-  Classes, SysUtils, Forms, StdCtrls, Controls, contnrs,
+  Classes, SysUtils, Forms, StdCtrls, Controls, LCLType, contnrs,
   umessages, uentrytreenode, udatamodel, usearchservice;
 
 type
@@ -18,10 +18,13 @@ type
     EditSearch: TEdit;
     ListResults: TListBox;
     procedure EditSearchChange(Sender: TObject);
+    procedure EditSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ListResultsDblClick(Sender: TObject);
+    procedure ListResultsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     FModel: TDataModel;
     FResults: TFPObjectList;
+    procedure SelectResult(idx: Integer);
   public
     SelectedNode: TEntryTreeNode;
     procedure SetModel(AModel: TDataModel);
@@ -88,16 +91,41 @@ begin
   end;
 end;
 
-procedure TSearchForm.ListResultsDblClick(Sender: TObject);
-var
-  idx: Integer;
+procedure TSearchForm.SelectResult(idx: Integer);
 begin
   if (FResults = nil) or (FResults.Count = 0) then Exit;
-  idx := ListResults.ItemIndex;
   if (idx < 0) or (idx >= FResults.Count) then Exit;
 
   SelectedNode := TSearchResult(FResults[idx]).Node;
   ModalResult := mrOK;
+end;
+
+procedure TSearchForm.ListResultsDblClick(Sender: TObject);
+begin
+  SelectResult(ListResults.ItemIndex);
+end;
+
+procedure TSearchForm.ListResultsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    SelectResult(ListResults.ItemIndex);
+    Key := 0;
+  end;
+end;
+
+procedure TSearchForm.EditSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+var
+  idx: Integer;
+begin
+  if Key = VK_RETURN then
+  begin
+    idx := ListResults.ItemIndex;
+    if (idx < 0) and (FResults <> nil) and (FResults.Count > 0) then
+      idx := 0;
+    SelectResult(idx);
+    Key := 0;
+  end;
 end;
 
 end.

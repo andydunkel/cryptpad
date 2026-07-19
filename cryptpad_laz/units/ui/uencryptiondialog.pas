@@ -29,6 +29,7 @@ type
     FEditor: TMemo;
     FToolBar: TToolBar;
     FToolImages: TImageList;
+    ToolButtonDecrypt: TToolButton;
     ToolButtonNew: TToolButton;
     ToolButtonOpen: TToolButton;
     ToolButtonSave: TToolButton;
@@ -67,6 +68,7 @@ type
     procedure ActionEncryptExecute(Sender: TObject);
     procedure ActionDecryptExecute(Sender: TObject);
     procedure ActionExitExecute(Sender: TObject);
+    procedure FEditorChange(Sender: TObject);
     procedure FormCloseHandler(Sender: TObject; var CloseAction: TCloseAction);
   private
     FSaved: Boolean;
@@ -336,6 +338,11 @@ end;
 procedure TEncryptionForm.ActionExitExecute(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TEncryptionForm.FEditorChange(Sender: TObject);
+begin
+
 end;
 
 procedure TEncryptionForm.FormCloseHandler(Sender: TObject; var CloseAction: TCloseAction);

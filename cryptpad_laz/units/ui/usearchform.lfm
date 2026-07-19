@@ -1,33 +1,40 @@
 object SearchForm: TSearchForm
   Left = 250
-  Height = 420
+  Height = 389
   Top = 150
-  Width = 560
+  Width = 548
   Caption = 'Search Results'
-  ClientHeight = 420
-  ClientWidth = 560
+  ClientHeight = 389
+  ClientWidth = 548
   Position = poScreenCenter
+  LCLVersion = '4.6.0.0'
   object EditSearch: TEdit
     Left = 12
     Height = 23
-    Top = 12
-    Width = 440
-    OnChange = EditSearchChange
+    Top = 16
+    Width = 520
+    Anchors = [akTop, akLeft, akRight]
     TabOrder = 0
+    OnChange = EditSearchChange
+    OnKeyDown = EditSearchKeyDown
   end
   object ListResults: TListBox
     Left = 12
     Height = 300
     Top = 44
     Width = 520
-    OnDblClick = ListResultsDblClick
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ItemHeight = 0
     TabOrder = 1
+    OnDblClick = ListResultsDblClick
+    OnKeyDown = ListResultsKeyDown
   end
   object ButtonClose: TButton
     Left = 456
     Height = 25
     Top = 352
     Width = 75
+    Anchors = [akLeft, akRight]
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
