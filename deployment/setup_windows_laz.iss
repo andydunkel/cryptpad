@@ -47,8 +47,8 @@ ShowUndisplayableLanguages=false
 ChangesAssociations=true
 
 ; Code Signing
-SignTool=yubikey /d $q{#MyAppName}$q /du $q{#MyAppURL}$q /v $f
-SignedUninstaller=yes
+;SignTool=yubikey /d $q{#MyAppName}$q /du $q{#MyAppURL}$q /v $f
+;SignedUninstaller=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
