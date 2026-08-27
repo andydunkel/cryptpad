@@ -418,7 +418,11 @@ var
   updaterPath: string;
   proc: TProcess;
 begin
+  {$IFDEF WINDOWS}
   updaterPath := ExtractFilePath(ParamStr(0)) + 'updater.exe';
+  {$ELSE}
+  updaterPath := ExtractFilePath(ParamStr(0)) + 'updater';
+  {$ENDIF}
   if not FileExists(updaterPath) then
   begin
     MessageDlg(GetStringF('menu.help.checkupdates.notfound', [updaterPath]), GetString('dialog.error.title'),

@@ -57,7 +57,7 @@ Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\cryptpad_laz\out\*"; DestDir: "{app}"; Flags: overwritereadonly replacesameversion recursesubdirs createallsubdirs
+Source: "..\cryptpad_laz\out\*"; DestDir: "{app}"; Excludes: "cryptpad,updater"; Flags: overwritereadonly replacesameversion recursesubdirs createallsubdirs
 
 ; Icons
 Source: "..\res\DA-CryptPadFile.ico"; DestDir: "{app}"; Flags: overwritereadonly replacesameversion
