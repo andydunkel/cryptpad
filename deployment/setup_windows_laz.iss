@@ -41,7 +41,6 @@ SolidCompression=yes
 WizardStyle=modern
 ShowLanguageDialog=auto
 LanguageDetectionMethod=uilanguage
-ShowUndisplayableLanguages=false
 
 ; Associations
 ChangesAssociations=true
@@ -58,14 +57,14 @@ Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\cryptpad_laz\out\*"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion recursesubdirs createallsubdirs
+Source: "..\cryptpad_laz\out\*"; DestDir: "{app}"; Flags: overwritereadonly replacesameversion recursesubdirs createallsubdirs
 
 ; Icons
-Source: "..\res\DA-CryptPadFile.ico"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
-Source: "..\res\DA-CryptPad.ico"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
+Source: "..\res\DA-CryptPadFile.ico"; DestDir: "{app}"; Flags: overwritereadonly replacesameversion
+Source: "..\res\DA-CryptPad.ico"; DestDir: "{app}"; Flags: overwritereadonly replacesameversion
 
 ; License
-Source: "..\LICENSE"; DestDir: "{app}"; Flags: overwritereadonly ignoreversion replacesameversion
+Source: "..\LICENSE"; DestDir: "{app}"; Flags: overwritereadonly replacesameversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; IconFilename: "{app}\DA-CryptPad.ico"; IconIndex: 0
@@ -84,7 +83,6 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
-Type: filesandordirs; Name: "{userappdata}\{#MyAppName}"
 
 [Code]
 function GetUninstallString(): String;
