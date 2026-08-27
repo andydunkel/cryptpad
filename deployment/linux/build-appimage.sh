@@ -15,6 +15,10 @@ LANG_DIR="$REPO_ROOT/cryptpad_laz/out/lang"
 DESKTOP_FILE="$SCRIPT_DIR/net.dasoftware.cryptpad.desktop"
 APPSTREAM_FILE="$SCRIPT_DIR/net.dasoftware.cryptpad.metainfo.xml"
 ICON_FILE="$SCRIPT_DIR/net.dasoftware.cryptpad.png"
+APP_RUN="$SCRIPT_DIR/AppRun"
+ADWAITA_THEME_DIR=${ADWAITA_THEME_DIR:-/usr/share/themes/Adwaita/gtk-2.0}
+ADWAITA_LICENSE="$SCRIPT_DIR/licenses/Adwaita-LGPL-2.1.txt"
+ADWAITA_NOTICE="$SCRIPT_DIR/licenses/Adwaita-NOTICE.txt"
 
 LINUXDEPLOY=${LINUXDEPLOY:-$TOOLS_DIR/linuxdeploy-x86_64.AppImage}
 GTK_PLUGIN=${GTK_PLUGIN:-$TOOLS_DIR/linuxdeploy-plugin-gtk.sh}
@@ -61,6 +65,10 @@ download_tool() {
 
 command -v lazbuild >/dev/null
 command -v curl >/dev/null
+command -v pkg-config >/dev/null
+
+GTK2_LIBDIR=$(pkg-config --variable=libdir gtk+-2.0)
+ADWAITA_ENGINE=${ADWAITA_ENGINE:-$GTK2_LIBDIR/gtk-2.0/2.10.0/engines/libadwaita.so}
 
 require_file "$UPDATER_BIN"
 require_file "$UPDATER_INI"
@@ -69,6 +77,11 @@ require_directory "$LANG_DIR"
 require_file "$DESKTOP_FILE"
 require_file "$APPSTREAM_FILE"
 require_file "$ICON_FILE"
+require_file "$APP_RUN"
+require_directory "$ADWAITA_THEME_DIR"
+require_file "$ADWAITA_ENGINE"
+require_file "$ADWAITA_LICENSE"
+require_file "$ADWAITA_NOTICE"
 
 APP_VERSION=${APP_VERSION:-$(detect_version)}
 OUTPUT_NAME="DA-CryptPad-$APP_VERSION-x86_64.AppImage"
@@ -88,8 +101,11 @@ require_file "$CRYPTPAD_BIN"
 
 install -d "$APPDIR/usr/bin/lang"
 install -d "$APPDIR/usr/lib"
+install -d "$APPDIR/usr/lib/gtk-2.0/2.10.0/engines"
+install -d "$APPDIR/usr/share/themes/Adwaita/gtk-2.0"
 install -d "$APPDIR/usr/share/metainfo"
 install -d "$APPDIR/usr/share/licenses/da-cryptpad"
+install -d "$APPDIR/usr/share/licenses/adwaita-gtk2"
 install -m 644 "$UPDATER_INI" "$APPDIR/usr/bin/updater.ini"
 install -m 644 "$UPDATER_LANG" "$APPDIR/usr/bin/updlang.ini"
 install -m 644 "$LANG_DIR/Messages.properties" \
@@ -100,6 +116,13 @@ install -m 644 "$APPSTREAM_FILE" \
   "$APPDIR/usr/share/metainfo/net.dasoftware.cryptpad.appdata.xml"
 install -m 644 "$REPO_ROOT/LICENSE" \
   "$APPDIR/usr/share/licenses/da-cryptpad/LICENSE"
+install -m 755 "$ADWAITA_ENGINE" \
+  "$APPDIR/usr/lib/gtk-2.0/2.10.0/engines/libadwaita.so"
+install -m 644 "$ADWAITA_LICENSE" \
+  "$APPDIR/usr/share/licenses/adwaita-gtk2/LGPL-2.1"
+install -m 644 "$ADWAITA_NOTICE" \
+  "$APPDIR/usr/share/licenses/adwaita-gtk2/NOTICE"
+cp -a "$ADWAITA_THEME_DIR/." "$APPDIR/usr/share/themes/Adwaita/gtk-2.0/"
 
 # Lazarus' GTK2 interface also loads these unversioned names at runtime. Keep
 # them inside the AppDir so it cannot load a second GTK/GDK copy from the host.
@@ -119,6 +142,7 @@ export LINUXDEPLOY_OUTPUT_VERSION="$APP_VERSION"
   --executable "$UPDATER_BIN" \
   --desktop-file "$DESKTOP_FILE" \
   --icon-file "$ICON_FILE" \
+  --custom-apprun "$APP_RUN" \
   --plugin gtk \
   --output appimage
 

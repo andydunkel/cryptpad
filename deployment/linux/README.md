@@ -4,6 +4,11 @@ The AppImage contains the native Linux release binaries, translations, updater
 configuration and the GTK runtime files. The Linux updater only checks for new
 releases; users download and replace the AppImage themselves.
 
+The bundled Adwaita GTK2 theme gives the application a consistent modern look
+without changing the user's desktop theme. Building requires the Adwaita GTK2
+theme and engine on the build system. On Debian and Ubuntu they are provided by
+`gnome-themes-extra` and `gnome-themes-extra-data`.
+
 Build from the repository root:
 
 ```bash
@@ -36,6 +41,9 @@ Generated files are written to `dist/`. Packaging tools are cached below
 The updater is packaged beside the main executable. This is intentional: both
 programs resolve `updater.ini`, `updlang.ini` and `lang/` relative to their
 executable directory.
+
+`AppRun` activates the bundled theme only for DA-CryptPad. The updater inherits
+the same theme environment when launched from the application.
 
 For public releases, run this build on the oldest supported Linux base system
 and test the resulting AppImage on every supported distribution.

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+HERE=$(dirname "$(readlink -f "$0")")
+
+# Keep the bundled GTK2 theme local to DA-CryptPad. The updater inherits these
+# values when it is launched from the application.
+export GTK2_RC_FILES="$HERE/usr/share/themes/Adwaita/gtk-2.0/gtkrc"
+export GTK_PATH="$HERE/usr/lib/gtk-2.0"
+
+exec "$HERE/usr/bin/cryptpad" "$@"

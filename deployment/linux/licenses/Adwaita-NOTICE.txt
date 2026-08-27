@@ -1,0 +1,10 @@
+The bundled Adwaita GTK2 theme and engine originate from GNOME's
+gnome-themes-standard/gnome-themes-extra project.
+
+Copyright includes:
+  Copyright (C) 2010-2012 the GNOME theme contributors and Red Hat, Inc.
+
+The theme and engine are distributed under the GNU Lesser General Public
+License, version 2.1 or any later version. The complete LGPL 2.1 license is
+included as Adwaita-LGPL-2.1.txt and in the generated AppImage under
+usr/share/licenses/adwaita-gtk2/.
