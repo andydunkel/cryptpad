@@ -5,14 +5,16 @@ unit main;
 
 interface
 
+{$WARN 5079 off}
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
-  ExtCtrls, SynEdit, ImgList, ActnList, LCLProc, Process, uabout,
+  ExtCtrls, SynEdit, SynEditWrappedView, ImgList, ActnList, LCLProc, Process, uabout,
   {$IFDEF WINDOWS}Windows,{$ENDIF}
   uentrytreenode, udatamodel, uxmlmanager, umessages, uappsettings,
   usynhighlightermarkdown,
   uencryptiondialog, upasswordpromptform, uencryptpasswordform,
   upasswordgenform, usearchform, usettingsform;
+{$WARN 5079 on}
 
 type
 
@@ -230,6 +232,7 @@ begin
   // Keystrokes list itself -- and ours currently stores an empty one, leaving the editor
   // with no cursor/navigation keys at all. Force the defaults back in explicitly.
   FEditor.Keystrokes.ResetDefaults;
+  TLazSynEditLineWrapPlugin.Create(FEditor);
 
   ApplyTranslations;
   UpdateRecentFilesMenu;
