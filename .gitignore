@@ -70,3 +70,6 @@ Desktop.ini
 *.bak
 *.swp
 *~
+
+# Local packaging tools and generated deployment artifacts
+/build/

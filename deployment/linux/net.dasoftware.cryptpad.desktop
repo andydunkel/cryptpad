@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=DA-CryptPad
+Comment=Organize encrypted notes and passwords
+Exec=cryptpad
+Icon=net.dasoftware.cryptpad
+Terminal=false
+Categories=Utility;Security;
+Keywords=Encryption;Notes;Passwords;Markdown;
+StartupNotify=true

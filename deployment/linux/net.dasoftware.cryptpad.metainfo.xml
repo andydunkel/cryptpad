@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>net.dasoftware.cryptpad</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>DA-CryptPad</name>
+  <summary>Encrypted outliner for notes and passwords</summary>
+  <description>
+    <p>
+      DA-CryptPad is a lightweight encrypted outliner for organizing notes,
+      passwords and other sensitive information in a hierarchical structure.
+    </p>
+    <p>
+      It includes AES encryption, Markdown highlighting, search and drag-and-drop
+      reordering, with an interface available in English and German.
+    </p>
+  </description>
+  <launchable type="desktop-id">net.dasoftware.cryptpad.desktop</launchable>
+  <provides>
+    <binary>cryptpad</binary>
+  </provides>
+  <url type="homepage">https://www.da-software.net/en/da-cryptpad-outliner-with-encryption</url>
+  <developer id="net.dasoftware">
+    <name>DA-Software</name>
+  </developer>
+  <releases>
+    <release version="1.2.0" date="2026-08-27"/>
+  </releases>
+  <content_rating type="oars-1.1"/>
+</component>
